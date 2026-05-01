@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - 上海资源</title>
+  <style>
+    :root {
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+      --risk-green: #6BAF7A;
+      --risk-green-bg: #EDF5EF;
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-crisis: 0 4px 20px rgba(212,107,107,0.3);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--color-bg); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ========== 页面头部 ========== */
+    .page-header {
+      padding: var(--space-lg) var(--space-base) 0;
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .page-title { font-size: var(--text-h1); font-weight: 700; }
+
+    /* ========== Tab 导航 ========== */
+    .tab-nav {
+      display: flex;
+      background: var(--color-bg-elevated);
+      position: relative;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .tab-btn {
+      flex: 1;
+      height: 44px;
+      background: none;
+      border: none;
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      position: relative;
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px;
+    }
+    .tab-btn.active {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    .tab-indicator {
+      position: absolute;
+      bottom: 0;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 3px 3px 0 0;
+      transition: left var(--duration-normal) var(--easing-default), width var(--duration-normal) var(--easing-default);
+    }
+
+    /* ========== 内容区 ========== */
+    .res-content {
+      padding: var(--space-base);
+      padding-bottom: 120px;
+    }
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.2s var(--easing-decelerate);
+    }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ========== 筛选下拉 ========== */
+    .filter-bar {
+      margin-bottom: var(--space-md);
+    }
+    .filter-select {
+      width: 100%;
+      height: 40px;
+      background: var(--color-bg-elevated);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0 var(--space-base);
+      font-family: var(--font-family);
+      font-size: var(--text-body-sm);
+      color: var(--color-text-primary);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239B9B9B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+
+    /* ========== 资源卡片 ========== */
+    .res-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+      margin-bottom: var(--space-md);
+      animation: fadeInUp 0.4s var(--easing-decelerate) both;
+    }
+    .res-card:nth-child(2) { animation-delay: 0.05s; }
+    .res-card:nth-child(3) { animation-delay: 0.1s; }
+    .res-card:nth-child(4) { animation-delay: 0.15s; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .res-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: var(--space-sm);
+    }
+    .res-card-name {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      line-height: 1.3;
+      flex: 1;
+    }
+    .res-tags {
+      display: flex;
+      gap: var(--space-xs);
+      flex-shrink: 0;
+      margin-left: var(--space-sm);
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-caption);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .tag-primary { background: var(--color-primary-light); color: var(--color-primary); }
+    .tag-success { background: var(--risk-green-bg); color: var(--risk-green); font-weight: 600; }
+
+    .res-card-info {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--space-sm);
+    }
+    .res-card-info-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xs);
+    }
+    .res-card-info-icon { font-size: 13px; flex-shrink: 0; width: 18px; text-align: center; }
+
+    .res-card-phone {
+      color: var(--color-primary);
+      font-weight: 600;
+      text-decoration: none;
+      font-variant-numeric: tabular-nums;
+    }
+    .res-card-phone:hover { text-decoration: underline; }
+
+    .btn-call {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-full);
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-family);
+      font-size: var(--text-body-sm);
+      font-weight: 500;
+      cursor: pointer;
+      min-height: 32px;
+      text-decoration: none;
+      transition: background var(--duration-fast), transform var(--duration-fast);
+    }
+    .btn-call:hover { background: var(--color-primary); color: var(--color-text-inverse); }
+    .btn-call:active { transform: scale(0.97); }
+
+    /* ========== 热线卡片（醒目样式） ========== */
+    .hotline-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+      margin-bottom: var(--space-md);
+      border-left: 4px solid var(--color-primary);
+      animation: fadeInUp 0.4s var(--easing-decelerate) both;
+    }
+    .hotline-card:nth-child(2) { animation-delay: 0.05s; }
+    .hotline-card:nth-child(3) { animation-delay: 0.1s; }
+
+    .hotline-name {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+    .hotline-number {
+      font-size: var(--text-h2);
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: var(--space-xs);
+      text-decoration: none;
+      display: inline-block;
+    }
+    .hotline-number:hover { text-decoration: underline; }
+    .hotline-desc {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+    .hotline-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-top: var(--space-sm);
+    }
+
+    /* ========== 社区卡片 ========== */
+    .community-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+      margin-bottom: var(--space-md);
+      animation: fadeInUp 0.4s var(--easing-decelerate) both;
+    }
+    .community-name {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+    .community-info {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+    .community-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-top: var(--space-sm);
+    }
+
+    /* ========== 医保政策列表 ========== */
+    .policy-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .policy-item {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+      animation: fadeInUp 0.4s var(--easing-decelerate) both;
+    }
+    .policy-item:nth-child(2) { animation-delay: 0.05s; }
+    .policy-item:nth-child(3) { animation-delay: 0.1s; }
+
+    .policy-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+    .policy-desc {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+    .policy-highlight {
+      color: var(--color-accent);
+      font-weight: 700;
+    }
+    .policy-note {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-sm);
+      line-height: 1.5;
+    }
+
+    /* ========== BottomNav ========== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; height: 64px;
+      background: var(--color-bg-elevated); border-top: 1px solid var(--color-border);
+      display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; color: var(--color-text-tertiary);
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px; position: relative; cursor: pointer;
+      background: none; border: none; font-family: var(--font-family);
+    }
+    .nav-item-icon { font-size: 20px; line-height: 1; }
+    .nav-item-label { font-size: 11px; line-height: 1; }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item.active .nav-item-label { font-weight: 600; font-size: 12px; }
+    .nav-item.active .nav-item-icon { font-size: 22px; }
+    .nav-item.active::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--color-primary); border-radius: 0 0 3px 3px;
+    }
+
+    /* ========== CrisisButton ========== */
+    .crisis-btn {
+      position: fixed; right: 16px; bottom: 80px; width: 52px; height: 52px;
+      border-radius: 50%; background: var(--color-danger); border: none;
+      box-shadow: var(--shadow-crisis); animation: pulse 2s ease-in-out infinite;
+      z-index: 200; cursor: pointer; font-size: 22px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .crisis-btn:active { transform: scale(0.95); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    /* ========== 确认清单 ========== */
+    .checklist-overlay {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 300; display: none;
+    }
+    .checklist-overlay.show { display: block; }
+    .checklist-handle { width: 36px; height: 4px; background: var(--color-border); border-radius: var(--radius-full); margin: 0 auto var(--space-md); }
+    .checklist-title { font-size: var(--text-h3); font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-md); }
+    .checklist-items { list-style: none; display: flex; flex-direction: column; gap: var(--space-sm); }
+    .checklist-item { display: flex; align-items: flex-start; gap: var(--space-sm); font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 1.5; }
+    .checklist-checkbox {
+      width: 18px; height: 18px; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm);
+      flex-shrink: 0; margin-top: 1px; cursor: pointer; appearance: none; -webkit-appearance: none;
+      transition: background var(--duration-fast), border-color var(--duration-fast);
+    }
+    .checklist-checkbox:checked {
+      background: var(--color-primary); border-color: var(--color-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: center;
+    }
+
+    .demo-btn {
+      position: fixed; top: var(--space-sm); right: var(--space-sm); z-index: 300;
+      padding: var(--space-xs) var(--space-sm); font-size: 11px;
+      font-family: var(--font-family); border: 1px solid var(--color-border);
+      border-radius: var(--radius-full); background: var(--color-bg-elevated);
+      color: var(--color-text-secondary); cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <button class="demo-btn" onclick="toggleChecklist()">清单</button>
+
+    <header class="page-header">
+      <h1 class="page-title">上海资源</h1>
+    </header>
+
+    <!-- Tab 导航 -->
+    <nav class="tab-nav" id="tabNav">
+      <button class="tab-btn active" data-tab="hospitals" onclick="switchTab('hospitals', this)">医院</button>
+      <button class="tab-btn" data-tab="hotlines" onclick="switchTab('hotlines', this)">热线</button>
+      <button class="tab-btn" data-tab="community" onclick="switchTab('community', this)">社区</button>
+      <button class="tab-btn" data-tab="insurance" onclick="switchTab('insurance', this)">医保</button>
+      <div class="tab-indicator" id="tabIndicator"></div>
+    </nav>
+
+    <main class="res-content">
+
+      <!-- Tab 1: 医院 -->
+      <div class="tab-panel active" id="panel-hospitals">
+        <div class="filter-bar">
+          <select class="filter-select" aria-label="区域筛选">
+            <option>全部区域</option>
+            <option>徐汇区</option>
+            <option>浦东新区</option>
+            <option>杨浦区</option>
+            <option>虹口区</option>
+            <option>闵行区</option>
+            <option>宝山区</option>
+            <option>奉贤区</option>
+          </select>
+        </div>
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <div class="res-card-name">上海市精神卫生中心</div>
+            <div class="res-tags">
+              <span class="tag tag-primary">三甲</span>
+              <span class="tag tag-primary">专科</span>
+            </div>
+          </div>
+          <div class="res-card-info">
+            <div class="res-card-info-row"><span class="res-card-info-icon">📍</span><span>徐汇区宛平南路600号</span></div>
+            <div class="res-card-info-row"><span class="res-card-info-icon">📞</span><a href="tel:021-64387250" class="res-card-phone">021-64387250</a></div>
+          </div>
+          <div class="res-tags" style="margin-top: var(--space-sm);">
+            <span class="tag tag-primary">门诊</span>
+            <span class="tag tag-primary">急诊</span>
+            <span class="tag tag-primary">心理咨询</span>
+            <span class="tag tag-primary">睡眠科</span>
+          </div>
+          <div style="margin-top: var(--space-sm);">
+            <a href="tel:021-64387250" class="btn-call">📞 拨打电话</a>
+          </div>
+        </div>
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <div class="res-card-name">长海医院</div>
+            <div class="res-tags">
+              <span class="tag tag-primary">三甲</span>
+              <span class="tag tag-primary">综合</span>
+            </div>
+          </div>
+          <div class="res-card-info">
+            <div class="res-card-info-row"><span class="res-card-info-icon">📍</span><span>杨浦区长海路168号</span></div>
+            <div class="res-card-info-row"><span class="res-card-info-icon">📞</span><a href="tel:021-31166666" class="res-card-phone">021-31166666</a></div>
+          </div>
+          <div class="res-tags" style="margin-top: var(--space-sm);">
+            <span class="tag tag-primary">心理科</span>
+            <span class="tag tag-primary">精神科</span>
+          </div>
+          <div style="margin-top: var(--space-sm);">
+            <a href="tel:021-31166666" class="btn-call">📞 拨打电话</a>
+          </div>
+        </div>
+
+        <div class="res-card">
+          <div class="res-card-header">
+            <div class="res-card-name">上海市第十人民医院</div>
+            <div class="res-tags">
+              <span class="tag tag-primary">三甲</span>
+              <span class="tag tag-primary">综合</span>
+            </div>
+          </div>
+          <div class="res-card-info">
+            <div class="res-card-info-row"><span class="res-card-info-icon">📍</span><span>静安区延长中路301号</span></div>
+            <div class="res-card-info-row"><span class="res-card-info-icon">📞</span><a href="tel:021-66300588" class="res-card-phone">021-66300588</a></div>
+          </div>
+          <div class="res-tags" style="margin-top: var(--space-sm);">
+            <span class="tag tag-primary">心理科</span>
+            <span class="tag tag-primary">睡眠障碍</span>
+          </div>
+          <div style="margin-top: var(--space-sm);">
+            <a href="tel:021-66300588" class="btn-call">📞 拨打电话</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: 热线 -->
+      <div class="tab-panel" id="panel-hotlines">
+
+        <div class="hotline-card">
+          <div class="hotline-name">上海市心理援助热线</div>
+          <a href="tel:962525" class="hotline-number">962525</a>
+          <div class="hotline-desc">上海市卫生健康委员会主管，专业心理咨询师接听，提供情绪疏导、心理危机干预等服务。</div>
+          <div class="hotline-meta">
+            <span class="tag tag-success">24h</span>
+            <span class="tag tag-success">免费</span>
+          </div>
+        </div>
+
+        <div class="hotline-card">
+          <div class="hotline-name">全国心理援助热线</div>
+          <a href="tel:400-161-9995" class="hotline-number">400-161-9995</a>
+          <div class="hotline-desc">卫生健康委设立，面向全国公众提供心理健康咨询服务和心理危机干预。</div>
+          <div class="hotline-meta">
+            <span class="tag tag-success">24h</span>
+            <span class="tag tag-success">免费</span>
+          </div>
+        </div>
+
+        <div class="hotline-card">
+          <div class="hotline-name">上海公共卫生热线</div>
+          <a href="tel:12320-5" class="hotline-number">12320-5</a>
+          <div class="hotline-desc">上海市疾控中心主管，提供心理健康知识咨询和转介服务。</div>
+          <div class="hotline-meta">
+            <span class="tag tag-success">24h</span>
+          </div>
+        </div>
+
+        <div class="hotline-card">
+          <div class="hotline-name">青少年心理咨询热线</div>
+          <a href="tel:12355" class="hotline-number">12355</a>
+          <div class="hotline-desc">共青团中央设立，为青少年提供心理咨询和法律援助。</div>
+          <div class="hotline-meta">
+            <span class="tag tag-primary">工作日 9:00-17:00</span>
+          </div>
+        </div>
+
+        <div class="hotline-card">
+          <div class="hotline-name">妇女维权热线</div>
+          <a href="tel:12338" class="hotline-number">12338</a>
+          <div class="hotline-desc">全国妇联设立，为妇女提供心理疏导、法律咨询和维权服务。</div>
+          <div class="hotline-meta">
+            <span class="tag tag-primary">工作日 9:00-17:00</span>
+          </div>
+        </div>
+
+        <div class="hotline-card">
+          <div class="hotline-name">希望24热线</div>
+          <a href="tel:400-161-9995" class="hotline-number">400-691-0694</a>
+          <div class="hotline-desc">专业心理危机干预热线，提供生命教育与危机干预服务。</div>
+          <div class="hotline-meta">
+            <span class="tag tag-success">24h</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: 社区 -->
+      <div class="tab-panel" id="panel-community">
+
+        <div class="community-card">
+          <div class="community-name">静安区精神卫生中心</div>
+          <div class="community-info">
+            <div class="res-card-info-row"><span class="res-card-info-icon">📍</span><span>静安区愚园路611号</span></div>
+            <div class="res-card-info-row"><span class="res-card-info-icon">📞</span><a href="tel:021-62532870" class="res-card-phone">021-62532870</a></div>
+          </div>
+          <div class="community-tags">
+            <span class="tag tag-primary">全区域覆盖</span>
+            <span class="tag tag-primary">社区随访</span>
+            <span class="tag tag-primary">康复指导</span>
+          </div>
+        </div>
+
+        <div class="community-card">
+          <div class="community-name">打浦桥社区卫生服务中心</div>
+          <div class="community-info">
+            <div class="res-card-info-row"><span class="res-card-info-icon">📍</span><span>黄浦区瑞金二路街道</span></div>
+            <div class="res-card-info-row"><span class="res-card-info-icon">📞</span><a href="tel:021-63016500" class="res-card-phone">021-63016500</a></div>
+          </div>
+          <div class="community-tags">
+            <span class="tag tag-primary">心理健康筛查</span>
+            <span class="tag tag-primary">药物管理</span>
+            <span class="tag tag-primary">家庭支持</span>
+          </div>
+        </div>
+
+        <div class="community-card">
+          <div class="community-name">殷行社区卫生服务中心</div>
+          <div class="community-info">
+            <div class="res-card-info-row"><span class="res-card-info-icon">📍</span><span>杨浦区殷行街道</span></div>
+            <div class="res-card-info-row"><span class="res-card-info-icon">📞</span><a href="tel:021-65320120" class="res-card-phone">021-65320120</a></div>
+          </div>
+          <div class="community-tags">
+            <span class="tag tag-primary">心理康复</span>
+            <span class="tag tag-primary">日间照料</span>
+            <span class="tag tag-primary">同伴支持</span>
+          </div>
+        </div>
+
+        <div class="community-card">
+          <div class="community-name">青村镇社区卫生服务中心</div>
+          <div class="community-info">
+            <div class="res-card-info-row"><span class="res-card-info-icon">📍</span><span>奉贤区青村镇</span></div>
+            <div class="res-card-info-row"><span class="res-card-info-icon">📞</span><a href="tel:021-57561312" class="res-card-phone">021-57561312</a></div>
+          </div>
+          <div class="community-tags">
+            <span class="tag tag-primary">精神康复</span>
+            <span class="tag tag-primary">健康宣教</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: 医保 -->
+      <div class="tab-panel" id="panel-insurance">
+        <div class="policy-list">
+
+          <div class="policy-item">
+            <div class="policy-title">心理咨询纳入医保</div>
+            <div class="policy-desc">
+              自2025年起，上海市将心理治疗纳入基本医疗保险支付范围。参保人员在定点医疗机构接受心理治疗，可按医保规定报销。
+            </div>
+            <div class="policy-note">政策来源：上海市医疗保障局 2025年</div>
+          </div>
+
+          <div class="policy-item">
+            <div class="policy-title">门诊报销比例</div>
+            <div class="policy-desc">
+              在职职工门诊报销比例 <span class="policy-highlight">85%</span>，退休人员 <span class="policy-highlight">92%</span>。精神专科医院门诊报销比例在上述基础上适当提高。
+            </div>
+            <div class="policy-note">具体比例以就诊时医保结算为准</div>
+          </div>
+
+          <div class="policy-item">
+            <div class="policy-title">每月补贴额度</div>
+            <div class="policy-desc">
+              社区卫生服务中心就诊，每月可享受 <span class="policy-highlight">4次</span> 心理咨询补贴，每次补贴标准按实际费用计算。
+            </div>
+            <div class="policy-note">需提前在社区签约家庭医生</div>
+          </div>
+
+          <div class="policy-item">
+            <div class="policy-title">特殊病种门诊</div>
+            <div class="policy-desc">
+              抑郁症等严重精神障碍可申请特殊病种门诊待遇，报销比例 <span class="policy-highlight">85%以上</span>，年度限额相应提高。
+            </div>
+            <div class="policy-note">需持二级以上医院诊断证明至医保经办机构办理</div>
+          </div>
+
+          <div class="policy-item">
+            <div class="policy-title">长护险覆盖</div>
+            <div class="policy-desc">
+              严重精神障碍患者经评估后可纳入长期护理保险保障范围，享受专业护理服务。
+            </div>
+            <div class="policy-note">需经定点评估机构评估认定</div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <!-- BottomNav -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item" aria-label="打卡"><span class="nav-item-icon">📝</span><span class="nav-item-label">打卡</span></button>
+      <button class="nav-item" aria-label="预警"><span class="nav-item-icon">📊</span><span class="nav-item-label">预警</span></button>
+      <button class="nav-item" aria-label="用药"><span class="nav-item-icon">💊</span><span class="nav-item-label">用药</span></button>
+      <button class="nav-item active" aria-label="资源" aria-current="page"><span class="nav-item-icon">🏥</span><span class="nav-item-label">资源</span></button>
+      <button class="nav-item" aria-label="求助"><span class="nav-item-icon">🆘</span><span class="nav-item-label">求助</span></button>
+    </nav>
+
+    <!-- CrisisButton -->
+    <button class="crisis-btn" aria-label="紧急求助">🆘</button>
+
+    <!-- 确认清单 -->
+    <div class="checklist-overlay" id="checklist">
+      <div class="checklist-handle"></div>
+      <h2 class="checklist-title">✅ 轮次 6 确认清单 — Resources 上海资源页</h2>
+      <ul class="checklist-items">
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>4个Tab的切换是否流畅</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>医院卡片的信息是否完整且不拥挤</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>区域筛选是否易用</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>热线电话是否易于拨打（tel:链接）</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>962525是否足够醒目</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>医保政策信息是否清晰可读</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>整体信息密度是否合适</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Tab 切换
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + tabId).classList.add('active');
+      updateIndicator(btn);
+    }
+
+    // Tab 指示器动画
+    function updateIndicator(btn) {
+      const indicator = document.getElementById('tabIndicator');
+      const nav = document.getElementById('tabNav');
+      const navRect = nav.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      indicator.style.left = (btnRect.left - navRect.left) + 'px';
+      indicator.style.width = btnRect.width + 'px';
+    }
+
+    // 初始化指示器
+    window.addEventListener('load', () => {
+      const activeBtn = document.querySelector('.tab-btn.active');
+      if (activeBtn) updateIndicator(activeBtn);
+    });
+    window.addEventListener('resize', () => {
+      const activeBtn = document.querySelector('.tab-btn.active');
+      if (activeBtn) updateIndicator(activeBtn);
+    });
+
+    function toggleChecklist() {
+      document.getElementById('checklist').classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

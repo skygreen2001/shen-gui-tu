@@ -1,0 +1,87 @@
+.page { min-height: 100vh; }
+.header { padding: var(--space-lg) var(--space-md) var(--space-md); }
+.header h1 { font-size: 24px; font-weight: 700; }
+.header p { font-size: 14px; color: var(--text-secondary); margin-top: var(--space-xs); }
+.content { padding: 0 var(--space-md); }
+.adherence { text-align: center; padding: var(--space-lg) 0; }
+.adherenceCircle {
+  width: 120px; height: 120px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto var(--space-md); font-size: 28px; font-weight: 700; color: white;
+}
+.adherenceLabel { font-size: 13px; color: var(--text-secondary); }
+.medCard {
+  background: var(--surface); border-radius: var(--radius-md);
+  padding: var(--space-md); box-shadow: var(--shadow-sm); margin-bottom: var(--space-md);
+}
+.medName { font-size: 15px; font-weight: 600; }
+.medCardTop {
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.infoBtn {
+  background: none; border: none; font-size: 20px; padding: 0;
+  cursor: pointer; min-height: 36px; line-height: 1;
+}
+.medDose { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.medTime { font-size: 12px; color: var(--text-hint); margin-top: var(--space-xs); }
+.medActions { display: flex; gap: var(--space-sm); margin-top: var(--space-md); }
+.takeBtn {
+  flex: 1; padding: 10px; background: var(--primary); color: white;
+  border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+  transition: all 0.2s; min-height: 40px;
+}
+.takeBtn.taken { background: var(--success); }
+.takeBtn:active { transform: scale(0.96); }
+.skipBtn {
+  flex: 1; padding: 10px; background: transparent; color: var(--primary);
+  border: 1.5px solid var(--primary); border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; transition: all 0.2s; min-height: 40px;
+}
+.skipBtn:active { transform: scale(0.96); }
+.skipBtn.skipped { background: var(--warning); color: white; border-color: var(--warning); }
+.addBtn {
+  display: block; width: 100%; padding: 12px; background: transparent;
+  color: var(--primary); border: 1.5px dashed var(--primary-light);
+  border-radius: var(--radius-md); font-size: 14px; font-weight: 500;
+  margin-bottom: var(--space-md); transition: all 0.2s; min-height: 44px;
+}
+.addBtn:active { transform: scale(0.96); }
+.addForm {
+  background: var(--surface); border-radius: var(--radius-md);
+  padding: var(--space-md); box-shadow: var(--shadow-sm); margin-bottom: var(--space-md);
+  display: flex; flex-direction: column; gap: var(--space-sm);
+  animation: fadeInUp 0.3s ease;
+}
+.input {
+  width: 100%; padding: 10px var(--space-md);
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; background: var(--surface); color: var(--text-primary);
+}
+.input:focus { outline: none; border-color: var(--primary); }
+.confirmBtn {
+  padding: 10px; background: var(--primary); color: white;
+  border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  min-height: 40px;
+}
+.auxEntry {
+  display: flex; align-items: center; gap: var(--space-md);
+  background: var(--surface); border-radius: var(--radius-md);
+  padding: var(--space-md); box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-md); cursor: pointer;
+  transition: transform 0.2s;
+}
+.auxEntry:active { transform: scale(0.98); }
+.auxIcon { font-size: 28px; }
+.auxText { flex: 1; }
+.auxTitle { font-size: 15px; font-weight: 600; }
+.auxDesc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.auxArrow { font-size: 18px; color: var(--text-hint); }
+.tip {
+  background: #EBF3FB; border-radius: var(--radius-md);
+  padding: var(--space-md); font-size: 13px; color: var(--primary-dark);
+  line-height: 1.5; margin-top: var(--space-md);
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

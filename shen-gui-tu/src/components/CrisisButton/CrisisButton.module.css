@@ -1,0 +1,25 @@
+.btn {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--space-md));
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--crisis-size);
+  height: var(--crisis-size);
+  border-radius: 50%;
+  background: var(--danger);
+  color: white;
+  border: none;
+  font-size: 24px;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pulse 2s infinite;
+  transition: transform 0.2s;
+  box-shadow: 0 4px 16px rgba(212,107,107,0.4);
+}
+.btn:active { transform: translateX(-50%) scale(0.9); }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(212,107,107,0.4); }
+  50% { box-shadow: 0 4px 24px rgba(212,107,107,0.6); }
+}

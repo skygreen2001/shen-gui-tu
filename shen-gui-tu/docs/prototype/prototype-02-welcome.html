@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - Welcome 欢迎页</title>
+  <style>
+    /* ========== CSS 变量系统（复用全局设计系统） ========== */
+    :root {
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    /* ========== 全局重置 ========== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    #root {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      background: var(--color-bg);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ========== Welcome 页面样式 ========== */
+
+    /* 顶部海报区域 */
+    .hero {
+      min-height: 42vh;
+      background: linear-gradient(180deg, var(--color-primary-light) 0%, var(--color-bg) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2xl) var(--space-base) var(--space-xl);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 装饰性背景元素 - 柔和的圆形光晕 */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(74,144,217,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: -30px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,152,94,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 品牌名称 */
+    .brand-name {
+      font-size: var(--text-hero);
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: 8px;
+      margin-bottom: var(--space-sm);
+      animation: fadeInDown 0.6s var(--easing-decelerate) both;
+    }
+
+    .brand-subtitle {
+      font-size: var(--text-h3);
+      font-weight: 400;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      animation: fadeInDown 0.6s var(--easing-decelerate) 0.1s both;
+    }
+
+    .brand-tagline {
+      font-size: var(--text-body);
+      font-weight: 400;
+      color: var(--color-text-tertiary);
+      font-style: italic;
+      animation: fadeInDown 0.6s var(--easing-decelerate) 0.2s both;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 内容区域 */
+    .content {
+      padding: 0 var(--space-base);
+    }
+
+    /* 核心价值区 */
+    .values {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.3s both;
+    }
+
+    .value-item {
+      text-align: center;
+      padding: var(--space-base) var(--space-sm);
+    }
+
+    .value-icon {
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: var(--space-sm);
+      display: block;
+    }
+
+    .value-title {
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-xs);
+      line-height: 1.3;
+    }
+
+    .value-desc {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      line-height: 1.4;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 分隔区域 */
+    .divider-section {
+      text-align: center;
+      margin-bottom: var(--space-lg);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.4s both;
+    }
+
+    .divider-line {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-base);
+    }
+
+    .divider-line::before,
+    .divider-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-border);
+    }
+
+    .divider-text {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    /* 数据统计区 */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.5s both;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: var(--text-h2);
+      font-weight: 700;
+      color: var(--color-primary);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-xs);
+    }
+
+    /* CTA 按钮 */
+    .cta-section {
+      padding: 0 var(--space-base);
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.6s both;
+    }
+
+    .btn-cta {
+      display: block;
+      width: 100%;
+      height: 48px;
+      background: var(--color-accent);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      cursor: pointer;
+      transition: transform var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast) var(--easing-default),
+                  box-shadow var(--duration-fast) var(--easing-default);
+      box-shadow: 0 4px 16px rgba(232,152,94,0.3);
+      min-height: 48px;
+    }
+
+    .btn-cta:hover {
+      background: var(--color-accent-dark);
+      transform: scale(1.02);
+      box-shadow: 0 6px 20px rgba(232,152,94,0.4);
+    }
+
+    .btn-cta:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(232,152,94,0.3);
+    }
+
+    /* 底部免责声明 */
+    .disclaimer {
+      text-align: center;
+      padding: var(--space-base);
+      padding-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.7s both;
+    }
+
+    .disclaimer-text {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      line-height: 1.8;
+    }
+
+    .disclaimer-hotline {
+      color: var(--color-primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* 确认清单浮层 */
+    .checklist-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+      z-index: 300;
+    }
+
+    .checklist-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      margin: 0 auto var(--space-md);
+    }
+
+    .checklist-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+    }
+
+    .checklist-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    .checklist-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+      margin-top: 1px;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: background var(--duration-fast), border-color var(--duration-fast);
+    }
+
+    .checklist-checkbox:checked {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- 顶部海报区域 -->
+    <section class="hero" role="banner">
+      <div class="hero-content">
+        <h1 class="brand-name">申 归 途</h1>
+        <p class="brand-subtitle">上海抑郁症复发预防支持工具</p>
+        <p class="brand-tagline">"每一步，都有人陪你"</p>
+      </div>
+    </section>
+
+    <!-- 内容区域 -->
+    <main class="content">
+
+      <!-- 核心价值 -->
+      <section class="values" aria-label="核心功能">
+        <div class="value-item">
+          <span class="value-icon" aria-hidden="true">🛡️</span>
+          <div class="value-title">六维预警监测</div>
+          <div class="value-desc">睡眠·情绪·躯体<br>动力·认知·社交</div>
+        </div>
+        <div class="value-item">
+          <span class="value-icon" aria-hidden="true">💊</span>
+          <div class="value-title">用药全程陪伴</div>
+          <div class="value-desc">服药提醒·依从追踪<br>正向反馈·减药导航</div>
+        </div>
+        <div class="value-item">
+          <span class="value-icon" aria-hidden="true">🏥</span>
+          <div class="value-title">上海本地资源</div>
+          <div class="value-desc">医院·热线·社区<br>医保政策·一键拨打</div>
+        </div>
+      </section>
+
+      <!-- 数据支撑 -->
+      <section class="divider-section" aria-label="数据支撑">
+        <div class="divider-line">
+          <span class="divider-text">数 据 支 撑</span>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="关键数据">
+        <div class="stat-item">
+          <div class="stat-number">50-85%</div>
+          <div class="stat-label">抑郁症复发率</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">9500万</div>
+          <div class="stat-label">国内患者总数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">2025</div>
+          <div class="stat-label">心理咨询纳入医保</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- CTA 按钮 -->
+    <div class="cta-section">
+      <button class="btn-cta" aria-label="开始使用申归途">开 始 使 用</button>
+    </div>
+
+    <!-- 底部免责声明 -->
+    <footer class="disclaimer">
+      <p class="disclaimer-text">
+        本工具仅供自我健康管理参考，不替代专业医疗诊断与治疗。<br>
+        如需帮助，请拨打 24 小时心理援助热线<br>
+        <a href="tel:962525" class="disclaimer-hotline">962525</a>
+      </p>
+    </footer>
+
+    <!-- 确认清单浮层 -->
+    <div class="checklist-overlay" role="region" aria-label="确认清单">
+      <div class="checklist-handle"></div>
+      <h2 class="checklist-title">✅ 轮次 2 确认清单 — Welcome 欢迎页</h2>
+      <ul class="checklist-items">
+        <li class="checklist-item">
+          <input type="checkbox" class="checklist-checkbox" aria-label="确认项1">
+          <span>第一屏是否具有"海报式"视觉冲击</span>
+        </li>
+        <li class="checklist-item">
+          <input type="checkbox" class="checklist-checkbox" aria-label="确认项2">
+          <span>品牌名称「申归途」的呈现是否专业优雅</span>
+        </li>
+        <li class="checklist-item">
+          <input type="checkbox" class="checklist-checkbox" aria-label="确认项3">
+          <span>三个核心价值的展示是否清晰</span>
+        </li>
+        <li class="checklist-item">
+          <input type="checkbox" class="checklist-checkbox" aria-label="确认项4">
+          <span>CTA按钮是否足够吸引点击</span>
+        </li>
+        <li class="checklist-item">
+          <input type="checkbox" class="checklist-checkbox" aria-label="确认项5">
+          <span>整体是否传达"温暖治愈"的感觉</span>
+        </li>
+        <li class="checklist-item">
+          <input type="checkbox" class="checklist-checkbox" aria-label="确认项6">
+          <span>免责声明和热线信息是否适当呈现</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - 迷你课程 & WRAP计划</title>
+  <style>
+    :root {
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+      --risk-green: #6BAF7A;
+      --risk-green-bg: #EDF5EF;
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-crisis: 0 4px 20px rgba(212,107,107,0.3);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--color-bg); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ========== 页面切换（演示用） ========== */
+    .page-switcher {
+      position: fixed; top: var(--space-sm); right: var(--space-sm); z-index: 300;
+      display: flex; gap: var(--space-xs);
+    }
+    .switch-btn {
+      padding: var(--space-xs) var(--space-sm); font-size: 11px;
+      font-family: var(--font-family); border: 1px solid var(--color-border);
+      border-radius: var(--radius-full); background: var(--color-bg-elevated);
+      color: var(--color-text-secondary); cursor: pointer; transition: all var(--duration-fast);
+    }
+    .switch-btn.active { background: var(--color-primary); color: var(--color-text-inverse); border-color: var(--color-primary); }
+
+    /* ========== 页面头部 ========== */
+    .page-header {
+      padding: var(--space-lg) var(--space-base) var(--space-md);
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border-light);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .btn-back {
+      background: none; border: none; font-size: 20px; cursor: pointer;
+      color: var(--color-text-secondary); padding: var(--space-xs);
+      min-width: 32px; min-height: 32px; display: flex; align-items: center;
+    }
+    .page-title { font-size: var(--text-h1); font-weight: 700; }
+
+    /* ========== 内容区 ========== */
+    .page-content {
+      padding: var(--space-base);
+      padding-bottom: 120px;
+    }
+    .page-view { display: none; }
+    .page-view.active { display: block; animation: fadeIn 0.25s var(--easing-decelerate); }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== CBTCourse 课程列表 ========== */
+    .course-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+      margin-bottom: var(--space-md);
+      cursor: pointer;
+      transition: transform var(--duration-fast), box-shadow var(--duration-fast);
+      animation: fadeInUp 0.4s var(--easing-decelerate) both;
+    }
+    .course-card:nth-child(2) { animation-delay: 0.05s; }
+    .course-card:nth-child(3) { animation-delay: 0.1s; }
+    .course-card:active { transform: scale(0.98); box-shadow: var(--shadow-md); }
+    .course-card.locked { opacity: 0.5; pointer-events: none; }
+
+    .course-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+    .course-icon { font-size: 24px; line-height: 1; }
+    .course-name { font-size: var(--text-h3); font-weight: 600; flex: 1; }
+    .course-lock { font-size: 16px; }
+
+    .course-meta {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-sm);
+    }
+    .course-progress-track {
+      width: 100%;
+      height: 4px;
+      background: var(--color-bg-subtle);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .course-progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      transition: width 0.6s var(--easing-decelerate);
+    }
+
+    /* ========== CBT 步骤视图 ========== */
+    .step-view { display: none; }
+    .step-view.active { display: block; }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-lg);
+    }
+    .step-title-area { flex: 1; }
+    .step-course-name {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+    }
+    .step-progress-text {
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+    .step-dots {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-border);
+      transition: background var(--duration-fast);
+    }
+    .step-dot.completed { background: var(--color-primary); }
+    .step-dot.current { background: var(--color-primary); width: 20px; border-radius: var(--radius-full); }
+
+    .step-content {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      animation: fadeInUp 0.3s var(--easing-decelerate);
+    }
+    .step-emoji { font-size: 48px; margin-bottom: var(--space-md); }
+    .step-heading { font-size: var(--text-h2); font-weight: 600; margin-bottom: var(--space-sm); }
+    .step-body { font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 1.7; max-width: 320px; }
+    .step-input-area {
+      width: 100%;
+      margin-top: var(--space-md);
+      text-align: left;
+    }
+    .step-input {
+      width: 100%;
+      min-height: 72px;
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-sm) var(--space-base);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .step-input::placeholder { color: var(--color-text-tertiary); }
+    .step-input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+
+    .step-nav {
+      display: flex;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+    .btn-step {
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      min-height: 44px;
+      transition: transform var(--duration-fast);
+    }
+    .btn-step:active { transform: scale(0.97); }
+    .btn-step-prev { background: transparent; color: var(--color-text-secondary); border: 1.5px solid var(--color-border); }
+    .btn-step-next { background: var(--color-primary); color: var(--color-text-inverse); }
+    .btn-step-done { background: var(--color-success); color: var(--color-text-inverse); }
+
+    /* ========== WRAP 折叠面板 ========== */
+    .wrap-guide {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+      line-height: 1.5;
+    }
+
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .accordion-panel {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      animation: fadeInUp 0.4s var(--easing-decelerate) both;
+    }
+    .accordion-panel:nth-child(2) { animation-delay: 0.05s; }
+    .accordion-panel:nth-child(3) { animation-delay: 0.1s; }
+    .accordion-panel:nth-child(4) { animation-delay: 0.15s; }
+    .accordion-panel:nth-child(5) { animation-delay: 0.2s; }
+
+    .accordion-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-base);
+      background: none;
+      border: none;
+      font-family: var(--font-family);
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-text-primary);
+      cursor: pointer;
+      min-height: 48px;
+      transition: background var(--duration-fast);
+    }
+    .accordion-trigger:hover { background: var(--color-bg-subtle); }
+    .accordion-trigger-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .accordion-arrow {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      transition: transform var(--duration-normal) var(--easing-default);
+    }
+    .accordion-panel.open .accordion-arrow { transform: rotate(90deg); }
+
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s var(--easing-default);
+    }
+    .accordion-panel.open .accordion-body { max-height: 500px; }
+
+    .accordion-content {
+      padding: 0 var(--space-base) var(--space-base);
+    }
+    .accordion-hint {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      font-style: italic;
+      margin-bottom: var(--space-sm);
+    }
+    .accordion-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .accordion-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      padding: var(--space-xs) 0;
+    }
+    .accordion-item-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+    .accordion-item-delete {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--color-text-tertiary);
+      font-size: 16px;
+      cursor: pointer;
+      padding: var(--space-xs);
+      min-width: 28px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color var(--duration-fast);
+    }
+    .accordion-item-delete:hover { color: var(--color-danger); }
+
+    .btn-add-item {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: none;
+      border: none;
+      color: var(--color-primary);
+      font-family: var(--font-family);
+      font-size: var(--text-body-sm);
+      font-weight: 500;
+      cursor: pointer;
+      padding: var(--space-sm) 0;
+      min-height: 36px;
+      transition: opacity var(--duration-fast);
+    }
+    .btn-add-item:hover { opacity: 0.7; }
+
+    .accordion-empty {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      padding: var(--space-sm) 0;
+    }
+
+    .wrap-footer {
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-base);
+      margin-top: var(--space-lg);
+      animation: fadeInUp 0.4s var(--easing-decelerate) 0.25s both;
+    }
+    .wrap-footer-title {
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: var(--space-xs);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .wrap-footer-desc {
+      font-size: var(--text-caption);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ========== BottomNav ========== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; height: 64px;
+      background: var(--color-bg-elevated); border-top: 1px solid var(--color-border);
+      display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; color: var(--color-text-tertiary);
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px; position: relative; cursor: pointer;
+      background: none; border: none; font-family: var(--font-family);
+    }
+    .nav-item-icon { font-size: 20px; line-height: 1; }
+    .nav-item-label { font-size: 11px; line-height: 1; }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item.active .nav-item-label { font-weight: 600; font-size: 12px; }
+    .nav-item.active .nav-item-icon { font-size: 22px; }
+    .nav-item.active::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--color-primary); border-radius: 0 0 3px 3px;
+    }
+
+    /* ========== CrisisButton ========== */
+    .crisis-btn {
+      position: fixed; right: 16px; bottom: 80px; width: 52px; height: 52px;
+      border-radius: 50%; background: var(--color-danger); border: none;
+      box-shadow: var(--shadow-crisis); animation: pulse 2s ease-in-out infinite;
+      z-index: 200; cursor: pointer; font-size: 22px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .crisis-btn:active { transform: scale(0.95); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    /* ========== 确认清单 ========== */
+    .checklist-overlay {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 300; display: none;
+    }
+    .checklist-overlay.show { display: block; }
+    .checklist-handle { width: 36px; height: 4px; background: var(--color-border); border-radius: var(--radius-full); margin: 0 auto var(--space-md); }
+    .checklist-title { font-size: var(--text-h3); font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-md); }
+    .checklist-items { list-style: none; display: flex; flex-direction: column; gap: var(--space-sm); }
+    .checklist-item { display: flex; align-items: flex-start; gap: var(--space-sm); font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 1.5; }
+    .checklist-checkbox {
+      width: 18px; height: 18px; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm);
+      flex-shrink: 0; margin-top: 1px; cursor: pointer; appearance: none; -webkit-appearance: none;
+      transition: background var(--duration-fast), border-color var(--duration-fast);
+    }
+    .checklist-checkbox:checked {
+      background: var(--color-primary); border-color: var(--color-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- 页面切换 -->
+    <div class="page-switcher">
+      <button class="switch-btn active" onclick="showPage('cbt')">CBT课程</button>
+      <button class="switch-btn" onclick="showPage('wrap')">WRAP计划</button>
+      <button class="switch-btn" onclick="toggleChecklist()">清单</button>
+    </div>
+
+    <!-- ========== CBT 课程页 ========== -->
+    <div class="page-view active" id="page-cbt">
+      <header class="page-header">
+        <button class="btn-back" onclick="backToList()">←</button>
+        <h1 class="page-title">迷你课程</h1>
+      </header>
+
+      <main class="page-content">
+        <!-- 课程列表视图 -->
+        <div id="cbtList">
+          <div class="course-card" onclick="openCourse(0)">
+            <div class="course-card-header">
+              <span class="course-icon">📖</span>
+              <span class="course-name">认识你的情绪</span>
+            </div>
+            <div class="course-meta">5个步骤 · 已完成2步</div>
+            <div class="course-progress-track">
+              <div class="course-progress-fill" style="width: 40%;"></div>
+            </div>
+          </div>
+
+          <div class="course-card" onclick="openCourse(1)">
+            <div class="course-card-header">
+              <span class="course-icon">🧠</span>
+              <span class="course-name">识别思维陷阱</span>
+            </div>
+            <div class="course-meta">4个步骤 · 未开始</div>
+            <div class="course-progress-track">
+              <div class="course-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="course-card locked">
+            <div class="course-card-header">
+              <span class="course-icon">💪</span>
+              <span class="course-name">建立应对工具箱</span>
+              <span class="course-lock">🔒</span>
+            </div>
+            <div class="course-meta">6个步骤 · 完成前两课后解锁</div>
+            <div class="course-progress-track">
+              <div class="course-progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 步骤视图 -->
+        <div class="step-view" id="stepView">
+          <div class="step-header">
+            <div class="step-title-area">
+              <div class="step-course-name" id="stepCourseName">认识你的情绪</div>
+              <div class="step-progress-text" id="stepProgressText">步骤 1/5</div>
+            </div>
+            <div class="step-dots" id="stepDots">
+              <div class="step-dot current"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+            </div>
+          </div>
+
+          <div class="step-content" id="stepContent">
+            <!-- 动态填充 -->
+          </div>
+
+          <div class="step-nav">
+            <button class="btn-step btn-step-prev" id="btnPrev" onclick="prevStep()">上一步</button>
+            <button class="btn-step btn-step-next" id="btnNext" onclick="nextStep()">下一步</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ========== WRAP 计划页 ========== -->
+    <div class="page-view" id="page-wrap">
+      <header class="page-header">
+        <h1 class="page-title">我的WRAP计划</h1>
+      </header>
+
+      <main class="page-content">
+        <p class="wrap-guide">你的个性化康复蓝图，每天花几分钟回顾和更新。</p>
+
+        <div class="accordion">
+          <!-- 面板1：每日维护清单 -->
+          <div class="accordion-panel open">
+            <button class="accordion-trigger" onclick="togglePanel(this)">
+              <span class="accordion-trigger-left">📋 每日维护清单</span>
+              <span class="accordion-arrow">▶</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="accordion-hint">每天做什么让自己感觉好？</div>
+                <ul class="accordion-list">
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>每天按时服药<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>10分钟正念练习<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>散步30分钟<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                </ul>
+                <button class="btn-add-item" onclick="addItem(this)">+ 添加条目</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 面板2：预警信号识别 -->
+          <div class="accordion-panel">
+            <button class="accordion-trigger" onclick="togglePanel(this)">
+              <span class="accordion-trigger-left">🔔 预警信号识别</span>
+              <span class="accordion-arrow">▶</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="accordion-hint">你特有的早期预警信号是什么？</div>
+                <ul class="accordion-list">
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>开始失眠<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>不想说话<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                </ul>
+                <button class="btn-add-item" onclick="addItem(this)">+ 添加条目</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 面板3：应对策略工具箱 -->
+          <div class="accordion-panel">
+            <button class="accordion-trigger" onclick="togglePanel(this)">
+              <span class="accordion-trigger-left">🧰 应对策略工具箱</span>
+              <span class="accordion-arrow">▶</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="accordion-hint">状态不好时，什么对你有帮助？</div>
+                <ul class="accordion-list">
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>听喜欢的音乐<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>找朋友聊天<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>写日记<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                </ul>
+                <button class="btn-add-item" onclick="addItem(this)">+ 添加条目</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 面板4：危机计划 -->
+          <div class="accordion-panel">
+            <button class="accordion-trigger" onclick="togglePanel(this)">
+              <span class="accordion-trigger-left">🆘 危机计划</span>
+              <span class="accordion-arrow">▶</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="accordion-hint">紧急时，谁能帮助你？</div>
+                <ul class="accordion-list">
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>主治医生：张医生<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>紧急联系人：妈妈<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                </ul>
+                <button class="btn-add-item" onclick="addItem(this)">+ 添加条目</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 面板5：康复后自我关怀 -->
+          <div class="accordion-panel">
+            <button class="accordion-trigger" onclick="togglePanel(this)">
+              <span class="accordion-trigger-left">🌱 康复后自我关怀</span>
+              <span class="accordion-arrow">▶</span>
+            </button>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <div class="accordion-hint">康复后，你想对自己说什么？</div>
+                <ul class="accordion-list">
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>慢慢来，不着急<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                  <li class="accordion-item"><span class="accordion-item-dot"></span>你很勇敢<button class="accordion-item-delete" onclick="removeItem(this)">×</button></li>
+                </ul>
+                <button class="btn-add-item" onclick="addItem(this)">+ 添加条目</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wrap-footer">
+          <div class="wrap-footer-title">💡 关于WRAP</div>
+          <div class="wrap-footer-desc">WRAP（Wellness Recovery Action Plan）是由Mary Ellen Copeland创立的个性化康复计划工具，已被全球广泛应用于心理健康康复领域。通过识别预警信号、制定应对策略，帮助你主动管理自己的康复过程。</div>
+        </div>
+      </main>
+    </div>
+
+    <!-- BottomNav -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item" aria-label="打卡"><span class="nav-item-icon">📝</span><span class="nav-item-label">打卡</span></button>
+      <button class="nav-item" aria-label="预警"><span class="nav-item-icon">📊</span><span class="nav-item-label">预警</span></button>
+      <button class="nav-item" aria-label="用药"><span class="nav-item-icon">💊</span><span class="nav-item-label">用药</span></button>
+      <button class="nav-item" aria-label="资源"><span class="nav-item-icon">🏥</span><span class="nav-item-label">资源</span></button>
+      <button class="nav-item" aria-label="求助"><span class="nav-item-icon">🆘</span><span class="nav-item-label">求助</span></button>
+    </nav>
+
+    <!-- CrisisButton -->
+    <button class="crisis-btn" aria-label="紧急求助">🆘</button>
+
+    <!-- 确认清单 -->
+    <div class="checklist-overlay" id="checklist">
+      <div class="checklist-handle"></div>
+      <h2 class="checklist-title">✅ 轮次 8 确认清单 — 可选页面</h2>
+      <ul class="checklist-items">
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>课程步骤式导航是否清晰</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>WRAP折叠面板的操作是否流畅</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>整体风格是否与核心页面一致</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // ========== 页面切换 ==========
+    function showPage(page) {
+      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('page-' + page).classList.add('active');
+      if (page === 'cbt') document.querySelectorAll('.switch-btn')[0].classList.add('active');
+      if (page === 'wrap') document.querySelectorAll('.switch-btn')[1].classList.add('active');
+    }
+
+    // ========== CBT 课程逻辑 ==========
+    const courses = [
+      {
+        name: '认识你的情绪',
+        steps: [
+          { emoji: '😊😢😰', heading: '情绪是什么？', body: '情绪是我们对事件的内在反应。它没有好坏之分，每一种情绪都在传递信息。焦虑可能在提醒你注意风险，悲伤可能在帮助你消化失去。' },
+          { emoji: '📝', heading: '记录今天的情绪', body: '试着用三个词描述你此刻的感受。不需要修饰，不需要判断，只是诚实记录。', type: 'input', placeholder: '我现在的感受是...' },
+          { emoji: '🌡️', heading: '给情绪打分', body: '用1-10分评估这个情绪的强度。1分很轻微，10分非常强烈。这能帮你追踪情绪变化。' },
+          { emoji: '🔍', heading: '情绪背后的想法', body: '当你感到低落时，脑海中出现了什么想法？试着捕捉那个自动冒出来的念头，它往往是情绪的触发器。' },
+          { emoji: '🌟', heading: '你做得很好', body: '认识情绪是自我关怀的第一步。从今天开始，试着每天花几分钟关注自己的感受。你已经迈出了重要的一步。' }
+        ]
+      },
+      {
+        name: '识别思维陷阱',
+        steps: [
+          { emoji: '🪤', heading: '什么是思维陷阱？', body: '思维陷阱是我们大脑中不自觉的扭曲想法模式。它们看似合理，却会加剧负面情绪。识别它们是改变的第一步。' },
+          { emoji: '⭕', heading: '常见的思维陷阱', body: '非黑即白：要么完美要么失败\n过度概括：一次失败=永远失败\n读心术：认定别人在评判自己\n灾难化：想象最坏的结果' },
+          { emoji: '🔎', heading: '找出你的陷阱', body: '回忆最近一次情绪低落时，你脑海中出现了什么想法？它属于哪种思维陷阱？', type: 'input', placeholder: '我当时在想...' },
+          { emoji: '💡', heading: '换个角度想', body: '试着用更平衡的方式重新表述那个想法。例如："我搞砸了" → "这件事没有达到预期，但我可以从中学到东西。"' }
+        ]
+      }
+    ];
+
+    let currentCourse = 0;
+    let currentStep = 0;
+
+    function openCourse(idx) {
+      currentCourse = idx;
+      currentStep = 0;
+      document.getElementById('cbtList').style.display = 'none';
+      document.getElementById('stepView').classList.add('active');
+      renderStep();
+    }
+
+    function backToList() {
+      document.getElementById('cbtList').style.display = 'block';
+      document.getElementById('stepView').classList.remove('active');
+    }
+
+    function renderStep() {
+      const course = courses[currentCourse];
+      const step = course.steps[currentStep];
+      const total = course.steps.length;
+
+      document.getElementById('stepCourseName').textContent = course.name;
+      document.getElementById('stepProgressText').textContent = `步骤 ${currentStep + 1}/${total}`;
+
+      // 更新圆点
+      const dotsEl = document.getElementById('stepDots');
+      dotsEl.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'step-dot';
+        if (i < currentStep) dot.classList.add('completed');
+        if (i === currentStep) dot.classList.add('current');
+        dotsEl.appendChild(dot);
+      }
+
+      // 更新内容
+      const contentEl = document.getElementById('stepContent');
+      let html = `<div class="step-emoji">${step.emoji}</div>`;
+      html += `<div class="step-heading">${step.heading}</div>`;
+      html += `<div class="step-body">${step.body}</div>`;
+      if (step.type === 'input') {
+        html += `<div class="step-input-area"><textarea class="step-input" placeholder="${step.placeholder}"></textarea></div>`;
+      }
+      contentEl.innerHTML = html;
+
+      // 按钮状态
+      const prevBtn = document.getElementById('btnPrev');
+      const nextBtn = document.getElementById('btnNext');
+      prevBtn.style.display = currentStep === 0 ? 'none' : 'inline-flex';
+
+      if (currentStep === total - 1) {
+        nextBtn.textContent = '完成课程';
+        nextBtn.className = 'btn-step btn-step-done';
+      } else {
+        nextBtn.textContent = '下一步';
+        nextBtn.className = 'btn-step btn-step-next';
+      }
+    }
+
+    function nextStep() {
+      const course = courses[currentCourse];
+      if (currentStep < course.steps.length - 1) {
+        currentStep++;
+        renderStep();
+      } else {
+        backToList();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 0) {
+        currentStep--;
+        renderStep();
+      }
+    }
+
+    // ========== WRAP 折叠面板 ==========
+    function togglePanel(trigger) {
+      const panel = trigger.closest('.accordion-panel');
+      const isOpen = panel.classList.contains('open');
+      // 关闭其他
+      document.querySelectorAll('.accordion-panel.open').forEach(p => {
+        if (p !== panel) p.classList.remove('open');
+      });
+      panel.classList.toggle('open', !isOpen);
+    }
+
+    function removeItem(btn) {
+      const item = btn.closest('.accordion-item');
+      item.style.opacity = '0';
+      item.style.transform = 'translateX(20px)';
+      item.style.transition = 'all 0.2s ease';
+      setTimeout(() => item.remove(), 200);
+    }
+
+    function addItem(btn) {
+      const list = btn.previousElementSibling;
+      const item = document.createElement('li');
+      item.className = 'accordion-item';
+      item.innerHTML = '<span class="accordion-item-dot"></span><span class="item-text" contenteditable="true" style="outline:none;flex:1;">新条目</span><button class="accordion-item-delete" onclick="removeItem(this)">×</button>';
+      list.appendChild(item);
+      item.querySelector('.item-text').focus();
+    }
+
+    function toggleChecklist() {
+      document.getElementById('checklist').classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

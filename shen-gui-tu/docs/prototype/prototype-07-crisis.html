@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - 危机干预</title>
+  <style>
+    :root {
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-danger-dark: #C05555;
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+      --risk-green: #6BAF7A;
+      --risk-green-bg: #EDF5EF;
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-crisis: 0 4px 20px rgba(212,107,107,0.3);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--color-bg); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ========== 内容区 ========== */
+    .crisis-content {
+      padding: var(--space-base);
+      padding-bottom: 120px;
+    }
+
+    /* ========== 核心文案区 ========== */
+    .hero-section {
+      text-align: center;
+      padding: var(--space-2xl) var(--space-base) var(--space-xl);
+      animation: fadeInUp 0.6s var(--easing-decelerate) both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-title {
+      font-size: var(--text-h1);
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-sm);
+      line-height: 1.4;
+    }
+    .hero-sub {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ========== 热线按钮 ========== */
+    .hotline-section {
+      padding: 0 var(--space-base);
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.6s var(--easing-decelerate) 0.1s both;
+    }
+    .hotline-primary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 64px;
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0 var(--space-base);
+      font-family: var(--font-family);
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(74,144,217,0.25);
+      transition: transform var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast);
+      min-height: 64px;
+      margin-bottom: var(--space-md);
+    }
+    .hotline-primary:active { transform: scale(0.98); background: var(--color-primary-dark); }
+    .hotline-primary-left { text-align: left; }
+    .hotline-primary-number {
+      font-size: var(--text-h2);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .hotline-primary-desc {
+      font-size: var(--text-caption);
+      opacity: 0.85;
+    }
+    .hotline-primary-badge {
+      background: rgba(255,255,255,0.2);
+      border-radius: var(--radius-full);
+      padding: 2px var(--space-sm);
+      font-size: var(--text-caption);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .hotline-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 56px;
+      background: transparent;
+      color: var(--color-primary);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: 0 var(--space-base);
+      font-family: var(--font-family);
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast);
+      min-height: 56px;
+    }
+    .hotline-secondary:active { transform: scale(0.98); background: var(--color-primary-light); }
+    .hotline-secondary-number {
+      font-size: var(--text-h3);
+      font-weight: 700;
+    }
+    .hotline-secondary-desc {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+    }
+
+    /* ========== 更多求助渠道 ========== */
+    .more-section {
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.6s var(--easing-decelerate) 0.2s both;
+    }
+    .more-title {
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+    }
+    .more-list {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .more-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) var(--space-base);
+      border-bottom: 1px solid var(--color-border-light);
+      text-decoration: none;
+      color: var(--color-text-primary);
+      transition: background var(--duration-fast);
+      min-height: 48px;
+    }
+    .more-item:last-child { border-bottom: none; }
+    .more-item:active { background: var(--color-bg-subtle); }
+    .more-item-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .more-item-icon { font-size: 16px; }
+    .more-item-name { font-size: var(--text-body-sm); }
+    .more-item-number {
+      font-size: var(--text-body-sm);
+      color: var(--color-primary);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ========== 呼吸引导区 ========== */
+    .breathing-section {
+      text-align: center;
+      padding: var(--space-xl) 0;
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.6s var(--easing-decelerate) 0.3s both;
+    }
+    .breathing-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-lg);
+    }
+    .breathing-circle-wrap {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: 0 auto var(--space-lg);
+    }
+    .breathing-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--color-primary-light);
+      border: 3px solid var(--color-primary);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      transition: transform 1s ease-in-out, background 1s ease-in-out, border-color 1s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .breathing-circle.inhale {
+      transform: translate(-50%, -50%) scale(1.3);
+      background: rgba(74,144,217,0.2);
+      border-color: var(--color-primary);
+    }
+    .breathing-circle.hold {
+      transform: translate(-50%, -50%) scale(1.3);
+      background: rgba(74,144,217,0.15);
+      border-color: var(--color-primary-dark);
+    }
+    .breathing-circle.exhale {
+      transform: translate(-50%, -50%) scale(1);
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+    }
+    .breathing-phase {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+    .breathing-count {
+      font-size: var(--text-hero);
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1;
+      margin-top: var(--space-xs);
+    }
+
+    .breathing-controls {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-md);
+    }
+    .btn-breathe {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      min-height: 44px;
+      padding: 0 var(--space-lg);
+      transition: transform var(--duration-fast), opacity var(--duration-fast);
+    }
+    .btn-breathe:active { transform: scale(0.97); }
+    .btn-breathe-start {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+    .btn-breathe-stop {
+      background: transparent;
+      color: var(--color-text-tertiary);
+      border: 1.5px solid var(--color-border);
+      display: none;
+    }
+    .breathing-hint {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-sm);
+    }
+
+    /* ========== 安全提示 ========== */
+    .safety-section {
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.6s var(--easing-decelerate) 0.4s both;
+    }
+    .safety-card {
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-base);
+    }
+    .safety-title {
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .safety-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .safety-item {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      padding-left: var(--space-md);
+      position: relative;
+    }
+    .safety-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      opacity: 0.5;
+    }
+
+    /* ========== BottomNav ========== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; height: 64px;
+      background: var(--color-bg-elevated); border-top: 1px solid var(--color-border);
+      display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; color: var(--color-text-tertiary);
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px; position: relative; cursor: pointer;
+      background: none; border: none; font-family: var(--font-family);
+    }
+    .nav-item-icon { font-size: 20px; line-height: 1; }
+    .nav-item-label { font-size: 11px; line-height: 1; }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item.active .nav-item-label { font-weight: 600; font-size: 12px; }
+    .nav-item.active .nav-item-icon { font-size: 22px; }
+    .nav-item.active::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--color-primary); border-radius: 0 0 3px 3px;
+    }
+
+    /* ========== CrisisButton (此页面不显示浮动按钮) ========== */
+
+    /* ========== 确认清单 ========== */
+    .checklist-overlay {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 300; display: none;
+    }
+    .checklist-overlay.show { display: block; }
+    .checklist-handle { width: 36px; height: 4px; background: var(--color-border); border-radius: var(--radius-full); margin: 0 auto var(--space-md); }
+    .checklist-title { font-size: var(--text-h3); font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-md); }
+    .checklist-items { list-style: none; display: flex; flex-direction: column; gap: var(--space-sm); }
+    .checklist-item { display: flex; align-items: flex-start; gap: var(--space-sm); font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 1.5; }
+    .checklist-checkbox {
+      width: 18px; height: 18px; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm);
+      flex-shrink: 0; margin-top: 1px; cursor: pointer; appearance: none; -webkit-appearance: none;
+      transition: background var(--duration-fast), border-color var(--duration-fast);
+    }
+    .checklist-checkbox:checked {
+      background: var(--color-primary); border-color: var(--color-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: center;
+    }
+
+    .demo-btn {
+      position: fixed; top: var(--space-sm); right: var(--space-sm); z-index: 300;
+      padding: var(--space-xs) var(--space-sm); font-size: 11px;
+      font-family: var(--font-family); border: 1px solid var(--color-border);
+      border-radius: var(--radius-full); background: var(--color-bg-elevated);
+      color: var(--color-text-secondary); cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <button class="demo-btn" onclick="toggleChecklist()">清单</button>
+
+    <main class="crisis-content" role="main" aria-label="危机干预">
+
+      <!-- 核心文案 -->
+      <section class="hero-section">
+        <h1 class="hero-title">你不是一个人</h1>
+        <p class="hero-sub">无论发生什么，<br>都有人愿意倾听</p>
+      </section>
+
+      <!-- 热线按钮 -->
+      <section class="hotline-section">
+        <a href="tel:962525" class="hotline-primary" role="link" aria-label="拨打上海市心理热线 962525">
+          <div class="hotline-primary-left">
+            <div class="hotline-primary-number">📞 962525</div>
+            <div class="hotline-primary-desc">上海市心理热线</div>
+          </div>
+          <span class="hotline-primary-badge">24h · 免费</span>
+        </a>
+
+        <a href="tel:4001619995" class="hotline-secondary" role="link" aria-label="拨打全国心理援助热线 400-161-9995">
+          <div class="hotline-primary-left">
+            <div class="hotline-secondary-number">📞 400-161-9995</div>
+            <div class="hotline-secondary-desc">全国心理援助热线</div>
+          </div>
+          <span class="hotline-primary-badge" style="background: var(--color-primary-light); color: var(--color-primary);">24h · 免费</span>
+        </a>
+      </section>
+
+      <!-- 更多求助渠道 -->
+      <section class="more-section">
+        <div class="more-title">更多求助渠道</div>
+        <div class="more-list">
+          <a href="tel:123205" class="more-item">
+            <div class="more-item-left">
+              <span class="more-item-icon">🏥</span>
+              <span class="more-item-name">上海公共卫生热线</span>
+            </div>
+            <span class="more-item-number">12320-5</span>
+          </a>
+          <a href="tel:12355" class="more-item">
+            <div class="more-item-left">
+              <span class="more-item-icon">🧑‍🎓</span>
+              <span class="more-item-name">青少年心理咨询</span>
+            </div>
+            <span class="more-item-number">12355</span>
+          </a>
+          <a href="tel:12338" class="more-item">
+            <div class="more-item-left">
+              <span class="more-item-icon">👩</span>
+              <span class="more-item-name">妇女维权热线</span>
+            </div>
+            <span class="more-item-number">12338</span>
+          </a>
+          <a href="tel:120" class="more-item">
+            <div class="more-item-left">
+              <span class="more-item-icon">🚑</span>
+              <span class="more-item-name">急救电话</span>
+            </div>
+            <span class="more-item-number">120</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- 呼吸引导 -->
+      <section class="breathing-section" aria-label="呼吸引导">
+        <div class="breathing-title">🫁 跟我一起呼吸</div>
+
+        <div class="breathing-circle-wrap">
+          <div class="breathing-circle" id="breathCircle">
+            <div class="breathing-phase" id="breathPhase">准备开始</div>
+            <div class="breathing-count" id="breathCount"></div>
+          </div>
+        </div>
+
+        <div class="breathing-controls">
+          <button class="btn-breathe btn-breathe-start" id="btnStart" onclick="startBreathing()">开始呼吸</button>
+          <button class="btn-breathe btn-breathe-stop" id="btnStop" onclick="stopBreathing()">停止</button>
+        </div>
+        <div class="breathing-hint">4-7-8 呼吸法 · 吸气4秒 · 屏住7秒 · 呼气8秒</div>
+      </section>
+
+      <!-- 安全提示 -->
+      <section class="safety-section">
+        <div class="safety-card">
+          <div class="safety-title">🛡️ 安全提示</div>
+          <ul class="safety-list">
+            <li class="safety-item">你现在很安全</li>
+            <li class="safety-item">这些感受会过去的</li>
+            <li class="safety-item">不要独自承受，打电话给信任的人</li>
+            <li class="safety-item">如果你有伤害自己的想法，请立即拨打上方热线</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BottomNav -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item" aria-label="打卡"><span class="nav-item-icon">📝</span><span class="nav-item-label">打卡</span></button>
+      <button class="nav-item" aria-label="预警"><span class="nav-item-icon">📊</span><span class="nav-item-label">预警</span></button>
+      <button class="nav-item" aria-label="用药"><span class="nav-item-icon">💊</span><span class="nav-item-label">用药</span></button>
+      <button class="nav-item" aria-label="资源"><span class="nav-item-icon">🏥</span><span class="nav-item-label">资源</span></button>
+      <button class="nav-item active" aria-label="求助" aria-current="page"><span class="nav-item-icon">🆘</span><span class="nav-item-label">求助</span></button>
+    </nav>
+
+    <!-- 确认清单 -->
+    <div class="checklist-overlay" id="checklist">
+      <div class="checklist-handle"></div>
+      <h2 class="checklist-title">✅ 轮次 7 确认清单 — Crisis 危机干预页</h2>
+      <ul class="checklist-items">
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>页面是否传达"安全、不孤单"的感觉</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>热线按钮是否足够醒目和易于点击</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>呼吸引导动画是否舒缓自然</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>呼吸节奏（4-7-8）是否舒适</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>安全提示的内容是否恰当</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>整体氛围是否温暖而非冷冰冰</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // ========== 4-7-8 呼吸引导 ==========
+    let breathingTimer = null;
+    let breathingPhase = 'idle'; // idle, inhale, hold, exhale
+    let breathCount = 0;
+
+    function startBreathing() {
+      document.getElementById('btnStart').style.display = 'none';
+      document.getElementById('btnStop').style.display = 'inline-flex';
+      runBreathCycle();
+    }
+
+    function stopBreathing() {
+      clearTimeout(breathingTimer);
+      breathingPhase = 'idle';
+      const circle = document.getElementById('breathCircle');
+      circle.className = 'breathing-circle';
+      document.getElementById('breathPhase').textContent = '准备开始';
+      document.getElementById('breathCount').textContent = '';
+      document.getElementById('btnStart').style.display = 'inline-flex';
+      document.getElementById('btnStop').style.display = 'none';
+    }
+
+    function runBreathCycle() {
+      // 吸气 4秒
+      setPhase('inhale', '吸气', 4, () => {
+        // 屏住 7秒
+        setPhase('hold', '屏住', 7, () => {
+          // 呼气 8秒
+          setPhase('exhale', '呼气', 8, () => {
+            // 循环
+            runBreathCycle();
+          });
+        });
+      });
+    }
+
+    function setPhase(phase, label, duration, callback) {
+      breathingPhase = phase;
+      const circle = document.getElementById('breathCircle');
+      const phaseEl = document.getElementById('breathPhase');
+      const countEl = document.getElementById('breathCount');
+
+      circle.className = 'breathing-circle ' + phase;
+      phaseEl.textContent = label;
+      countEl.textContent = duration;
+
+      let count = duration;
+      countEl.textContent = count;
+
+      const countInterval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countEl.textContent = count;
+        } else {
+          clearInterval(countInterval);
+          countEl.textContent = '';
+        }
+      }, 1000);
+
+      breathingTimer = setTimeout(() => {
+        clearInterval(countInterval);
+        callback();
+      }, duration * 1000);
+    }
+
+    function toggleChecklist() {
+      document.getElementById('checklist').classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - 用药管理</title>
+  <style>
+    :root {
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-danger-dark: #C05555;
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+      --risk-green: #6BAF7A;
+      --risk-green-bg: #EDF5EF;
+      --risk-orange: #E8985E;
+      --risk-orange-bg: #FDF0E5;
+      --risk-red: #D46B6B;
+      --risk-red-bg: #FDECEC;
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-crisis: 0 4px 20px rgba(212,107,107,0.3);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--color-bg); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ========== 页面头部 ========== */
+    .page-header {
+      padding: var(--space-lg) var(--space-base) var(--space-md);
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .page-title { font-size: var(--text-h1); font-weight: 700; }
+
+    /* ========== 内容区 ========== */
+    .med-content {
+      padding: var(--space-base);
+      padding-bottom: 120px;
+    }
+
+    /* ========== 依从率卡片 ========== */
+    .adherence-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .adherence-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+    .adherence-title {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+    }
+    .adherence-streak {
+      font-size: var(--text-caption);
+      color: var(--color-success);
+      background: var(--risk-green-bg);
+      padding: 2px var(--space-sm);
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      display: none;
+    }
+    .adherence-streak.show { display: inline-block; }
+
+    .adherence-main {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+    .adherence-percent {
+      font-size: var(--text-hero);
+      font-weight: 700;
+      color: var(--risk-green);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      transition: color 0.3s ease;
+    }
+    .adherence-unit {
+      font-size: var(--text-h2);
+      font-weight: 700;
+      color: var(--risk-green);
+    }
+    .adherence-detail {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--color-bg-subtle);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--risk-green);
+      width: 0%;
+      transition: width 0.6s var(--easing-decelerate), background 0.3s ease;
+    }
+
+    /* ========== 药物列表区 ========== */
+    .med-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.1s both;
+    }
+    .med-list-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+    }
+    .btn-add {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: none;
+      border: 1.5px solid var(--color-primary);
+      color: var(--color-primary);
+      border-radius: var(--radius-full);
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-family);
+      font-size: var(--text-body-sm);
+      font-weight: 500;
+      cursor: pointer;
+      min-height: 36px;
+      transition: background var(--duration-fast), color var(--duration-fast);
+    }
+    .btn-add:hover { background: var(--color-primary-light); }
+    .btn-add:active { transform: scale(0.97); }
+
+    /* ========== 药物卡片 ========== */
+    .med-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+      margin-bottom: var(--space-md);
+      animation: fadeInUp 0.5s var(--easing-decelerate) both;
+      transition: transform var(--duration-fast) var(--easing-default), box-shadow var(--duration-fast);
+    }
+    .med-card:nth-child(2) { animation-delay: 0.15s; }
+    .med-card:nth-child(3) { animation-delay: 0.2s; }
+
+    .med-card-name {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+    .med-card-info {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-md);
+      line-height: 1.5;
+    }
+    .med-card-info span {
+      margin-right: var(--space-sm);
+    }
+
+    .med-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+    }
+    .btn-take {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: var(--risk-green-bg);
+      color: var(--risk-green);
+      border: none;
+      border-radius: var(--radius-full);
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-family);
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 36px;
+      transition: background var(--duration-fast), transform var(--duration-fast);
+    }
+    .btn-take:hover { background: var(--risk-green); color: var(--color-text-inverse); }
+    .btn-take:active { transform: scale(0.95); }
+    .btn-take.taken {
+      background: var(--risk-green);
+      color: var(--color-text-inverse);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .btn-skip {
+      background: none;
+      border: none;
+      color: var(--color-text-tertiary);
+      font-family: var(--font-family);
+      font-size: var(--text-body-sm);
+      cursor: pointer;
+      min-height: 36px;
+      padding: var(--space-xs) var(--space-sm);
+      transition: color var(--duration-fast);
+    }
+    .btn-skip:hover { color: var(--color-text-secondary); }
+
+    /* ========== Toast 提示 ========== */
+    .toast-container {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 250;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--color-text-primary);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
+      padding: var(--space-sm) var(--space-lg);
+      font-size: var(--text-body-sm);
+      box-shadow: var(--shadow-lg);
+      white-space: nowrap;
+      animation: toastIn 0.25s var(--easing-decelerate), toastOut 0.25s var(--easing-default) 2.5s forwards;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-8px); }
+    }
+
+    /* ========== 添加药物表单（底部滑入） ========== */
+    .add-form-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.3);
+      z-index: 400;
+      display: none;
+      opacity: 0;
+      transition: opacity var(--duration-normal);
+    }
+    .add-form-overlay.show { display: block; opacity: 1; }
+
+    .add-form {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      width: 100%;
+      max-width: 480px;
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+      z-index: 401;
+      transition: transform var(--duration-normal) var(--easing-decelerate);
+    }
+    .add-form.show { transform: translateX(-50%) translateY(0); }
+
+    .add-form-handle {
+      width: 36px; height: 4px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      margin: 0 auto var(--space-md);
+    }
+    .add-form-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: var(--space-lg);
+    }
+    .form-group {
+      margin-bottom: var(--space-md);
+    }
+    .form-label {
+      font-size: var(--text-body-sm);
+      font-weight: 500;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-xs);
+      display: block;
+    }
+    .form-input {
+      width: 100%;
+      height: 44px;
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0 var(--space-base);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+    }
+    .form-input::placeholder { color: var(--color-text-tertiary); }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+    .form-select {
+      width: 100%;
+      height: 44px;
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0 var(--space-base);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239B9B9B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+    .form-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+    .form-actions {
+      display: flex;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+    .form-btn {
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: transform var(--duration-fast), opacity var(--duration-fast);
+    }
+    .form-btn:active { transform: scale(0.97); }
+    .form-btn-cancel {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: 1.5px solid var(--color-border);
+    }
+    .form-btn-confirm {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+    }
+
+    /* ========== 温馨提示 ========== */
+    .tip-card {
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-base);
+      margin-top: var(--space-lg);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.3s both;
+    }
+    .tip-text {
+      font-size: var(--text-body-sm);
+      color: var(--color-primary);
+      line-height: 1.6;
+    }
+
+    /* ========== BottomNav ========== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; height: 64px;
+      background: var(--color-bg-elevated); border-top: 1px solid var(--color-border);
+      display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; color: var(--color-text-tertiary);
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px; position: relative; cursor: pointer;
+      background: none; border: none; font-family: var(--font-family);
+    }
+    .nav-item-icon { font-size: 20px; line-height: 1; }
+    .nav-item-label { font-size: 11px; line-height: 1; }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item.active .nav-item-label { font-weight: 600; font-size: 12px; }
+    .nav-item.active .nav-item-icon { font-size: 22px; }
+    .nav-item.active::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--color-primary); border-radius: 0 0 3px 3px;
+    }
+
+    /* ========== CrisisButton ========== */
+    .crisis-btn {
+      position: fixed; right: 16px; bottom: 80px; width: 52px; height: 52px;
+      border-radius: 50%; background: var(--color-danger); border: none;
+      box-shadow: var(--shadow-crisis); animation: pulse 2s ease-in-out infinite;
+      z-index: 200; cursor: pointer; font-size: 22px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .crisis-btn:active { transform: scale(0.95); background: var(--color-danger-dark); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    /* ========== 确认清单 ========== */
+    .checklist-overlay {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 300; display: none;
+    }
+    .checklist-overlay.show { display: block; }
+    .checklist-handle { width: 36px; height: 4px; background: var(--color-border); border-radius: var(--radius-full); margin: 0 auto var(--space-md); }
+    .checklist-title { font-size: var(--text-h3); font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-md); }
+    .checklist-items { list-style: none; display: flex; flex-direction: column; gap: var(--space-sm); }
+    .checklist-item { display: flex; align-items: flex-start; gap: var(--space-sm); font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 1.5; }
+    .checklist-checkbox {
+      width: 18px; height: 18px; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm);
+      flex-shrink: 0; margin-top: 1px; cursor: pointer; appearance: none; -webkit-appearance: none;
+      transition: background var(--duration-fast), border-color var(--duration-fast);
+    }
+    .checklist-checkbox:checked {
+      background: var(--color-primary); border-color: var(--color-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: center;
+    }
+
+    /* ========== 演示切换 ========== */
+    .demo-bar {
+      position: fixed; top: var(--space-sm); right: var(--space-sm); z-index: 300;
+      display: flex; gap: var(--space-xs);
+    }
+    .demo-btn {
+      padding: var(--space-xs) var(--space-sm); font-size: 11px;
+      font-family: var(--font-family); border: 1px solid var(--color-border);
+      border-radius: var(--radius-full); background: var(--color-bg-elevated);
+      color: var(--color-text-secondary); cursor: pointer; transition: all var(--duration-fast);
+    }
+    .demo-btn.active { background: var(--color-primary); color: var(--color-text-inverse); border-color: var(--color-primary); }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- 演示切换 -->
+    <div class="demo-bar">
+      <button class="demo-btn" onclick="simulateTake()">模拟服药</button>
+      <button class="demo-btn" onclick="openAddForm()">添加药物</button>
+      <button class="demo-btn" onclick="toggleChecklist()">清单</button>
+    </div>
+
+    <header class="page-header">
+      <h1 class="page-title">用药管理</h1>
+    </header>
+
+    <main class="med-content">
+      <!-- 依从率卡片 -->
+      <div class="adherence-card">
+        <div class="adherence-header">
+          <span class="adherence-title">本周依从率</span>
+          <span class="adherence-streak" id="streakBadge">🎉 连续一周！</span>
+        </div>
+        <div class="adherence-main">
+          <span class="adherence-percent" id="adherencePercent">0</span>
+          <span class="adherence-unit">%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="adherence-detail" style="margin-top: var(--space-sm);">本周服药 <strong id="takenCount">6</strong>/7 次</div>
+      </div>
+
+      <!-- 药物列表 -->
+      <div class="med-list-header">
+        <h2 class="med-list-title">我的药物</h2>
+        <button class="btn-add" onclick="openAddForm()">+ 添加</button>
+      </div>
+
+      <div id="medList">
+        <!-- 药物卡片1 -->
+        <div class="med-card">
+          <div class="med-card-name">草酸艾司西酞普兰</div>
+          <div class="med-card-info">
+            <span>10mg</span>·<span>每日1次</span>·<span>早餐后</span>
+          </div>
+          <div class="med-card-actions">
+            <button class="btn-skip" onclick="skipMed(this)">跳过</button>
+            <button class="btn-take" onclick="takeMed(this)">✅ 已服</button>
+          </div>
+        </div>
+
+        <!-- 药物卡片2 -->
+        <div class="med-card">
+          <div class="med-card-name">喹硫平</div>
+          <div class="med-card-info">
+            <span>25mg</span>·<span>每晚1次</span>·<span>睡前</span>
+          </div>
+          <div class="med-card-actions">
+            <button class="btn-skip" onclick="skipMed(this)">跳过</button>
+            <button class="btn-take" onclick="takeMed(this)">✅ 已服</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 温馨提示 -->
+      <div class="tip-card">
+        <p class="tip-text">
+          💡 漏服不必焦虑。如果偶尔忘记，不要加倍补服。如有疑问，请咨询医生。
+        </p>
+      </div>
+    </main>
+
+    <!-- 添加药物表单 -->
+    <div class="add-form-overlay" id="formOverlay" onclick="closeAddForm()"></div>
+    <div class="add-form" id="addForm">
+      <div class="add-form-handle"></div>
+      <h2 class="add-form-title">添加药物</h2>
+      <div class="form-group">
+        <label class="form-label">药物名称</label>
+        <input class="form-input" type="text" placeholder="如：草酸艾司西酞普兰">
+      </div>
+      <div class="form-group">
+        <label class="form-label">剂量</label>
+        <input class="form-input" type="text" placeholder="如：10mg">
+      </div>
+      <div class="form-group">
+        <label class="form-label">频次</label>
+        <select class="form-select">
+          <option>每日1次</option>
+          <option>每日2次</option>
+          <option>每晚1次</option>
+          <option>每周1次</option>
+          <option>按需服用</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">服药时间</label>
+        <input class="form-input" type="text" placeholder="如：早餐后、睡前">
+      </div>
+      <div class="form-actions">
+        <button class="form-btn form-btn-cancel" onclick="closeAddForm()">取消</button>
+        <button class="form-btn form-btn-confirm" onclick="confirmAdd()">确认添加</button>
+      </div>
+    </div>
+
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- BottomNav -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item" aria-label="打卡"><span class="nav-item-icon">📝</span><span class="nav-item-label">打卡</span></button>
+      <button class="nav-item" aria-label="预警"><span class="nav-item-icon">📊</span><span class="nav-item-label">预警</span></button>
+      <button class="nav-item active" aria-label="用药" aria-current="page"><span class="nav-item-icon">💊</span><span class="nav-item-label">用药</span></button>
+      <button class="nav-item" aria-label="资源"><span class="nav-item-icon">🏥</span><span class="nav-item-label">资源</span></button>
+      <button class="nav-item" aria-label="求助"><span class="nav-item-icon">🆘</span><span class="nav-item-label">求助</span></button>
+    </nav>
+
+    <!-- CrisisButton -->
+    <button class="crisis-btn" aria-label="紧急求助">🆘</button>
+
+    <!-- 确认清单 -->
+    <div class="checklist-overlay" id="checklist">
+      <div class="checklist-handle"></div>
+      <h2 class="checklist-title">✅ 轮次 5 确认清单 — Medication 用药管理</h2>
+      <ul class="checklist-items">
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>依从率的展示是否直观</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>药物卡片的信息层次是否清晰</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>服药/跳过操作是否便捷</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>正向反馈是否温暖不机械</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>添加药物的流程是否简单</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>温馨提示的内容是否恰当</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // 依从率动画
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('adherencePercent').textContent = '85';
+        document.getElementById('progressFill').style.width = '85%';
+      }, 300);
+    });
+
+    // 服药操作
+    const encouragements = [
+      '今天又照顾好自己了 ✨',
+      '坚持就是力量 💪',
+      '你做得很好 🌟',
+      '每一步都算数 🌿',
+      '谢谢你的坚持 🤗'
+    ];
+
+    function takeMed(btn) {
+      btn.classList.add('taken');
+      btn.textContent = '✅ 已服';
+      const skipBtn = btn.previousElementSibling;
+      if (skipBtn) skipBtn.style.display = 'none';
+      showToast(encouragements[Math.floor(Math.random() * encouragements.length)]);
+    }
+
+    function skipMed(btn) {
+      showToast('没关系，记得和医生聊聊 💙');
+    }
+
+    function simulateTake() {
+      const firstTakeBtn = document.querySelector('.btn-take:not(.taken)');
+      if (firstTakeBtn) takeMed(firstTakeBtn);
+    }
+
+    // Toast
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      container.innerHTML = '';
+      container.appendChild(toast);
+      setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
+    }
+
+    // 添加药物表单
+    function openAddForm() {
+      document.getElementById('formOverlay').classList.add('show');
+      document.getElementById('addForm').classList.add('show');
+    }
+    function closeAddForm() {
+      document.getElementById('formOverlay').classList.remove('show');
+      document.getElementById('addForm').classList.remove('show');
+    }
+    function confirmAdd() {
+      closeAddForm();
+      showToast('药物已添加 💊');
+    }
+
+    // 确认清单
+    function toggleChecklist() {
+      document.getElementById('checklist').classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

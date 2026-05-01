@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - 全局设计系统 + 共享组件</title>
+  <style>
+    /* ========== CSS 变量系统 ========== */
+    :root {
+      /* 色彩 - 语义色板 */
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-danger-dark: #C05555;
+
+      /* 色彩 - 中性色板 */
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+
+      /* 风险等级 */
+      --risk-green: #6BAF7A;
+      --risk-yellow: #E8C95A;
+      --risk-orange: #E8985E;
+      --risk-red: #D46B6B;
+      --risk-green-bg: #EDF5EF;
+      --risk-yellow-bg: #FDF8E8;
+      --risk-orange-bg: #FDF0E5;
+      --risk-red-bg: #FDECEC;
+
+      /* 字体 */
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+
+      /* 字号 */
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --text-button: 16px;
+
+      /* 间距 */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+
+      /* 圆角 */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+
+      /* 阴影 */
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-crisis: 0 4px 20px rgba(212,107,107,0.3);
+
+      /* 动画 */
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    /* ========== 全局重置 ========== */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    #root {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      background: var(--color-bg);
+    }
+
+    /* ========== 无障碍 ========== */
+    :focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ========== 页面布局 ========== */
+    .page {
+      padding: var(--space-base);
+      padding-bottom: 100px; /* BottomNav + CrisisButton 空间 */
+    }
+
+    .section {
+      margin-bottom: var(--space-xl);
+    }
+
+    .section-title {
+      font-size: var(--text-h2);
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .section-desc {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-base);
+    }
+
+    /* ========== 色彩展示 ========== */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-sm);
+    }
+
+    .color-swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .color-swatch-preview {
+      height: 56px;
+    }
+
+    .color-swatch-info {
+      background: var(--color-bg-elevated);
+      padding: var(--space-sm);
+    }
+
+    .color-swatch-name {
+      font-size: var(--text-caption);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    .color-swatch-value {
+      font-size: 11px;
+      color: var(--color-text-tertiary);
+      font-family: 'SF Mono', 'Menlo', monospace;
+    }
+
+    .risk-colors {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .risk-swatch {
+      text-align: center;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .risk-swatch-preview {
+      height: 48px;
+    }
+
+    .risk-swatch-label {
+      background: var(--color-bg-elevated);
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 11px;
+      color: var(--color-text-secondary);
+    }
+
+    /* ========== 字体展示 ========== */
+    .type-specimen {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: var(--space-base);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .type-row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-md);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .type-row:last-child {
+      border-bottom: none;
+    }
+
+    .type-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      min-width: 80px;
+      flex-shrink: 0;
+      font-family: 'SF Mono', 'Menlo', monospace;
+    }
+
+    .type-sample {
+      flex: 1;
+    }
+
+    /* ========== 间距展示 ========== */
+    .spacing-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .spacing-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .spacing-bar {
+      height: 8px;
+      background: var(--color-primary);
+      border-radius: var(--radius-full);
+      opacity: 0.6;
+    }
+
+    .spacing-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-secondary);
+      min-width: 60px;
+      font-family: 'SF Mono', 'Menlo', monospace;
+    }
+
+    /* ========== 圆角展示 ========== */
+    .radius-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--space-sm);
+    }
+
+    .radius-item {
+      text-align: center;
+    }
+
+    .radius-box {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--color-primary-light);
+      border: 2px solid var(--color-primary);
+    }
+
+    .radius-label {
+      font-size: 10px;
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-xs);
+      font-family: 'SF Mono', 'Menlo', monospace;
+    }
+
+    /* ========== 按钮展示 ========== */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-family);
+      font-size: var(--text-button);
+      font-weight: 600;
+      line-height: 1;
+      transition: transform var(--duration-fast) var(--easing-default),
+                  opacity var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast) var(--easing-default);
+      min-height: 44px;
+      min-width: 44px;
+      text-decoration: none;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
+      padding: 0 var(--space-lg);
+      height: 44px;
+    }
+
+    .btn-accent {
+      background: var(--color-accent);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
+      padding: 0 var(--space-lg);
+      height: 48px;
+      font-size: 18px;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+      border-radius: var(--radius-full);
+      padding: 0 var(--space-lg);
+      height: 44px;
+    }
+
+    .btn-danger {
+      background: var(--color-danger);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
+      padding: 0 var(--space-lg);
+      height: 44px;
+    }
+
+    .btn-text {
+      background: transparent;
+      color: var(--color-primary);
+      border: none;
+      padding: 0 var(--space-sm);
+      height: 44px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .btn-disabled {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
+      padding: 0 var(--space-lg);
+      height: 44px;
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .btn-sm {
+      height: 36px;
+      font-size: var(--text-body-sm);
+      padding: 0 var(--space-md);
+    }
+
+    .btn-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-xs);
+    }
+
+    /* ========== 卡片展示 ========== */
+    .card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+    }
+
+    .card-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: var(--space-xs);
+    }
+
+    .card-desc {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+
+    .card-elevated {
+      box-shadow: var(--shadow-md);
+    }
+
+    /* ========== 输入框展示 ========== */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .input-label {
+      font-size: var(--text-body-sm);
+      font-weight: 500;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-xs);
+    }
+
+    .input {
+      width: 100%;
+      height: 44px;
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 0 var(--space-base);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      transition: border-color var(--duration-fast) var(--easing-default),
+                  box-shadow var(--duration-fast) var(--easing-default);
+    }
+
+    .input::placeholder {
+      color: var(--color-text-tertiary);
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+
+    .textarea {
+      min-height: 80px;
+      padding: var(--space-sm) var(--space-base);
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    /* ========== Toast展示 ========== */
+    .toast-demo {
+      position: relative;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toast {
+      background: var(--color-text-primary);
+      color: var(--color-text-inverse);
+      border-radius: var(--radius-full);
+      padding: var(--space-sm) var(--space-lg);
+      font-size: var(--text-body-sm);
+      box-shadow: var(--shadow-lg);
+      animation: toastIn 0.25s var(--easing-decelerate);
+      white-space: nowrap;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ========== BottomNav ========== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      height: 64px;
+      background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      text-decoration: none;
+      color: var(--color-text-tertiary);
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px;
+      position: relative;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-family);
+    }
+
+    .nav-item-icon {
+      font-size: 20px;
+      line-height: 1;
+      transition: transform var(--duration-normal) var(--easing-default);
+    }
+
+    .nav-item-label {
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .nav-item.active {
+      color: var(--color-primary);
+    }
+
+    .nav-item.active .nav-item-label {
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .nav-item.active .nav-item-icon {
+      font-size: 22px;
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 0 0 3px 3px;
+    }
+
+    /* ========== CrisisButton ========== */
+    .crisis-btn {
+      position: fixed;
+      right: 16px;
+      bottom: 80px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--color-danger);
+      border: none;
+      box-shadow: var(--shadow-crisis);
+      animation: pulse 2s ease-in-out infinite;
+      z-index: 200;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast) var(--easing-default);
+    }
+
+    .crisis-btn:active {
+      transform: scale(0.95);
+      background: var(--color-danger-dark);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    /* ========== 标签展示 ========== */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px var(--space-sm);
+      border-radius: var(--radius-sm);
+      font-size: var(--text-caption);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .tag-primary {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .tag-success {
+      background: var(--risk-green-bg);
+      color: var(--risk-green);
+    }
+
+    .tag-warning {
+      background: var(--risk-yellow-bg);
+      color: #8B7A2E;
+    }
+
+    .tag-danger {
+      background: var(--risk-red-bg);
+      color: var(--risk-red);
+    }
+
+    .tag-24h {
+      background: var(--risk-green-bg);
+      color: var(--risk-green);
+      font-weight: 600;
+    }
+
+    .tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    /* ========== 动画展示 ========== */
+    .anim-demo {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .anim-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .anim-label {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      min-width: 100px;
+    }
+
+    .anim-box {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: var(--color-primary);
+    }
+
+    .anim-bounce {
+      animation: bounce 0.6s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    .anim-fade-in {
+      animation: fadeIn 0.4s var(--easing-decelerate);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .anim-pulse-demo {
+      animation: pulseDemo 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseDemo {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.8; }
+    }
+
+    .anim-slide-up {
+      animation: slideUp 0.25s var(--easing-decelerate);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== 页面标题 ========== */
+    .page-header {
+      padding: var(--space-lg) var(--space-base) var(--space-md);
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .page-header h1 {
+      font-size: var(--text-h1);
+      font-weight: 700;
+      color: var(--color-text-primary);
+    }
+
+    .page-header p {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-size: var(--text-caption);
+      font-weight: 600;
+      padding: 2px var(--space-sm);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-sm);
+    }
+
+    /* ========== 阴影展示 ========== */
+    .shadow-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+
+    .shadow-item {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      text-align: center;
+    }
+
+    .shadow-item-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-sm);
+      font-family: 'SF Mono', 'Menlo', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- 页面标题 -->
+    <header class="page-header">
+      <span class="badge">轮次 1/9</span>
+      <h1>全局设计系统 + 共享组件</h1>
+      <p>色彩、字体、间距、圆角、阴影、按钮、卡片、输入框、BottomNav、CrisisButton</p>
+    </header>
+
+    <main class="page">
+
+      <!-- 1. 色彩体系 -->
+      <section class="section">
+        <h2 class="section-title">色彩体系</h2>
+        <p class="section-desc">语义色板 — 用于操作、状态、风险等级的传达</p>
+
+        <div class="color-grid">
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--color-primary)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Primary</div>
+              <div class="color-swatch-value">#4A90D9</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--color-accent)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Accent</div>
+              <div class="color-swatch-value">#E8985E</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--color-success)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Success</div>
+              <div class="color-swatch-value">#6BAF7A</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--color-warning)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Warning</div>
+              <div class="color-swatch-value">#E8C95A</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--color-danger)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Danger</div>
+              <div class="color-swatch-value">#D46B6B</div>
+            </div>
+          </div>
+          <div class="color-swatch">
+            <div class="color-swatch-preview" style="background: var(--color-bg)"></div>
+            <div class="color-swatch-info">
+              <div class="color-swatch-name">Background</div>
+              <div class="color-swatch-value">#F8F6F2</div>
+            </div>
+          </div>
+        </div>
+
+        <p class="section-desc" style="margin-top: var(--space-lg);">风险等级色 — 四级预警系统</p>
+        <div class="risk-colors">
+          <div class="risk-swatch">
+            <div class="risk-swatch-preview" style="background: var(--risk-green)"></div>
+            <div class="risk-swatch-label">稳定</div>
+          </div>
+          <div class="risk-swatch">
+            <div class="risk-swatch-preview" style="background: var(--risk-yellow)"></div>
+            <div class="risk-swatch-label">关注</div>
+          </div>
+          <div class="risk-swatch">
+            <div class="risk-swatch-preview" style="background: var(--risk-orange)"></div>
+            <div class="risk-swatch-label">预警</div>
+          </div>
+          <div class="risk-swatch">
+            <div class="risk-swatch-preview" style="background: var(--risk-red)"></div>
+            <div class="risk-swatch-label">危机</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 字体系统 -->
+      <section class="section">
+        <h2 class="section-title">字体系统</h2>
+        <p class="section-desc">系统字体栈 PingFang SC，8级字号阶梯</p>
+
+        <div class="type-specimen">
+          <div class="type-row">
+            <span class="type-label">hero 28px</span>
+            <span class="type-sample" style="font-size: 28px; font-weight: 700;">申归途</span>
+          </div>
+          <div class="type-row">
+            <span class="type-label">h1 22px</span>
+            <span class="type-sample" style="font-size: 22px; font-weight: 700;">预警仪表盘</span>
+          </div>
+          <div class="type-row">
+            <span class="type-label">h2 18px</span>
+            <span class="type-sample" style="font-size: 18px; font-weight: 600;">近7天趋势</span>
+          </div>
+          <div class="type-row">
+            <span class="type-label">h3 16px</span>
+            <span class="type-sample" style="font-size: 16px; font-weight: 600;">睡眠质量</span>
+          </div>
+          <div class="type-row">
+            <span class="type-label">body 15px</span>
+            <span class="type-sample" style="font-size: 15px; font-weight: 400;">花30秒，记录今天的你</span>
+          </div>
+          <div class="type-row">
+            <span class="type-label">body-sm 14px</span>
+            <span class="type-sample" style="font-size: 14px; font-weight: 400;">10mg · 每日1次 · 早餐后</span>
+          </div>
+          <div class="type-row">
+            <span class="type-label">caption 12px</span>
+            <span class="type-sample" style="font-size: 12px; font-weight: 400;">连续打卡 7 天</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. 间距系统 -->
+      <section class="section">
+        <h2 class="section-title">间距系统</h2>
+        <p class="section-desc">8px 基准网格</p>
+
+        <div class="spacing-demo">
+          <div class="spacing-item">
+            <span class="spacing-label">xs 4px</span>
+            <div class="spacing-bar" style="width: 4px;"></div>
+          </div>
+          <div class="spacing-item">
+            <span class="spacing-label">sm 8px</span>
+            <div class="spacing-bar" style="width: 8px;"></div>
+          </div>
+          <div class="spacing-item">
+            <span class="spacing-label">md 12px</span>
+            <div class="spacing-bar" style="width: 12px;"></div>
+          </div>
+          <div class="spacing-item">
+            <span class="spacing-label">base 16px</span>
+            <div class="spacing-bar" style="width: 16px;"></div>
+          </div>
+          <div class="spacing-item">
+            <span class="spacing-label">lg 24px</span>
+            <div class="spacing-bar" style="width: 24px;"></div>
+          </div>
+          <div class="spacing-item">
+            <span class="spacing-label">xl 32px</span>
+            <div class="spacing-bar" style="width: 32px;"></div>
+          </div>
+          <div class="spacing-item">
+            <span class="spacing-label">2xl 48px</span>
+            <div class="spacing-bar" style="width: 48px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 圆角系统 -->
+      <section class="section">
+        <h2 class="section-title">圆角系统</h2>
+
+        <div class="radius-grid">
+          <div class="radius-item">
+            <div class="radius-box" style="border-radius: 6px;"></div>
+            <div class="radius-label">sm 6px</div>
+          </div>
+          <div class="radius-item">
+            <div class="radius-box" style="border-radius: 10px;"></div>
+            <div class="radius-label">md 10px</div>
+          </div>
+          <div class="radius-item">
+            <div class="radius-box" style="border-radius: 16px;"></div>
+            <div class="radius-label">lg 16px</div>
+          </div>
+          <div class="radius-item">
+            <div class="radius-box" style="border-radius: 24px;"></div>
+            <div class="radius-label">xl 24px</div>
+          </div>
+          <div class="radius-item">
+            <div class="radius-box" style="border-radius: 9999px;"></div>
+            <div class="radius-label">full</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 阴影系统 -->
+      <section class="section">
+        <h2 class="section-title">阴影系统</h2>
+
+        <div class="shadow-grid">
+          <div class="shadow-item" style="box-shadow: var(--shadow-sm);">
+            <span style="font-size: var(--text-body-sm);">卡片默认</span>
+            <div class="shadow-item-label">shadow-sm</div>
+          </div>
+          <div class="shadow-item" style="box-shadow: var(--shadow-md);">
+            <span style="font-size: var(--text-body-sm);">悬浮卡片</span>
+            <div class="shadow-item-label">shadow-md</div>
+          </div>
+          <div class="shadow-item" style="box-shadow: var(--shadow-lg);">
+            <span style="font-size: var(--text-body-sm);">弹窗</span>
+            <div class="shadow-item-label">shadow-lg</div>
+          </div>
+          <div class="shadow-item" style="box-shadow: var(--shadow-crisis);">
+            <span style="font-size: var(--text-body-sm);">危机按钮</span>
+            <div class="shadow-item-label">shadow-crisis</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. 按钮系统 -->
+      <section class="section">
+        <h2 class="section-title">按钮系统</h2>
+        <p class="section-desc">6种按钮样式，最小触摸目标 44x44px</p>
+
+        <div class="btn-group">
+          <div>
+            <div class="btn-label">主按钮 Primary</div>
+            <button class="btn btn-primary">确认提交</button>
+          </div>
+          <div>
+            <div class="btn-label">强调按钮 Accent（CTA）</div>
+            <button class="btn btn-accent">开始使用</button>
+          </div>
+          <div class="btn-row">
+            <div>
+              <div class="btn-label">次按钮 Secondary</div>
+              <button class="btn btn-secondary">取消</button>
+            </div>
+            <div>
+              <div class="btn-label">危险按钮 Danger</div>
+              <button class="btn btn-danger">删除</button>
+            </div>
+          </div>
+          <div class="btn-row">
+            <div>
+              <div class="btn-label">文字按钮 Text</div>
+              <button class="btn btn-text">查看更多</button>
+            </div>
+            <div>
+              <div class="btn-label">禁用态 Disabled</div>
+              <button class="btn btn-disabled">提交打卡</button>
+            </div>
+          </div>
+          <div>
+            <div class="btn-label">小尺寸按钮</div>
+            <div class="btn-row">
+              <button class="btn btn-primary btn-sm">已服</button>
+              <button class="btn btn-text btn-sm">跳过</button>
+              <button class="btn btn-secondary btn-sm">+ 添加</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. 卡片系统 -->
+      <section class="section">
+        <h2 class="section-title">卡片系统</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-title">默认卡片</div>
+            <div class="card-desc">背景白色，圆角10px，轻阴影。用于内容展示。</div>
+          </div>
+          <div class="card card-elevated">
+            <div class="card-title">悬浮卡片</div>
+            <div class="card-desc">更强的阴影效果。用于下拉菜单、浮层。</div>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-md);">
+          <div class="card" style="background: var(--color-primary-light);">
+            <div class="card-title" style="color: var(--color-primary);">💡 温馨提示</div>
+            <div class="card-desc">浅色背景卡片。用于提示信息区域。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. 标签系统 -->
+      <section class="section">
+        <h2 class="section-title">标签系统</h2>
+
+        <div class="tag-group">
+          <span class="tag tag-primary">三甲专科</span>
+          <span class="tag tag-success">24h</span>
+          <span class="tag tag-warning">关注</span>
+          <span class="tag tag-danger">危机</span>
+          <span class="tag tag-primary">门诊</span>
+          <span class="tag tag-primary">急诊</span>
+          <span class="tag tag-primary">心理咨询</span>
+          <span class="tag tag-success">已完成</span>
+        </div>
+      </section>
+
+      <!-- 9. 输入框 -->
+      <section class="section">
+        <h2 class="section-title">输入框</h2>
+
+        <div class="input-group">
+          <div>
+            <div class="input-label">药物名称</div>
+            <input class="input" type="text" placeholder="请输入药物名称">
+          </div>
+          <div>
+            <div class="input-label">今日感受（选填）</div>
+            <textarea class="input textarea" placeholder="选填，记录此刻感受..." maxlength="200"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. Toast提示 -->
+      <section class="section">
+        <h2 class="section-title">Toast 提示</h2>
+
+        <div class="toast-demo">
+          <div class="toast">今天又照顾好自己了 ✨</div>
+        </div>
+      </section>
+
+      <!-- 11. 动画展示 -->
+      <section class="section">
+        <h2 class="section-title">动画与微交互</h2>
+
+        <div class="anim-demo">
+          <div class="anim-item">
+            <span class="anim-label">选中弹跳</span>
+            <div class="anim-box anim-bounce" style="background: var(--color-primary);"></div>
+          </div>
+          <div class="anim-item">
+            <span class="anim-label">淡入上移</span>
+            <div class="anim-box anim-fade-in" style="background: var(--color-accent);"></div>
+          </div>
+          <div class="anim-item">
+            <span class="anim-label">呼吸脉冲</span>
+            <div class="anim-box anim-pulse-demo" style="background: var(--color-danger); border-radius: 50%;"></div>
+          </div>
+          <div class="anim-item">
+            <span class="anim-label">底部滑入</span>
+            <div class="anim-box anim-slide-up" style="background: var(--color-success);"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 确认清单 -->
+      <section class="section" style="background: var(--color-primary-light); border-radius: var(--radius-md); padding: var(--space-base);">
+        <h2 class="section-title" style="border-bottom-color: var(--color-primary); color: var(--color-primary);">
+          ✅ 轮次 1 确认清单
+        </h2>
+        <div style="font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 2;">
+          <div>☐ 色彩方案在移动端屏幕上是否和谐温暖</div>
+          <div>☐ 字体大小是否舒适（特别是正文15px是否合适）</div>
+          <div>☐ BottomNav的5个Tab布局是否合理，选中态是否清晰</div>
+          <div>☐ CrisisButton是否醒目但不干扰</div>
+          <div>☐ 按钮的触摸目标是否足够大</div>
+          <div>☐ 暖白背景(#F8F6F2)的视觉效果</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BottomNav 共享组件 -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item active" aria-label="打卡" aria-current="page">
+        <span class="nav-item-icon">📝</span>
+        <span class="nav-item-label">打卡</span>
+      </button>
+      <button class="nav-item" aria-label="预警">
+        <span class="nav-item-icon">📊</span>
+        <span class="nav-item-label">预警</span>
+      </button>
+      <button class="nav-item" aria-label="用药">
+        <span class="nav-item-icon">💊</span>
+        <span class="nav-item-label">用药</span>
+      </button>
+      <button class="nav-item" aria-label="资源">
+        <span class="nav-item-icon">🏥</span>
+        <span class="nav-item-label">资源</span>
+      </button>
+      <button class="nav-item" aria-label="求助">
+        <span class="nav-item-icon">🆘</span>
+        <span class="nav-item-label">求助</span>
+      </button>
+    </nav>
+
+    <!-- CrisisButton 浮动按钮 -->
+    <button class="crisis-btn" aria-label="紧急求助" role="button">🆘</button>
+  </div>
+
+  <script>
+    // BottomNav Tab 切换交互
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(i => {
+          i.classList.remove('active');
+          i.removeAttribute('aria-current');
+        });
+        this.classList.add('active');
+        this.setAttribute('aria-current', 'page');
+      });
+    });
+
+    // 按钮点击反馈
+    document.querySelectorAll('.btn:not(.btn-disabled)').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        // 视觉反馈已通过CSS :active实现
+      });
+    });
+
+    // Toast自动消失演示
+    const toast = document.querySelector('.toast');
+    if (toast) {
+      setInterval(() => {
+        toast.style.animation = 'none';
+        toast.offsetHeight; // 触发reflow
+        toast.style.animation = 'toastIn 0.25s var(--easing-decelerate)';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>

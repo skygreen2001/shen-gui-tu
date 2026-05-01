@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - 预警仪表盘</title>
+  <style>
+    :root {
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-danger-dark: #C05555;
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+      --risk-green: #6BAF7A;
+      --risk-yellow: #E8C95A;
+      --risk-orange: #E8985E;
+      --risk-red: #D46B6B;
+      --risk-green-bg: #EDF5EF;
+      --risk-yellow-bg: #FDF8E8;
+      --risk-orange-bg: #FDF0E5;
+      --risk-red-bg: #FDECEC;
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-crisis: 0 4px 20px rgba(212,107,107,0.3);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { max-width: 480px; margin: 0 auto; min-height: 100vh; position: relative; background: var(--color-bg); }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ========== 页面头部 ========== */
+    .page-header {
+      padding: var(--space-lg) var(--space-base) var(--space-md);
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .page-title { font-size: var(--text-h1); font-weight: 700; }
+    .page-guide { font-size: var(--text-body-sm); color: var(--color-text-secondary); margin-top: var(--space-xs); }
+
+    /* ========== 内容区 ========== */
+    .dashboard-content {
+      padding: var(--space-base);
+      padding-bottom: 120px;
+    }
+
+    /* ========== SVG 仪表盘 ========== */
+    .gauge-section {
+      text-align: center;
+      padding: var(--space-lg) 0;
+      animation: fadeInUp 0.5s var(--easing-decelerate) both;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .gauge-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto var(--space-md);
+    }
+    .gauge-svg {
+      width: 200px;
+      height: 200px;
+      transform: rotate(-90deg);
+    }
+    .gauge-track {
+      fill: none;
+      stroke: var(--color-bg-subtle);
+      stroke-width: 12;
+      stroke-linecap: round;
+    }
+    .gauge-fill {
+      fill: none;
+      stroke: var(--risk-green);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-dasharray: 534;
+      stroke-dashoffset: 534;
+      transition: stroke-dashoffset 0.8s var(--easing-decelerate), stroke 0.3s ease;
+    }
+    .gauge-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .gauge-score {
+      font-size: var(--text-hero);
+      font-weight: 700;
+      color: var(--risk-green);
+      line-height: 1;
+      transition: color 0.3s ease;
+    }
+    .gauge-label {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+      transition: color 0.3s ease;
+    }
+
+    .gauge-advice {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      max-width: 280px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ========== 统计卡片 ========== */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.15s both;
+    }
+    .stat-card {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-md) var(--space-sm);
+      text-align: center;
+    }
+    .stat-number {
+      font-size: var(--text-h1);
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    /* ========== 7天趋势图 ========== */
+    .trend-section {
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.3s both;
+    }
+    .section-heading {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      margin-bottom: var(--space-md);
+    }
+
+    .trend-chart {
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-base);
+    }
+    .trend-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 100px;
+      padding: 0 var(--space-xs);
+      margin-bottom: var(--space-sm);
+    }
+    .trend-day {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      flex: 1;
+      justify-content: center;
+    }
+    .trend-bar {
+      width: 6px;
+      border-radius: 3px 3px 0 0;
+      background: var(--color-primary);
+      opacity: 0.65;
+      transition: height 0.6s var(--easing-decelerate);
+    }
+    .trend-day-label {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 var(--space-xs);
+    }
+    .trend-day-label span {
+      flex: 1;
+      text-align: center;
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+    }
+
+    .trend-legend {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      opacity: 0.65;
+    }
+
+    /* ========== 风险提醒横幅 ========== */
+    .risk-banner {
+      background: var(--risk-red-bg);
+      border-radius: var(--radius-md);
+      padding: var(--space-base);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      animation: fadeInUp 0.5s var(--easing-decelerate) 0.45s both;
+    }
+    .risk-banner-icon { font-size: 20px; flex-shrink: 0; }
+    .risk-banner-text {
+      font-size: var(--text-body-sm);
+      color: var(--risk-red);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    .risk-banner-link {
+      color: var(--risk-red);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    /* ========== 无数据占位 ========== */
+    .empty-state {
+      display: none;
+      text-align: center;
+      padding: var(--space-2xl) var(--space-base);
+    }
+    .empty-state.active { display: block; }
+    .gauge-section.hidden { display: none; }
+    .stats-row.hidden { display: none; }
+    .trend-section.hidden { display: none; }
+    .risk-banner.hidden { display: none; }
+
+    .empty-icon { font-size: 48px; margin-bottom: var(--space-md); opacity: 0.5; }
+    .empty-title { font-size: var(--text-h3); font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
+    .empty-desc { font-size: var(--text-body-sm); color: var(--color-text-tertiary); }
+
+    /* ========== BottomNav ========== */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; height: 64px;
+      background: var(--color-bg-elevated); border-top: 1px solid var(--color-border);
+      display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; color: var(--color-text-tertiary);
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px; position: relative; cursor: pointer;
+      background: none; border: none; font-family: var(--font-family);
+    }
+    .nav-item-icon { font-size: 20px; line-height: 1; }
+    .nav-item-label { font-size: 11px; line-height: 1; }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item.active .nav-item-label { font-weight: 600; font-size: 12px; }
+    .nav-item.active .nav-item-icon { font-size: 22px; }
+    .nav-item.active::before {
+      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 3px; background: var(--color-primary); border-radius: 0 0 3px 3px;
+    }
+
+    /* ========== CrisisButton ========== */
+    .crisis-btn {
+      position: fixed; right: 16px; bottom: 80px; width: 52px; height: 52px;
+      border-radius: 50%; background: var(--color-danger); border: none;
+      box-shadow: var(--shadow-crisis); animation: pulse 2s ease-in-out infinite;
+      z-index: 200; cursor: pointer; font-size: 22px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .crisis-btn:active { transform: scale(0.95); background: var(--color-danger-dark); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    /* ========== 状态切换按钮（演示用） ========== */
+    .state-switcher {
+      position: fixed; top: var(--space-sm); right: var(--space-sm); z-index: 300;
+      display: flex; gap: var(--space-xs);
+    }
+    .state-btn {
+      padding: var(--space-xs) var(--space-sm); font-size: 11px;
+      font-family: var(--font-family); border: 1px solid var(--color-border);
+      border-radius: var(--radius-full); background: var(--color-bg-elevated);
+      color: var(--color-text-secondary); cursor: pointer; transition: all var(--duration-fast);
+    }
+    .state-btn.active { background: var(--color-primary); color: var(--color-text-inverse); border-color: var(--color-primary); }
+
+    /* ========== 确认清单 ========== */
+    .checklist-overlay {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 480px; background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 300; display: none;
+    }
+    .checklist-overlay.show { display: block; }
+    .checklist-handle { width: 36px; height: 4px; background: var(--color-border); border-radius: var(--radius-full); margin: 0 auto var(--space-md); }
+    .checklist-title { font-size: var(--text-h3); font-weight: 600; color: var(--color-primary); margin-bottom: var(--space-md); }
+    .checklist-items { list-style: none; display: flex; flex-direction: column; gap: var(--space-sm); }
+    .checklist-item { display: flex; align-items: flex-start; gap: var(--space-sm); font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 1.5; }
+    .checklist-checkbox {
+      width: 18px; height: 18px; border: 1.5px solid var(--color-border); border-radius: var(--radius-sm);
+      flex-shrink: 0; margin-top: 1px; cursor: pointer; appearance: none; -webkit-appearance: none;
+      transition: background var(--duration-fast), border-color var(--duration-fast);
+    }
+    .checklist-checkbox:checked {
+      background: var(--color-primary); border-color: var(--color-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- 状态切换（演示用） -->
+    <div class="state-switcher">
+      <button class="state-btn active" onclick="showState('green')">稳定</button>
+      <button class="state-btn" onclick="showState('yellow')">关注</button>
+      <button class="state-btn" onclick="showState('orange')">预警</button>
+      <button class="state-btn" onclick="showState('red')">危机</button>
+      <button class="state-btn" onclick="showState('empty')">无数据</button>
+      <button class="state-btn" onclick="toggleChecklist()">清单</button>
+    </div>
+
+    <header class="page-header">
+      <h1 class="page-title">预警仪表盘</h1>
+      <p class="page-guide">了解自己的状态</p>
+    </header>
+
+    <main class="dashboard-content">
+
+      <!-- 有数据视图 -->
+      <div id="dataView">
+        <!-- SVG 仪表盘 -->
+        <section class="gauge-section" id="gaugeSection">
+          <div class="gauge-container">
+            <svg class="gauge-svg" viewBox="0 0 200 200">
+              <circle class="gauge-track" cx="100" cy="100" r="85"></circle>
+              <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="85"></circle>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-score" id="gaugeScore">72</div>
+              <div class="gauge-label" id="gaugeLabel">稳定</div>
+            </div>
+          </div>
+          <p class="gauge-advice" id="gaugeAdvice">你的状态整体稳定，继续保持</p>
+        </section>
+
+        <!-- 统计卡片 -->
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card">
+            <div class="stat-number">7</div>
+            <div class="stat-label">连续打卡</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">23</div>
+            <div class="stat-label">累计打卡</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">5</div>
+            <div class="stat-label">本周记录</div>
+          </div>
+        </div>
+
+        <!-- 7天趋势图 -->
+        <section class="trend-section" id="trendSection">
+          <h2 class="section-heading">近7天趋势</h2>
+          <div class="trend-chart">
+            <div class="trend-bars" id="trendBars">
+              <!-- 周一: 4,3,3,4,3,4 -->
+              <div class="trend-day">
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+              </div>
+              <!-- 周二: 3,4,4,3,3,3 -->
+              <div class="trend-day">
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+              </div>
+              <!-- 周三: 5,4,3,4,4,3 -->
+              <div class="trend-day">
+                <div class="trend-bar" style="height: 80px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+              </div>
+              <!-- 周四: 4,3,3,3,2,3 -->
+              <div class="trend-day">
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 32px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+              </div>
+              <!-- 周五: 3,3,4,3,3,2 -->
+              <div class="trend-day">
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 32px;"></div>
+              </div>
+              <!-- 周六: 4,4,3,4,4,4 -->
+              <div class="trend-day">
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 64px;"></div>
+              </div>
+              <!-- 周日: 4,3,3,3,3,3 -->
+              <div class="trend-day">
+                <div class="trend-bar" style="height: 64px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+                <div class="trend-bar" style="height: 48px;"></div>
+              </div>
+            </div>
+            <div class="trend-day-label">
+              <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+            </div>
+            <div class="trend-legend">
+              <div class="legend-item"><span class="legend-dot"></span>😴 睡眠</div>
+              <div class="legend-item"><span class="legend-dot"></span>💭 情绪</div>
+              <div class="legend-item"><span class="legend-dot"></span>💪 躯体</div>
+              <div class="legend-item"><span class="legend-dot"></span>🚀 动力</div>
+              <div class="legend-item"><span class="legend-dot"></span>🧠 认知</div>
+              <div class="legend-item"><span class="legend-dot"></span>🤝 社交</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 风险提醒横幅（仅红色等级显示） -->
+        <div class="risk-banner hidden" id="riskBanner">
+          <span class="risk-banner-icon">⚠️</span>
+          <div class="risk-banner-text">
+            你的状态需要关注，请拨打 <a href="tel:962525" class="risk-banner-link">962525</a> 或联系医生
+          </div>
+        </div>
+      </div>
+
+      <!-- 无数据占位 -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">暂无数据</div>
+        <div class="empty-desc">完成每日打卡后，这里会显示你的状态趋势</div>
+      </div>
+
+    </main>
+
+    <!-- BottomNav -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item" aria-label="打卡"><span class="nav-item-icon">📝</span><span class="nav-item-label">打卡</span></button>
+      <button class="nav-item active" aria-label="预警" aria-current="page"><span class="nav-item-icon">📊</span><span class="nav-item-label">预警</span></button>
+      <button class="nav-item" aria-label="用药"><span class="nav-item-icon">💊</span><span class="nav-item-label">用药</span></button>
+      <button class="nav-item" aria-label="资源"><span class="nav-item-icon">🏥</span><span class="nav-item-label">资源</span></button>
+      <button class="nav-item" aria-label="求助"><span class="nav-item-icon">🆘</span><span class="nav-item-label">求助</span></button>
+    </nav>
+
+    <!-- CrisisButton -->
+    <button class="crisis-btn" aria-label="紧急求助">🆘</button>
+
+    <!-- 确认清单 -->
+    <div class="checklist-overlay" id="checklist">
+      <div class="checklist-handle"></div>
+      <h2 class="checklist-title">✅ 轮次 4 确认清单 — Dashboard 预警仪表盘</h2>
+      <ul class="checklist-items">
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>仪表盘的核心信息（风险等级）是否一目了然</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>SVG圆环动画是否流畅</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>7天趋势图是否可读（6维×7天信息密度）</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>不同风险等级的颜色区分是否清晰</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>无数据时的占位状态是否友好</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>红色等级的提醒横幅是否醒目</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const riskConfig = {
+      green:  { score: 72, color: '#6BAF7A', label: '稳定', advice: '你的状态整体稳定，继续保持', offset: 534 - (534 * 0.72) },
+      yellow: { score: 55, color: '#E8C95A', label: '关注', advice: '有些维度需要留意，试着多关注自己', offset: 534 - (534 * 0.55) },
+      orange: { score: 38, color: '#E8985E', label: '预警', advice: '状态有所波动，建议联系专业人士聊聊', offset: 534 - (534 * 0.38) },
+      red:    { score: 22, color: '#D46B6B', label: '危机', advice: '你的状态需要关注，请拨打962525或联系医生', offset: 534 - (534 * 0.22) }
+    };
+
+    function showState(state) {
+      const btns = document.querySelectorAll('.state-btn:not(:last-child)');
+      btns.forEach(b => b.classList.remove('active'));
+      const idx = ['green','yellow','orange','red','empty'].indexOf(state);
+      if (idx >= 0) btns[idx].classList.add('active');
+
+      const dataView = document.getElementById('dataView');
+      const emptyState = document.getElementById('emptyState');
+      const riskBanner = document.getElementById('riskBanner');
+
+      if (state === 'empty') {
+        dataView.style.display = 'none';
+        emptyState.classList.add('active');
+        return;
+      }
+
+      dataView.style.display = 'block';
+      emptyState.classList.remove('active');
+
+      const config = riskConfig[state];
+      const fill = document.getElementById('gaugeFill');
+      const score = document.getElementById('gaugeScore');
+      const label = document.getElementById('gaugeLabel');
+      const advice = document.getElementById('gaugeAdvice');
+
+      // 先重置动画
+      fill.style.transition = 'none';
+      fill.style.strokeDashoffset = 534;
+      fill.style.stroke = config.color;
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          fill.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0, 0, 0.2, 1), stroke 0.3s ease';
+          fill.style.strokeDashoffset = config.offset;
+        });
+      });
+
+      score.textContent = config.score;
+      score.style.color = config.color;
+      label.textContent = config.label;
+      label.style.color = config.color;
+      advice.textContent = config.advice;
+
+      // 红色等级显示提醒横幅
+      if (state === 'red') {
+        riskBanner.classList.remove('hidden');
+      } else {
+        riskBanner.classList.add('hidden');
+      }
+    }
+
+    function toggleChecklist() {
+      document.getElementById('checklist').classList.toggle('show');
+    }
+
+    // 页面加载时触发绿色状态动画
+    window.addEventListener('load', () => {
+      setTimeout(() => showState('green'), 300);
+    });
+  </script>
+</body>
+</html>

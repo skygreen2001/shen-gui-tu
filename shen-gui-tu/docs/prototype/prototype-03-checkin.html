@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>申归途 - 每日打卡</title>
+  <style>
+    :root {
+      --color-primary: #4A90D9;
+      --color-primary-dark: #3A7BC8;
+      --color-primary-light: #E8F1FB;
+      --color-accent: #E8985E;
+      --color-accent-dark: #D4854A;
+      --color-success: #6BAF7A;
+      --color-warning: #E8C95A;
+      --color-danger: #D46B6B;
+      --color-danger-dark: #C05555;
+      --color-bg: #F8F6F2;
+      --color-bg-elevated: #FFFFFF;
+      --color-bg-subtle: #F0EDE7;
+      --color-text-primary: #2D2D2D;
+      --color-text-secondary: #6B6B6B;
+      --color-text-tertiary: #9B9B9B;
+      --color-text-inverse: #FFFFFF;
+      --color-border: #E5E2DC;
+      --color-border-light: #F0EDE7;
+      --risk-green: #6BAF7A;
+      --risk-yellow: #E8C95A;
+      --risk-orange: #E8985E;
+      --risk-red: #D46B6B;
+      --risk-green-bg: #EDF5EF;
+      --risk-yellow-bg: #FDF8E8;
+      --risk-orange-bg: #FDF0E5;
+      --risk-red-bg: #FDECEC;
+      --font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+      --text-hero: 28px;
+      --text-h1: 22px;
+      --text-h2: 18px;
+      --text-h3: 16px;
+      --text-body: 15px;
+      --text-body-sm: 14px;
+      --text-caption: 12px;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.10);
+      --shadow-crisis: 0 4px 20px rgba(212,107,107,0.3);
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+      --duration-slow: 400ms;
+      --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+      --easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      background: var(--color-bg);
+    }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+
+    /* ========== 页面头部 ========== */
+    .page-header {
+      padding: var(--space-lg) var(--space-base) var(--space-md);
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border-light);
+    }
+    .page-header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .page-title {
+      font-size: var(--text-h1);
+      font-weight: 700;
+    }
+    .page-date {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-tertiary);
+    }
+    .page-guide {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-xs);
+    }
+
+    /* ========== 打卡内容区 ========== */
+    .checkin-content {
+      padding: var(--space-base);
+      padding-bottom: 120px;
+    }
+
+    /* ========== 维度评分区 ========== */
+    .dimension {
+      margin-bottom: var(--space-lg);
+      animation: fadeInUp 0.4s var(--easing-decelerate) both;
+    }
+    .dimension:nth-child(1) { animation-delay: 0.05s; }
+    .dimension:nth-child(2) { animation-delay: 0.1s; }
+    .dimension:nth-child(3) { animation-delay: 0.15s; }
+    .dimension:nth-child(4) { animation-delay: 0.2s; }
+    .dimension:nth-child(5) { animation-delay: 0.25s; }
+    .dimension:nth-child(6) { animation-delay: 0.3s; }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dimension-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+    .dimension-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+    .dimension-name {
+      font-size: var(--text-body-sm);
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    /* 评分行 */
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: var(--space-sm) 0;
+    }
+    .rating-label {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      flex-shrink: 0;
+      width: 52px;
+      text-align: center;
+    }
+    .rating-label-left { text-align: right; }
+    .rating-label-right { text-align: left; }
+
+    .rating-group {
+      display: flex;
+      gap: var(--space-sm);
+      flex: 1;
+      justify-content: center;
+    }
+
+    .rating-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--color-border);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--font-family);
+      font-size: var(--text-caption);
+      font-weight: 500;
+      color: var(--color-text-tertiary);
+      transition: transform var(--duration-normal) var(--easing-default),
+                  background var(--duration-fast) var(--easing-default),
+                  border-color var(--duration-fast) var(--easing-default),
+                  color var(--duration-fast) var(--easing-default);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      min-width: 44px;
+      min-height: 44px;
+    }
+
+    .rating-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .rating-btn.selected {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-text-inverse);
+      transform: scale(1.1);
+      animation: ratingBounce 0.25s var(--easing-default);
+    }
+
+    @keyframes ratingBounce {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.2); }
+      100% { transform: scale(1.1); }
+    }
+
+    /* 维度分隔线 */
+    .dimension-divider {
+      height: 1px;
+      background: var(--color-border-light);
+      margin: 0 var(--space-sm);
+    }
+
+    /* ========== 备注文本框 ========== */
+    .note-section {
+      margin-bottom: var(--space-lg);
+      animation: fadeInUp 0.4s var(--easing-decelerate) 0.35s both;
+    }
+    .note-label {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-sm);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .note-input {
+      width: 100%;
+      min-height: 72px;
+      background: var(--color-bg-elevated);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: var(--space-sm) var(--space-base);
+      font-family: var(--font-family);
+      font-size: var(--text-body);
+      color: var(--color-text-primary);
+      resize: vertical;
+      line-height: 1.5;
+      transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+    }
+    .note-input::placeholder { color: var(--color-text-tertiary); }
+    .note-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-light);
+    }
+    .note-counter {
+      text-align: right;
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-top: var(--space-xs);
+    }
+
+    /* ========== 提交按钮 ========== */
+    .submit-section {
+      animation: fadeInUp 0.4s var(--easing-decelerate) 0.4s both;
+    }
+    .btn-submit {
+      display: block;
+      width: 100%;
+      height: 48px;
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border: none;
+      border-radius: var(--radius-full);
+      font-family: var(--font-family);
+      font-size: var(--text-h3);
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: transform var(--duration-fast) var(--easing-default),
+                  background var(--duration-fast) var(--easing-default),
+                  opacity var(--duration-fast);
+      min-height: 48px;
+    }
+    .btn-submit:active {
+      transform: scale(0.97);
+    }
+    .btn-submit:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .btn-submit.ready {
+      animation: submitPulse 2s ease-in-out infinite;
+    }
+    @keyframes submitPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,144,217,0.3); }
+      50% { box-shadow: 0 0 0 8px rgba(74,144,217,0); }
+    }
+
+    /* ========== 状态切换：提交成功 ========== */
+    .success-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2xl) var(--space-base);
+      text-align: center;
+      min-height: 60vh;
+    }
+    .success-view.active { display: flex; }
+    .checkin-form.hidden { display: none; }
+
+    .success-emoji {
+      font-size: 64px;
+      line-height: 1;
+      margin-bottom: var(--space-lg);
+      animation: successPop 0.5s var(--easing-decelerate);
+    }
+    @keyframes successPop {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .success-message {
+      font-size: var(--text-h2);
+      font-weight: 600;
+      color: var(--color-text-primary);
+      margin-bottom: var(--space-sm);
+    }
+    .success-sub {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* ========== 状态切换：已打卡 ========== */
+    .done-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2xl) var(--space-base);
+      text-align: center;
+      min-height: 50vh;
+    }
+    .done-view.active { display: flex; }
+
+    .done-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-md);
+    }
+    .done-title {
+      font-size: var(--text-h2);
+      font-weight: 600;
+      color: var(--color-success);
+      margin-bottom: var(--space-xs);
+    }
+    .done-time {
+      font-size: var(--text-body-sm);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-xl);
+    }
+
+    /* 已打卡评分摘要 */
+    .done-summary {
+      width: 100%;
+      background: var(--color-bg-elevated);
+      border-radius: var(--radius-md);
+      padding: var(--space-base);
+      box-shadow: var(--shadow-sm);
+    }
+    .done-summary-title {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      margin-bottom: var(--space-md);
+      text-align: left;
+    }
+    .done-bar-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
+    }
+    .done-bar-row:last-child { margin-bottom: 0; }
+    .done-bar-icon { font-size: 14px; width: 20px; text-align: center; }
+    .done-bar-label { font-size: var(--text-caption); color: var(--color-text-secondary); width: 40px; }
+    .done-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--color-bg-subtle);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .done-bar-fill {
+      height: 100%;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      transition: width 0.6s var(--easing-decelerate);
+    }
+    .done-bar-value {
+      font-size: var(--text-caption);
+      color: var(--color-text-tertiary);
+      width: 16px;
+      text-align: right;
+    }
+
+    .done-footer {
+      margin-top: var(--space-xl);
+      font-size: var(--text-body-sm);
+      color: var(--color-text-tertiary);
+    }
+
+    /* ========== BottomNav ========== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      height: 64px;
+      background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      z-index: 100;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      color: var(--color-text-tertiary);
+      transition: color var(--duration-normal) var(--easing-default);
+      min-height: 44px;
+      position: relative;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-family);
+    }
+    .nav-item-icon { font-size: 20px; line-height: 1; }
+    .nav-item-label { font-size: 11px; line-height: 1; }
+    .nav-item.active { color: var(--color-primary); }
+    .nav-item.active .nav-item-label { font-weight: 600; font-size: 12px; }
+    .nav-item.active .nav-item-icon { font-size: 22px; }
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 3px;
+      background: var(--color-primary);
+      border-radius: 0 0 3px 3px;
+    }
+
+    /* ========== CrisisButton ========== */
+    .crisis-btn {
+      position: fixed;
+      right: 16px;
+      bottom: 80px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--color-danger);
+      border: none;
+      box-shadow: var(--shadow-crisis);
+      animation: pulse 2s ease-in-out infinite;
+      z-index: 200;
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .crisis-btn:active { transform: scale(0.95); background: var(--color-danger-dark); }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
+    }
+
+    /* ========== 状态切换按钮（演示用） ========== */
+    .state-switcher {
+      position: fixed;
+      top: var(--space-sm);
+      right: var(--space-sm);
+      z-index: 300;
+      display: flex;
+      gap: var(--space-xs);
+    }
+    .state-btn {
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 11px;
+      font-family: var(--font-family);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      background: var(--color-bg-elevated);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all var(--duration-fast);
+    }
+    .state-btn.active {
+      background: var(--color-primary);
+      color: var(--color-text-inverse);
+      border-color: var(--color-primary);
+    }
+
+    /* ========== 确认清单 ========== */
+    .checklist-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      padding: var(--space-lg) var(--space-base) var(--space-xl);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+      z-index: 300;
+      display: none;
+    }
+    .checklist-overlay.show { display: block; }
+    .checklist-handle {
+      width: 36px; height: 4px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      margin: 0 auto var(--space-md);
+    }
+    .checklist-title {
+      font-size: var(--text-h3);
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: var(--space-md);
+    }
+    .checklist-items { list-style: none; display: flex; flex-direction: column; gap: var(--space-sm); }
+    .checklist-item {
+      display: flex; align-items: flex-start; gap: var(--space-sm);
+      font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: 1.5;
+    }
+    .checklist-checkbox {
+      width: 18px; height: 18px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0; margin-top: 1px;
+      cursor: pointer;
+      appearance: none; -webkit-appearance: none;
+      transition: background var(--duration-fast), border-color var(--duration-fast);
+    }
+    .checklist-checkbox:checked {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='white' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <!-- 状态切换（演示用，实际产品中不存在） -->
+    <div class="state-switcher">
+      <button class="state-btn active" onclick="showState('form')">未打卡</button>
+      <button class="state-btn" onclick="showState('success')">刚提交</button>
+      <button class="state-btn" onclick="showState('done')">已打卡</button>
+      <button class="state-btn" onclick="toggleChecklist()">清单</button>
+    </div>
+
+    <!-- 页面头部 -->
+    <header class="page-header">
+      <div class="page-header-row">
+        <h1 class="page-title">每日打卡</h1>
+        <span class="page-date">4/30 周三</span>
+      </div>
+      <p class="page-guide">花30秒，记录今天的你</p>
+    </header>
+
+    <!-- 状态一：未打卡（评分表单） -->
+    <div class="checkin-form" id="checkinForm">
+      <main class="checkin-content">
+        <!-- 6个维度 -->
+        <div class="dimension" data-dim="sleep">
+          <div class="dimension-header">
+            <span class="dimension-icon">😴</span>
+            <span class="dimension-name">睡眠质量</span>
+          </div>
+          <div class="rating-row" role="radiogroup" aria-label="睡眠质量评分">
+            <span class="rating-label rating-label-left">几乎没睡</span>
+            <div class="rating-group">
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="1分" onclick="selectRating(this)">1</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="2分" onclick="selectRating(this)">2</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="3分" onclick="selectRating(this)">3</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="4分" onclick="selectRating(this)">4</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="5分" onclick="selectRating(this)">5</button>
+            </div>
+            <span class="rating-label rating-label-right">睡得很好</span>
+          </div>
+        </div>
+
+        <div class="dimension-divider"></div>
+
+        <div class="dimension" data-dim="mood">
+          <div class="dimension-header">
+            <span class="dimension-icon">💭</span>
+            <span class="dimension-name">情绪状态</span>
+          </div>
+          <div class="rating-row" role="radiogroup" aria-label="情绪状态评分">
+            <span class="rating-label rating-label-left">很低落</span>
+            <div class="rating-group">
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="1分" onclick="selectRating(this)">1</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="2分" onclick="selectRating(this)">2</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="3分" onclick="selectRating(this)">3</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="4分" onclick="selectRating(this)">4</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="5分" onclick="selectRating(this)">5</button>
+            </div>
+            <span class="rating-label rating-label-right">很好</span>
+          </div>
+        </div>
+
+        <div class="dimension-divider"></div>
+
+        <div class="dimension" data-dim="body">
+          <div class="dimension-header">
+            <span class="dimension-icon">💪</span>
+            <span class="dimension-name">躯体感受</span>
+          </div>
+          <div class="rating-row" role="radiogroup" aria-label="躯体感受评分">
+            <span class="rating-label rating-label-left">很不適</span>
+            <div class="rating-group">
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="1分" onclick="selectRating(this)">1</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="2分" onclick="selectRating(this)">2</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="3分" onclick="selectRating(this)">3</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="4分" onclick="selectRating(this)">4</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="5分" onclick="selectRating(this)">5</button>
+            </div>
+            <span class="rating-label rating-label-right">舒适</span>
+          </div>
+        </div>
+
+        <div class="dimension-divider"></div>
+
+        <div class="dimension" data-dim="motivation">
+          <div class="dimension-header">
+            <span class="dimension-icon">🚀</span>
+            <span class="dimension-name">动力水平</span>
+          </div>
+          <div class="rating-row" role="radiogroup" aria-label="动力水平评分">
+            <span class="rating-label rating-label-left">毫无</span>
+            <div class="rating-group">
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="1分" onclick="selectRating(this)">1</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="2分" onclick="selectRating(this)">2</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="3分" onclick="selectRating(this)">3</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="4分" onclick="selectRating(this)">4</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="5分" onclick="selectRating(this)">5</button>
+            </div>
+            <span class="rating-label rating-label-right">充沛</span>
+          </div>
+        </div>
+
+        <div class="dimension-divider"></div>
+
+        <div class="dimension" data-dim="cognition">
+          <div class="dimension-header">
+            <span class="dimension-icon">🧠</span>
+            <span class="dimension-name">认知清晰度</span>
+          </div>
+          <div class="rating-row" role="radiogroup" aria-label="认知清晰度评分">
+            <span class="rating-label rating-label-left">模糊</span>
+            <div class="rating-group">
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="1分" onclick="selectRating(this)">1</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="2分" onclick="selectRating(this)">2</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="3分" onclick="selectRating(this)">3</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="4分" onclick="selectRating(this)">4</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="5分" onclick="selectRating(this)">5</button>
+            </div>
+            <span class="rating-label rating-label-right">清晰</span>
+          </div>
+        </div>
+
+        <div class="dimension-divider"></div>
+
+        <div class="dimension" data-dim="social">
+          <div class="dimension-header">
+            <span class="dimension-icon">🤝</span>
+            <span class="dimension-name">社交意愿</span>
+          </div>
+          <div class="rating-row" role="radiogroup" aria-label="社交意愿评分">
+            <span class="rating-label rating-label-left">想独处</span>
+            <div class="rating-group">
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="1分" onclick="selectRating(this)">1</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="2分" onclick="selectRating(this)">2</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="3分" onclick="selectRating(this)">3</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="4分" onclick="selectRating(this)">4</button>
+              <button class="rating-btn" role="radio" aria-checked="false" aria-label="5分" onclick="selectRating(this)">5</button>
+            </div>
+            <span class="rating-label rating-label-right">想交流</span>
+          </div>
+        </div>
+
+        <!-- 备注文本框 -->
+        <div class="note-section">
+          <div class="note-label">💬 今天想说什么？</div>
+          <textarea class="note-input" placeholder="选填，记录此刻感受..." maxlength="200" oninput="updateCounter(this)"></textarea>
+          <div class="note-counter"><span id="charCount">0</span>/200</div>
+        </div>
+
+        <!-- 提交按钮 -->
+        <div class="submit-section">
+          <button class="btn-submit" id="submitBtn" disabled aria-disabled="true" onclick="submitCheckIn()">提交打卡</button>
+        </div>
+      </main>
+    </div>
+
+    <!-- 状态二：刚提交成功 -->
+    <div class="success-view" id="successView">
+      <div class="success-emoji">🌟</div>
+      <div class="success-message">今天又照顾好自己了</div>
+      <div class="success-sub">记录本身就是一种勇气</div>
+    </div>
+
+    <!-- 状态三：今日已打卡 -->
+    <div class="done-view" id="doneView">
+      <div class="done-icon">✅</div>
+      <div class="done-title">今日已完成打卡</div>
+      <div class="done-time">打卡时间：08:32</div>
+
+      <div class="done-summary">
+        <div class="done-summary-title">今日评分摘要</div>
+        <div class="done-bar-row">
+          <span class="done-bar-icon">😴</span>
+          <span class="done-bar-label">睡眠</span>
+          <div class="done-bar-track"><div class="done-bar-fill" style="width: 60%;"></div></div>
+          <span class="done-bar-value">3</span>
+        </div>
+        <div class="done-bar-row">
+          <span class="done-bar-icon">💭</span>
+          <span class="done-bar-label">情绪</span>
+          <div class="done-bar-track"><div class="done-bar-fill" style="width: 80%;"></div></div>
+          <span class="done-bar-value">4</span>
+        </div>
+        <div class="done-bar-row">
+          <span class="done-bar-icon">💪</span>
+          <span class="done-bar-label">躯体</span>
+          <div class="done-bar-track"><div class="done-bar-fill" style="width: 60%;"></div></div>
+          <span class="done-bar-value">3</span>
+        </div>
+        <div class="done-bar-row">
+          <span class="done-bar-icon">🚀</span>
+          <span class="done-bar-label">动力</span>
+          <div class="done-bar-track"><div class="done-bar-fill" style="width: 40%;"></div></div>
+          <span class="done-bar-value">2</span>
+        </div>
+        <div class="done-bar-row">
+          <span class="done-bar-icon">🧠</span>
+          <span class="done-bar-label">认知</span>
+          <div class="done-bar-track"><div class="done-bar-fill" style="width: 80%;"></div></div>
+          <span class="done-bar-value">4</span>
+        </div>
+        <div class="done-bar-row">
+          <span class="done-bar-icon">🤝</span>
+          <span class="done-bar-label">社交</span>
+          <div class="done-bar-track"><div class="done-bar-fill" style="width: 60%;"></div></div>
+          <span class="done-bar-value">3</span>
+        </div>
+      </div>
+
+      <div class="done-footer">明天继续，我在这里等你 🌿</div>
+    </div>
+
+    <!-- BottomNav -->
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item active" aria-label="打卡" aria-current="page">
+        <span class="nav-item-icon">📝</span>
+        <span class="nav-item-label">打卡</span>
+      </button>
+      <button class="nav-item" aria-label="预警">
+        <span class="nav-item-icon">📊</span>
+        <span class="nav-item-label">预警</span>
+      </button>
+      <button class="nav-item" aria-label="用药">
+        <span class="nav-item-icon">💊</span>
+        <span class="nav-item-label">用药</span>
+      </button>
+      <button class="nav-item" aria-label="资源">
+        <span class="nav-item-icon">🏥</span>
+        <span class="nav-item-label">资源</span>
+      </button>
+      <button class="nav-item" aria-label="求助">
+        <span class="nav-item-icon">🆘</span>
+        <span class="nav-item-label">求助</span>
+      </button>
+    </nav>
+
+    <!-- CrisisButton -->
+    <button class="crisis-btn" aria-label="紧急求助">🆘</button>
+
+    <!-- 确认清单 -->
+    <div class="checklist-overlay" id="checklist">
+      <div class="checklist-handle"></div>
+      <h2 class="checklist-title">✅ 轮次 3 确认清单 — CheckIn 每日打卡</h2>
+      <ul class="checklist-items">
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>30秒内能否完成打卡（操作效率）</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>6个维度的评分操作是否直觉化</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>左右标注文字是否清晰易懂</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>提交后的鼓励语是否温暖恰当</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>"已打卡"状态的展示是否简洁</span></li>
+        <li class="checklist-item"><input type="checkbox" class="checklist-checkbox"><span>整体负担感是否足够低</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // 评分选择逻辑
+    function selectRating(btn) {
+      const group = btn.closest('.rating-group');
+      group.querySelectorAll('.rating-btn').forEach(b => {
+        b.classList.remove('selected');
+        b.setAttribute('aria-checked', 'false');
+      });
+      btn.classList.add('selected');
+      btn.setAttribute('aria-checked', 'true');
+      checkAllRated();
+    }
+
+    // 检查是否所有维度都已评分
+    function checkAllRated() {
+      const allGroups = document.querySelectorAll('.rating-group');
+      const allRated = Array.from(allGroups).every(g => g.querySelector('.selected'));
+      const submitBtn = document.getElementById('submitBtn');
+      if (allRated) {
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute('aria-disabled');
+        submitBtn.classList.add('ready');
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.setAttribute('aria-disabled', 'true');
+        submitBtn.classList.remove('ready');
+      }
+    }
+
+    // 字数计数器
+    function updateCounter(textarea) {
+      document.getElementById('charCount').textContent = textarea.value.length;
+    }
+
+    // 提交打卡（演示）
+    function submitCheckIn() {
+      showState('success');
+    }
+
+    // 状态切换（演示用）
+    function showState(state) {
+      const form = document.getElementById('checkinForm');
+      const success = document.getElementById('successView');
+      const done = document.getElementById('doneView');
+      const btns = document.querySelectorAll('.state-btn');
+
+      form.classList.remove('hidden');
+      success.classList.remove('active');
+      done.classList.remove('active');
+      btns.forEach(b => b.classList.remove('active'));
+
+      if (state === 'form') {
+        form.classList.remove('hidden');
+        btns[0].classList.add('active');
+      } else if (state === 'success') {
+        form.classList.add('hidden');
+        success.classList.add('active');
+        btns[1].classList.add('active');
+      } else if (state === 'done') {
+        form.classList.add('hidden');
+        done.classList.add('active');
+        btns[2].classList.add('active');
+      }
+    }
+
+    // 确认清单切换
+    function toggleChecklist() {
+      document.getElementById('checklist').classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

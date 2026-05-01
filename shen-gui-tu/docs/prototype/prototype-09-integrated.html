@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>申归途 — 集成走查原型</title>
+<style>
+/* ========== DESIGN TOKENS ========== */
+:root {
+  --primary: #4A90D9;
+  --primary-light: #A8CCE8;
+  --primary-dark: #2C6FB5;
+  --accent: #E8985E;
+  --accent-light: #F5C9A0;
+  --bg: #F8F6F2;
+  --bg-warm: #FDF8F0;
+  --surface: #FFFFFF;
+  --text-primary: #2D3436;
+  --text-secondary: #636E72;
+  --text-hint: #B2BEC3;
+  --border: #E8E4DE;
+  --success: #6BAF7A;
+  --warning: #E8C95A;
+  --danger: #D46B6B;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+  --nav-height: 64px;
+  --crisis-size: 56px;
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-tap-highlight-color: transparent; }
+body {
+  font-family: var(--font-family);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ========== PHONE FRAME ========== */
+.phone {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  background: var(--bg);
+  position: relative;
+  overflow-x: hidden;
+  box-shadow: 0 0 40px rgba(0,0,0,0.1);
+}
+
+/* ========== PAGE SYSTEM ========== */
+.page {
+  display: none;
+  padding-bottom: calc(var(--nav-height) + var(--crisis-size) + var(--space-xl));
+  min-height: 100vh;
+  animation: pageIn 0.3s ease;
+}
+.page.active { display: block; }
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== BOTTOM NAV ========== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: var(--nav-height);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  font-family: var(--font-family);
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item .nav-icon { font-size: 22px; line-height: 1; }
+.nav-item .nav-label { font-size: 10px; color: var(--text-hint); transition: color 0.2s; }
+.nav-item.active .nav-label { color: var(--primary); font-weight: 600; }
+.nav-item:active { transform: scale(0.92); }
+
+/* ========== CRISIS BUTTON ========== */
+.crisis-btn {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--space-md));
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--crisis-size);
+  height: var(--crisis-size);
+  border-radius: 50%;
+  background: var(--danger);
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(212,107,107,0.4);
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: crisisPulse 2s infinite;
+  transition: transform 0.2s;
+}
+.crisis-btn:active { transform: translateX(-50%) scale(0.9); }
+@keyframes crisisPulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(212,107,107,0.4); }
+  50% { box-shadow: 0 4px 24px rgba(212,107,107,0.6); }
+}
+
+/* ========== SHARED COMPONENTS ========== */
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+}
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-md);
+}
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.tag-primary { background: var(--primary-light); color: var(--primary-dark); }
+.tag-accent { background: var(--accent-light); color: #B06A2E; }
+.tag-success { background: #D4EDDA; color: #2D6A3F; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-family);
+  min-height: 44px;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-accent { background: var(--accent); color: white; }
+.btn-outline { background: transparent; border: 1.5px solid var(--primary); color: var(--primary); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-sm { padding: 8px 16px; font-size: 13px; min-height: 36px; }
+.btn-block { width: 100%; }
+
+/* ========== PAGE HEADER ========== */
+.page-header {
+  padding: var(--space-lg) var(--space-md) var(--space-md);
+}
+.page-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.page-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+}
+.page-content { padding: 0 var(--space-md); }
+
+/* ========== ANIMATION UTILITIES ========== */
+.fade-in { animation: fadeInUp 0.4s ease both; }
+.fade-in-d1 { animation-delay: 0.05s; }
+.fade-in-d2 { animation-delay: 0.1s; }
+.fade-in-d3 { animation-delay: 0.15s; }
+.fade-in-d4 { animation-delay: 0.2s; }
+.fade-in-d5 { animation-delay: 0.25s; }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================================================
+   PAGE 0: WELCOME
+   ================================================================ */
+.welcome-hero {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--bg) 100%);
+  padding: var(--space-2xl) var(--space-md);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.welcome-hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(74,144,217,0.15), transparent 70%);
+  border-radius: 50%;
+}
+.welcome-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(232,152,94,0.12), transparent 70%);
+  border-radius: 50%;
+}
+.welcome-brand {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 8px;
+  position: relative;
+  z-index: 1;
+}
+.welcome-subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: var(--space-sm);
+  position: relative;
+  z-index: 1;
+}
+.welcome-props {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+}
+.welcome-prop {
+  text-align: center;
+  padding: var(--space-md) var(--space-sm);
+}
+.welcome-prop-icon { font-size: 28px; margin-bottom: var(--space-sm); }
+.welcome-prop-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.welcome-prop-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.welcome-divider {
+  text-align: center;
+  padding: var(--space-md);
+  position: relative;
+}
+.welcome-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: var(--space-md); right: var(--space-md);
+  height: 1px;
+  background: var(--border);
+}
+.welcome-divider span {
+  background: var(--bg);
+  padding: 0 var(--space-md);
+  font-size: 12px;
+  color: var(--text-hint);
+  position: relative;
+}
+.welcome-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  padding: 0 var(--space-md) var(--space-lg);
+}
+.welcome-stat {
+  text-align: center;
+}
+.welcome-stat-num {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+.welcome-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.welcome-cta {
+  padding: 0 var(--space-md) var(--space-xl);
+  text-align: center;
+}
+.welcome-disclaimer {
+  padding: var(--space-md);
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-hint);
+  border-top: 1px solid var(--border);
+}
+
+/* ================================================================
+   PAGE 1: DASHBOARD
+   ================================================================ */
+.dashboard-gauge {
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+.gauge-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+.gauge-svg { width: 200px; height: 200px; transform: rotate(-90deg); }
+.gauge-bg { fill: none; stroke: var(--border); stroke-width: 12; }
+.gauge-fill { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s ease, stroke 0.5s; }
+.gauge-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.gauge-score { font-size: 40px; font-weight: 700; line-height: 1; }
+.gauge-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.gauge-level { font-size: 13px; font-weight: 600; margin-top: 2px; }
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+.stat-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.stat-value { font-size: 20px; font-weight: 700; }
+.stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.dashboard-trend { margin-bottom: var(--space-lg); }
+.trend-title { font-size: 14px; font-weight: 600; margin-bottom: var(--space-sm); }
+.trend-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100px;
+  padding: var(--space-sm) 0;
+  gap: 4px;
+}
+.trend-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.trend-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 70px;
+}
+.trend-bar {
+  width: 6px;
+  border-radius: 3px;
+  transition: height 0.5s ease;
+}
+.trend-day-label { font-size: 10px; color: var(--text-hint); }
+.risk-banner {
+  background: #FFF0F0;
+  border: 1px solid #FFD4D4;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.risk-banner-icon { font-size: 20px; }
+.risk-banner-text { font-size: 13px; color: var(--danger); font-weight: 500; }
+
+/* ================================================================
+   PAGE 2: CHECKIN
+   ================================================================ */
+.dimension-group {
+  margin-bottom: var(--space-lg);
+}
+.dimension-label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.dimension-label .dim-icon { font-size: 18px; }
+.rating-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+}
+.rating-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+.rating-label { font-size: 10px; color: var(--text-hint); }
+.radio-group {
+  display: flex;
+  gap: var(--space-sm);
+}
+.radio-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-hint);
+}
+.radio-btn:hover { border-color: var(--primary-light); }
+.radio-btn.selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+  animation: radioBounce 0.3s ease;
+}
+@keyframes radioBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.checkin-note {
+  width: 100%;
+  min-height: 80px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  font-size: 14px;
+  font-family: var(--font-family);
+  resize: vertical;
+  background: var(--surface);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+.checkin-note:focus { outline: none; border-color: var(--primary); }
+.checkin-note::placeholder { color: var(--text-hint); }
+
+/* ================================================================
+   PAGE 3: MEDICATION
+   ================================================================ */
+.med-adherence {
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+.adherence-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-md);
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  position: relative;
+}
+.adherence-label { font-size: 13px; color: var(--text-secondary); }
+.med-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-md);
+}
+.med-name { font-size: 15px; font-weight: 600; }
+.med-dose { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.med-time { font-size: 12px; color: var(--text-hint); margin-top: var(--space-xs); }
+.med-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.med-tip {
+  background: #EBF3FB;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  font-size: 13px;
+  color: var(--primary-dark);
+  line-height: 1.5;
+}
+
+/* ================================================================
+   PAGE 4: RESOURCES
+   ================================================================ */
+.res-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border);
+  position: relative;
+  margin-bottom: var(--space-md);
+}
+.res-tab {
+  flex: 1;
+  padding: var(--space-sm) 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-family);
+  transition: color 0.2s;
+}
+.res-tab.active { color: var(--primary); font-weight: 600; }
+.tab-indicator {
+  position: absolute;
+  bottom: -2px;
+  height: 2px;
+  background: var(--primary);
+  transition: left 0.3s ease, width 0.3s ease;
+  border-radius: 1px;
+}
+.res-filter {
+  margin-bottom: var(--space-md);
+}
+.res-filter select {
+  width: 100%;
+  padding: 10px var(--space-md);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: var(--font-family);
+  background: var(--surface);
+  color: var(--text-primary);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23636E72' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.res-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-sm);
+}
+.res-card-name { font-size: 15px; font-weight: 600; }
+.res-card-info { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.res-card-tags { display: flex; gap: var(--space-xs); margin-top: var(--space-sm); flex-wrap: wrap; }
+.res-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--space-sm);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.hotline-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-sm);
+  border-left: 3px solid var(--primary);
+}
+.hotline-name { font-size: 14px; font-weight: 600; }
+.hotline-num { font-size: 13px; color: var(--primary); margin-top: 2px; }
+.hotline-time { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+.policy-item {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-sm);
+}
+.policy-title { font-size: 14px; font-weight: 600; }
+.policy-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; line-height: 1.5; }
+.policy-highlight { color: var(--accent); font-weight: 700; }
+
+/* ================================================================
+   PAGE 5: CRISIS
+   ================================================================ */
+.crisis-page { padding-bottom: var(--space-xl) !important; }
+.crisis-hero {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md) var(--space-lg);
+}
+.crisis-hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+.crisis-hero-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: var(--space-sm);
+}
+.crisis-actions {
+  padding: 0 var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+.crisis-primary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 16px;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius-lg);
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  box-shadow: 0 4px 16px rgba(74,144,217,0.3);
+  transition: transform 0.2s;
+}
+.crisis-primary-btn:active { transform: scale(0.96); }
+.crisis-secondary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: 14px;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: transform 0.2s;
+}
+.crisis-secondary-btn:active { transform: scale(0.96); }
+.crisis-channels {
+  padding: 0 var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.crisis-channel-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  font-size: 14px;
+}
+.crisis-channel-item a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.breath-section {
+  padding: 0 var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+.breath-card {
+  background: var(--bg-warm);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  text-align: center;
+}
+.breath-title { font-size: 15px; font-weight: 600; margin-bottom: var(--space-md); }
+.breath-circle-wrap {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto var(--space-md);
+  position: relative;
+}
+.breath-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--primary-light);
+  transition: transform 4s ease-in-out, background 1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.breath-circle.inhale { transform: scale(1.3); background: var(--primary); }
+.breath-circle.hold { transform: scale(1.3); background: var(--primary); }
+.breath-circle.exhale { transform: scale(1.0); background: var(--primary-light); }
+.breath-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.breath-btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-xl);
+  border: 1.5px solid var(--primary);
+  background: transparent;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-family);
+}
+.safety-tips {
+  padding: 0 var(--space-md);
+}
+.safety-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+}
+.safety-card h3 { font-size: 14px; font-weight: 600; margin-bottom: var(--space-sm); }
+.safety-item {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: var(--space-xs) 0;
+  padding-left: var(--space-md);
+  position: relative;
+}
+.safety-item::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ================================================================
+   PAGE 6: CBT COURSE
+   ================================================================ */
+.cbt-list { margin-bottom: var(--space-lg); }
+.cbt-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-sm);
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.cbt-card:active { box-shadow: var(--shadow-md); }
+.cbt-card.locked { opacity: 0.5; cursor: not-allowed; }
+.cbt-card-header { display: flex; align-items: center; gap: var(--space-sm); }
+.cbt-card-icon { font-size: 24px; }
+.cbt-card-title { font-size: 15px; font-weight: 600; }
+.cbt-card-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.cbt-progress-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: var(--space-sm);
+  overflow: hidden;
+}
+.cbt-progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.cbt-step-view { display: none; }
+.cbt-step-view.active { display: block; }
+.step-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s;
+}
+.step-dot.active { background: var(--primary); transform: scale(1.3); }
+.step-dot.done { background: var(--success); }
+.step-content {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  min-height: 200px;
+}
+.step-type-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-hint);
+  margin-bottom: var(--space-sm);
+}
+.step-title { font-size: 18px; font-weight: 700; margin-bottom: var(--space-md); }
+.step-body { font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-lg);
+}
+
+/* ================================================================
+   PAGE 7: WRAP PLAN
+   ================================================================ */
+.wrap-panels { margin-bottom: var(--space-lg); }
+.wrap-panel {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-sm);
+  overflow: hidden;
+}
+.wrap-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  cursor: pointer;
+}
+.wrap-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.wrap-panel-arrow {
+  font-size: 12px;
+  color: var(--text-hint);
+  transition: transform 0.3s;
+}
+.wrap-panel.open .wrap-panel-arrow { transform: rotate(180deg); }
+.wrap-panel-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.wrap-panel.open .wrap-panel-body { max-height: 600px; }
+.wrap-panel-content { padding: 0 var(--space-md) var(--space-md); }
+.wrap-hint {
+  font-size: 12px;
+  color: var(--text-hint);
+  font-style: italic;
+  margin-bottom: var(--space-sm);
+}
+.wrap-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.wrap-item:last-child { border-bottom: none; }
+.wrap-item-text { flex: 1; }
+.wrap-item-delete {
+  color: var(--text-hint);
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 12px;
+  border: none;
+  background: none;
+}
+.wrap-add {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  color: var(--primary);
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: var(--font-family);
+}
+.wrap-footer {
+  padding: var(--space-md);
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-hint);
+  line-height: 1.5;
+}
+
+/* ========== CHECKLIST OVERLAY ========== */
+.checklist-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.checklist-overlay.show { display: flex; }
+.checklist-box {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  max-width: 360px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.checklist-box h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.checklist-num {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.checklist-close {
+  margin-top: var(--space-md);
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-family);
+}
+
+/* ========== TOAST ========== */
+.toast {
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--text-primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radius-xl);
+  font-size: 13px;
+  z-index: 300;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ==================== PAGE 0: WELCOME ==================== -->
+  <div class="page active" id="page-welcome">
+    <div class="welcome-hero fade-in">
+      <div class="welcome-brand">申归途</div>
+      <div class="welcome-subtitle">抑郁症复发预防支持工具</div>
+    </div>
+    <div class="welcome-props fade-in fade-in-d1">
+      <div class="welcome-prop">
+        <div class="welcome-prop-icon">📋</div>
+        <div class="welcome-prop-title">每日追踪</div>
+        <div class="welcome-prop-desc">6维度签到</div>
+      </div>
+      <div class="welcome-prop">
+        <div class="welcome-prop-icon">💊</div>
+        <div class="welcome-prop-title">用药提醒</div>
+        <div class="welcome-prop-desc">智能管理</div>
+      </div>
+      <div class="welcome-prop">
+        <div class="welcome-prop-icon">🛡️</div>
+        <div class="welcome-prop-title">危机守护</div>
+        <div class="welcome-prop-desc">一键求助</div>
+      </div>
+    </div>
+    <div class="welcome-divider fade-in fade-in-d2"><span>数据支撑</span></div>
+    <div class="welcome-stats fade-in fade-in-d3">
+      <div class="welcome-stat">
+        <div class="welcome-stat-num">50%</div>
+        <div class="welcome-stat-label">复发率</div>
+      </div>
+      <div class="welcome-stat">
+        <div class="welcome-stat-num">2年</div>
+        <div class="welcome-stat-label">高发期</div>
+      </div>
+      <div class="welcome-stat">
+        <div class="welcome-stat-num">85%</div>
+        <div class="welcome-stat-label">可预防</div>
+      </div>
+    </div>
+    <div class="welcome-cta fade-in fade-in-d4">
+      <button class="btn btn-accent btn-block" onclick="navigateTo('dashboard')">开始使用</button>
+    </div>
+    <div class="welcome-disclaimer fade-in fade-in-d5">
+      本工具仅作为辅助支持，不替代专业医疗建议<br>
+      如需帮助请拨打 <a href="tel:962525" style="color:var(--primary)">心理热线 962525</a>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 1: DASHBOARD ==================== -->
+  <div class="page" id="page-dashboard">
+    <div class="page-header fade-in">
+      <h1>你好 👋</h1>
+      <p>今天感觉怎么样？</p>
+    </div>
+    <div class="page-content">
+      <div class="dashboard-gauge fade-in fade-in-d1">
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 200 200">
+            <circle class="gauge-bg" cx="100" cy="100" r="85"/>
+            <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="85"
+              stroke-dasharray="534" stroke-dashoffset="534" stroke="var(--success)"/>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-score" id="gaugeScore">0</div>
+            <div class="gauge-label">综合评分</div>
+            <div class="gauge-level" id="gaugeLevel" style="color:var(--success)">状态良好</div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-stats fade-in fade-in-d2">
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--success)">7</div>
+          <div class="stat-label">连续签到</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--primary)">85%</div>
+          <div class="stat-label">用药率</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--accent)">3</div>
+          <div class="stat-label">CBT课程</div>
+        </div>
+      </div>
+      <div class="dashboard-trend fade-in fade-in-d3">
+        <div class="trend-title">近7天趋势</div>
+        <div class="trend-chart" id="trendChart"></div>
+      </div>
+      <div class="risk-banner fade-in fade-in-d4" id="riskBanner" style="display:none">
+        <div class="risk-banner-icon">⚠️</div>
+        <div class="risk-banner-text">您的状态评分偏低，建议联系医生或拨打 <a href="tel:962525" style="color:var(--danger);font-weight:700">962525</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 2: CHECKIN ==================== -->
+  <div class="page" id="page-checkin">
+    <div class="page-header fade-in">
+      <h1>每日签到 📋</h1>
+      <p>花1分钟了解自己的状态</p>
+    </div>
+    <div class="page-content" id="checkinForm">
+      <div class="dimension-group fade-in fade-in-d1" data-dim="sleep">
+        <div class="dimension-label"><span class="dim-icon">😴</span> 睡眠质量</div>
+        <div class="rating-row">
+          <div class="radio-group" role="radiogroup" aria-label="睡眠质量评分">
+            <div class="radio-btn" data-val="1" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">1</div>
+            <div class="radio-btn" data-val="2" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">2</div>
+            <div class="radio-btn" data-val="3" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">3</div>
+            <div class="radio-btn" data-val="4" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">4</div>
+            <div class="radio-btn" data-val="5" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">5</div>
+          </div>
+        </div>
+        <div class="rating-labels"><span class="rating-label">很差</span><span class="rating-label">很好</span></div>
+      </div>
+      <div class="dimension-group fade-in fade-in-d2" data-dim="mood">
+        <div class="dimension-label"><span class="dim-icon">😊</span> 情绪状态</div>
+        <div class="rating-row">
+          <div class="radio-group" role="radiogroup" aria-label="情绪状态评分">
+            <div class="radio-btn" data-val="1" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">1</div>
+            <div class="radio-btn" data-val="2" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">2</div>
+            <div class="radio-btn" data-val="3" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">3</div>
+            <div class="radio-btn" data-val="4" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">4</div>
+            <div class="radio-btn" data-val="5" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">5</div>
+          </div>
+        </div>
+        <div class="rating-labels"><span class="rating-label">低落</span><span class="rating-label">愉悦</span></div>
+      </div>
+      <div class="dimension-group fade-in fade-in-d3" data-dim="body">
+        <div class="dimension-label"><span class="dim-icon">🏃</span> 身体活力</div>
+        <div class="rating-row">
+          <div class="radio-group" role="radiogroup" aria-label="身体活力评分">
+            <div class="radio-btn" data-val="1" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">1</div>
+            <div class="radio-btn" data-val="2" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">2</div>
+            <div class="radio-btn" data-val="3" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">3</div>
+            <div class="radio-btn" data-val="4" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">4</div>
+            <div class="radio-btn" data-val="5" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">5</div>
+          </div>
+        </div>
+        <div class="rating-labels"><span class="rating-label">疲惫</span><span class="rating-label">充沛</span></div>
+      </div>
+      <div class="dimension-group fade-in fade-in-d4" data-dim="motivation">
+        <div class="dimension-label"><span class="dim-icon">🎯</span> 动力水平</div>
+        <div class="rating-row">
+          <div class="radio-group" role="radiogroup" aria-label="动力水平评分">
+            <div class="radio-btn" data-val="1" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">1</div>
+            <div class="radio-btn" data-val="2" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">2</div>
+            <div class="radio-btn" data-val="3" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">3</div>
+            <div class="radio-btn" data-val="4" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">4</div>
+            <div class="radio-btn" data-val="5" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">5</div>
+          </div>
+        </div>
+        <div class="rating-labels"><span class="rating-label">无</span><span class="rating-label">强烈</span></div>
+      </div>
+      <div class="dimension-group fade-in fade-in-d5" data-dim="cognition">
+        <div class="dimension-label"><span class="dim-icon">🧠</span> 思维清晰度</div>
+        <div class="rating-row">
+          <div class="radio-group" role="radiogroup" aria-label="思维清晰度评分">
+            <div class="radio-btn" data-val="1" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">1</div>
+            <div class="radio-btn" data-val="2" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">2</div>
+            <div class="radio-btn" data-val="3" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">3</div>
+            <div class="radio-btn" data-val="4" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">4</div>
+            <div class="radio-btn" data-val="5" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">5</div>
+          </div>
+        </div>
+        <div class="rating-labels"><span class="rating-label">模糊</span><span class="rating-label">清晰</span></div>
+      </div>
+      <div class="dimension-group" data-dim="social" style="animation: fadeInUp 0.4s ease both; animation-delay: 0.3s;">
+        <div class="dimension-label"><span class="dim-icon">👥</span> 社交意愿</div>
+        <div class="rating-row">
+          <div class="radio-group" role="radiogroup" aria-label="社交意愿评分">
+            <div class="radio-btn" data-val="1" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">1</div>
+            <div class="radio-btn" data-val="2" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">2</div>
+            <div class="radio-btn" data-val="3" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">3</div>
+            <div class="radio-btn" data-val="4" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">4</div>
+            <div class="radio-btn" data-val="5" onclick="selectRating(this)" role="radio" aria-checked="false" tabindex="0">5</div>
+          </div>
+        </div>
+        <div class="rating-labels"><span class="rating-label">回避</span><span class="rating-label">主动</span></div>
+      </div>
+      <div style="margin-top:var(--space-lg)">
+        <textarea class="checkin-note" placeholder="今天有什么想记录的吗？（选填）"></textarea>
+      </div>
+      <div style="margin-top:var(--space-lg)">
+        <button class="btn btn-primary btn-block" id="checkinSubmit" disabled onclick="submitCheckin()">提交签到</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 3: MEDICATION ==================== -->
+  <div class="page" id="page-medication">
+    <div class="page-header fade-in">
+      <h1>用药管理 💊</h1>
+      <p>坚持用药是康复的重要保障</p>
+    </div>
+    <div class="page-content">
+      <div class="med-adherence fade-in fade-in-d1">
+        <div class="adherence-circle" id="adherenceCircle" style="background:var(--success)">
+          <span id="adherencePct">0%</span>
+        </div>
+        <div class="adherence-label">本月用药依从率</div>
+      </div>
+      <div class="med-card fade-in fade-in-d2">
+        <div class="med-name">草酸艾司西酞普兰</div>
+        <div class="med-dose">10mg · 每日一次</div>
+        <div class="med-time">⏰ 早餐后</div>
+        <div class="med-actions">
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="takeMed(this)">✅ 已服用</button>
+          <button class="btn btn-outline btn-sm" style="flex:1" onclick="skipMed()">跳过</button>
+        </div>
+      </div>
+      <div class="med-card fade-in fade-in-d3">
+        <div class="med-name">喹硫平</div>
+        <div class="med-dose">25mg · 每晚一次</div>
+        <div class="med-time">🌙 睡前</div>
+        <div class="med-actions">
+          <button class="btn btn-primary btn-sm" style="flex:1" onclick="takeMed(this)">✅ 已服用</button>
+          <button class="btn btn-outline btn-sm" style="flex:1" onclick="skipMed()">跳过</button>
+        </div>
+      </div>
+      <div class="med-tip fade-in fade-in-d4">
+        💡 <strong>温馨提示：</strong>即使感觉好转，也请遵医嘱继续服药。突然停药可能导致不适。如有疑问，请咨询您的主治医生。
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 4: RESOURCES ==================== -->
+  <div class="page" id="page-resources">
+    <div class="page-header fade-in">
+      <h1>资源中心 📚</h1>
+      <p>上海本地心理健康资源</p>
+    </div>
+    <div class="page-content">
+      <div class="res-tabs fade-in fade-in-d1" id="resTabs">
+        <button class="res-tab active" onclick="switchResTab(0, this)">🏥 医院</button>
+        <button class="res-tab" onclick="switchResTab(1, this)">📞 热线</button>
+        <button class="res-tab" onclick="switchResTab(2, this)">🏘️ 社区</button>
+        <button class="res-tab" onclick="switchResTab(3, this)">📋 医保</button>
+        <div class="tab-indicator" id="tabIndicator"></div>
+      </div>
+      <!-- Tab 0: Hospitals -->
+      <div class="res-panel active" id="resPanel0">
+        <div class="res-filter fade-in fade-in-d2">
+          <select><option>全部区域</option><option>浦东新区</option><option>徐汇区</option><option>杨浦区</option><option>虹口区</option></select>
+        </div>
+        <div class="res-card fade-in fade-in-d2">
+          <div class="res-card-name">上海市精神卫生中心</div>
+          <div class="res-card-info">三甲 · 宛平南路600号</div>
+          <div class="res-card-tags"><span class="tag tag-primary">抑郁症专科</span><span class="tag tag-accent">门诊</span><span class="tag tag-success">急诊</span></div>
+          <a href="tel:02164387250" class="res-card-link">📞 6438-7250</a>
+        </div>
+        <div class="res-card fade-in fade-in-d3">
+          <div class="res-card-name">长海医院</div>
+          <div class="res-card-info">三甲 · 长海路168号</div>
+          <div class="res-card-tags"><span class="tag tag-primary">心理科</span><span class="tag tag-accent">门诊</span></div>
+          <a href="tel:02131166666" class="res-card-link">📞 3116-6666</a>
+        </div>
+        <div class="res-card fade-in fade-in-d4">
+          <div class="res-card-name">上海市第十人民医院</div>
+          <div class="res-card-info">三甲 · 延安中路965号</div>
+          <div class="res-card-tags"><span class="tag tag-primary">心身科</span><span class="tag tag-accent">门诊</span></div>
+          <a href="tel:02166300588" class="res-card-link">📞 6630-0588</a>
+        </div>
+      </div>
+      <!-- Tab 1: Hotlines -->
+      <div class="res-panel" id="resPanel1" style="display:none">
+        <div class="hotline-card fade-in fade-in-d2" style="border-left-color:var(--danger)">
+          <div class="hotline-name">🔴 上海市心理援助热线</div>
+          <div class="hotline-num"><a href="tel:962525" style="color:var(--danger);font-weight:700;font-size:18px">962525</a></div>
+          <div class="hotline-time">24小时 · 免费</div>
+        </div>
+        <div class="hotline-card fade-in fade-in-d2">
+          <div class="hotline-name">全国心理援助热线</div>
+          <div class="hotline-num"><a href="tel:4001619995">400-161-9995</a></div>
+          <div class="hotline-time">24小时</div>
+        </div>
+        <div class="hotline-card fade-in fade-in-d3">
+          <div class="hotline-name">生命热线</div>
+          <div class="hotline-num"><a href="tel:4008211215">400-821-1215</a></div>
+          <div class="hotline-time">每天 8:00-22:00</div>
+        </div>
+        <div class="hotline-card fade-in fade-in-d3">
+          <div class="hotline-name">希望24热线</div>
+          <div class="hotline-num"><a href="tel:4001619995">400-161-9995</a></div>
+          <div class="hotline-time">24小时</div>
+        </div>
+      </div>
+      <!-- Tab 2: Community -->
+      <div class="res-panel" id="resPanel2" style="display:none">
+        <div class="res-card fade-in fade-in-d2">
+          <div class="res-card-name">浦东新区精神卫生中心</div>
+          <div class="res-card-info">三林路165号</div>
+          <div class="res-card-tags"><span class="tag tag-primary">康复指导</span><span class="tag tag-success">社区随访</span></div>
+        </div>
+        <div class="res-card fade-in fade-in-d3">
+          <div class="res-card-name">徐汇区精神卫生中心</div>
+          <div class="res-card-info">宛平南路600号</div>
+          <div class="res-card-tags"><span class="tag tag-primary">心理咨询</span><span class="tag tag-success">团体治疗</span></div>
+        </div>
+      </div>
+      <!-- Tab 3: Insurance -->
+      <div class="res-panel" id="resPanel3" style="display:none">
+        <div class="policy-item fade-in fade-in-d2">
+          <div class="policy-title">门诊医保报销</div>
+          <div class="policy-desc">精神科门诊纳入医保范围，在职人员报销比例达 <span class="policy-highlight">85%</span></div>
+        </div>
+        <div class="policy-item fade-in fade-in-d3">
+          <div class="policy-title">住院报销比例</div>
+          <div class="policy-desc">精神科住院治疗医保报销比例最高可达 <span class="policy-highlight">92%</span></div>
+        </div>
+        <div class="policy-item fade-in fade-in-d4">
+          <div class="policy-title">社区免费服药</div>
+          <div class="policy-desc">登记在册的严重精神障碍患者可享受社区免费基本药物，每年 <span class="policy-highlight">4次</span> 免费体检</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 5: CRISIS ==================== -->
+  <div class="page crisis-page" id="page-crisis">
+    <div class="crisis-hero fade-in">
+      <div class="crisis-hero-title">你不是一个人 🤝</div>
+      <div class="crisis-hero-sub">无论何时，都有人愿意倾听和帮助你</div>
+    </div>
+    <div class="crisis-actions fade-in fade-in-d1">
+      <a href="tel:962525" class="crisis-primary-btn">📞 立即拨打 962525</a>
+      <a href="tel:4001619995" class="crisis-secondary-btn">📞 全国热线 400-161-9995</a>
+    </div>
+    <div class="crisis-channels fade-in fade-in-d2">
+      <div class="crisis-channel-item">🏥 <a href="tel:120">急救电话 120</a></div>
+      <div class="crisis-channel-item">💬 <a href="tel:4001619995">希望24热线</a></div>
+      <div class="crisis-channel-item">📱 <a href="tel:12345">市民服务热线 12345</a></div>
+      <div class="crisis-channel-item">🏫 <a href="tel:962525">学校心理中心</a></div>
+    </div>
+    <div class="breath-section fade-in fade-in-d3">
+      <div class="breath-card">
+        <div class="breath-title">🌬️ 4-7-8 呼吸放松法</div>
+        <div class="breath-circle-wrap">
+          <div class="breath-circle" id="breathCircle"></div>
+          <div class="breath-text" id="breathText">开始</div>
+        </div>
+        <button class="breath-btn" id="breathBtn" onclick="toggleBreathing()">开始练习</button>
+      </div>
+    </div>
+    <div class="safety-tips fade-in fade-in-d4">
+      <div class="safety-card">
+        <h3>🛡️ 安全小贴士</h3>
+        <div class="safety-item">远离危险物品和环境</div>
+        <div class="safety-item">联系信任的人，告诉他们你的感受</div>
+        <div class="safety-item">去一个让你感到安全的地方</div>
+        <div class="safety-item">记住：这种感觉会过去的</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 6: CBT COURSE ==================== -->
+  <div class="page" id="page-cbt">
+    <div class="page-header fade-in">
+      <h1>CBT课程 📖</h1>
+      <p>认知行为疗法自助课程</p>
+    </div>
+    <div class="page-content">
+      <div class="cbt-list" id="cbtList">
+        <div class="cbt-card fade-in fade-in-d1" onclick="openCourse(0)">
+          <div class="cbt-card-header">
+            <div class="cbt-card-icon">🧠</div>
+            <div class="cbt-card-title">认识你的思维模式</div>
+          </div>
+          <div class="cbt-card-desc">学习识别自动化消极思维</div>
+          <div class="cbt-progress-bar"><div class="cbt-progress-fill" style="width:60%"></div></div>
+        </div>
+        <div class="cbt-card fade-in fade-in-d2" onclick="openCourse(1)">
+          <div class="cbt-card-header">
+            <div class="cbt-card-icon">🔄</div>
+            <div class="cbt-card-title">重塑认知框架</div>
+          </div>
+          <div class="cbt-card-desc">用更平衡的方式看待问题</div>
+          <div class="cbt-progress-bar"><div class="cbt-progress-fill" style="width:20%"></div></div>
+        </div>
+        <div class="cbt-card locked fade-in fade-in-d3">
+          <div class="cbt-card-header">
+            <div class="cbt-card-icon">🔒</div>
+            <div class="cbt-card-title">行为激活策略</div>
+          </div>
+          <div class="cbt-card-desc">完成前两课解锁</div>
+          <div class="cbt-progress-bar"><div class="cbt-progress-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="cbt-step-view" id="cbtStepView">
+        <div style="margin-bottom:var(--space-md)">
+          <button class="btn btn-outline btn-sm" onclick="closeCourse()">← 返回课程列表</button>
+        </div>
+        <div class="step-dots" id="stepDots"></div>
+        <div class="step-content" id="stepContent"></div>
+        <div class="step-nav">
+          <button class="btn btn-outline btn-sm" id="prevStepBtn" onclick="prevStep()">← 上一步</button>
+          <button class="btn btn-primary btn-sm" id="nextStepBtn" onclick="nextStep()">下一步 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 7: WRAP PLAN ==================== -->
+  <div class="page" id="page-wrap">
+    <div class="page-header fade-in">
+      <h1>WRAP计划 📝</h1>
+      <p>个人康复行动计划</p>
+    </div>
+    <div class="page-content">
+      <div class="wrap-panels" id="wrapPanels">
+        <div class="wrap-panel fade-in fade-in-d1">
+          <div class="wrap-panel-header" onclick="togglePanel(this.parentElement)">
+            <div class="wrap-panel-title">☀️ 每日维护清单</div>
+            <div class="wrap-panel-arrow">▼</div>
+          </div>
+          <div class="wrap-panel-body">
+            <div class="wrap-panel-content">
+              <div class="wrap-hint">每天坚持的小事，保持身心平衡</div>
+              <div class="wrap-item"><span class="wrap-item-text">每天按时服药</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <div class="wrap-item"><span class="wrap-item-text">30分钟散步或运动</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <div class="wrap-item"><span class="wrap-item-text">写感恩日记</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <button class="wrap-add" onclick="addItem(this)">+ 添加条目</button>
+            </div>
+          </div>
+        </div>
+        <div class="wrap-panel fade-in fade-in-d2">
+          <div class="wrap-panel-header" onclick="togglePanel(this.parentElement)">
+            <div class="wrap-panel-title">🚩 预警信号识别</div>
+            <div class="wrap-panel-arrow">▼</div>
+          </div>
+          <div class="wrap-panel-body">
+            <div class="wrap-panel-content">
+              <div class="wrap-hint">了解自己的预警信号，及早应对</div>
+              <div class="wrap-item"><span class="wrap-item-text">连续失眠超过3天</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <div class="wrap-item"><span class="wrap-item-text">对以前喜欢的事失去兴趣</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <button class="wrap-add" onclick="addItem(this)">+ 添加条目</button>
+            </div>
+          </div>
+        </div>
+        <div class="wrap-panel fade-in fade-in-d3">
+          <div class="wrap-panel-header" onclick="togglePanel(this.parentElement)">
+            <div class="wrap-panel-title">🧰 应对策略工具箱</div>
+            <div class="wrap-panel-arrow">▼</div>
+          </div>
+          <div class="wrap-panel-body">
+            <div class="wrap-panel-content">
+              <div class="wrap-hint">当你感到不适时，可以尝试这些方法</div>
+              <div class="wrap-item"><span class="wrap-item-text">做4-7-8呼吸练习</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <div class="wrap-item"><span class="wrap-item-text">联系我的支持伙伴</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <button class="wrap-add" onclick="addItem(this)">+ 添加条目</button>
+            </div>
+          </div>
+        </div>
+        <div class="wrap-panel fade-in fade-in-d4">
+          <div class="wrap-panel-header" onclick="togglePanel(this.parentElement)">
+            <div class="wrap-panel-title">🆘 危机计划</div>
+            <div class="wrap-panel-arrow">▼</div>
+          </div>
+          <div class="wrap-panel-body">
+            <div class="wrap-panel-content">
+              <div class="wrap-hint">当情况严重时的紧急应对方案</div>
+              <div class="wrap-item"><span class="wrap-item-text">拨打962525心理热线</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <div class="wrap-item"><span class="wrap-item-text">联系主治医生：王医生</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <button class="wrap-add" onclick="addItem(this)">+ 添加条目</button>
+            </div>
+          </div>
+        </div>
+        <div class="wrap-panel fade-in fade-in-d5">
+          <div class="wrap-panel-header" onclick="togglePanel(this.parentElement)">
+            <div class="wrap-panel-title">🌱 康复后自我关怀</div>
+            <div class="wrap-panel-arrow">▼</div>
+          </div>
+          <div class="wrap-panel-body">
+            <div class="wrap-panel-content">
+              <div class="wrap-hint">康复后继续保持的好习惯</div>
+              <div class="wrap-item"><span class="wrap-item-text">定期复诊，不自行减药</span><button class="wrap-item-delete" onclick="removeItem(this)">✕</button></div>
+              <button class="wrap-add" onclick="addItem(this)">+ 添加条目</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wrap-footer">
+        WRAP（Wellness Recovery Action Plan）是由 Mary Ellen Copeland 博士开发的<br>个人康复行动计划，已被全球广泛用于心理健康自我管理。
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== BOTTOM NAV ==================== -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" onclick="navigateTo('dashboard')" data-page="dashboard" aria-label="首页">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">首页</span>
+    </button>
+    <button class="nav-item" onclick="navigateTo('checkin')" data-page="checkin" aria-label="签到">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">签到</span>
+    </button>
+    <button class="nav-item" onclick="navigateTo('resources')" data-page="resources" aria-label="资源">
+      <span class="nav-icon">📚</span>
+      <span class="nav-label">资源</span>
+    </button>
+    <button class="nav-item" onclick="navigateTo('crisis')" data-page="crisis" aria-label="危机">
+      <span class="nav-icon">🆘</span>
+      <span class="nav-label">危机</span>
+    </button>
+    <button class="nav-item" onclick="navigateTo('cbt')" data-page="cbt" aria-label="课程">
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">课程</span>
+    </button>
+  </nav>
+
+  <!-- ==================== CRISIS BUTTON ==================== -->
+  <button class="crisis-btn" id="crisisBtn" onclick="navigateTo('crisis')" aria-label="紧急求助">🆘</button>
+
+  <!-- ==================== CHECKLIST OVERLAY ==================== -->
+  <div class="checklist-overlay" id="checklistOverlay">
+    <div class="checklist-box">
+      <h2>✅ 轮次9 · 整体走查确认清单</h2>
+      <div class="checklist-item"><span class="checklist-num">1</span> 全局设计一致性：颜色、字体、间距、圆角、阴影是否统一？</div>
+      <div class="checklist-item"><span class="checklist-num">2</span> BottomNav 导航：各页面切换是否流畅，active 状态是否正确？</div>
+      <div class="checklist-item"><span class="checklist-num">3</span> CrisisButton 浮动按钮：除危机页外是否始终可见，脉冲动画是否正常？</div>
+      <div class="checklist-item"><span class="checklist-num">4</span> 页面转场动画：fadeInUp 是否自然，延迟层级是否合理？</div>
+      <div class="checklist-item"><span class="checklist-num">5</span> 各页面内容完整性：欢迎页、仪表盘、签到、用药、资源、危机、CBT、WRAP</div>
+      <div class="checklist-item"><span class="checklist-num">6</span> 交互功能：评分选择、用药打卡、Tab切换、手风琴、呼吸练习是否正常？</div>
+      <div class="checklist-item"><span class="checklist-num">7</span> 危机页特殊处理：无浮动CrisisButton、大号拨打按钮、呼吸练习</div>
+      <div class="checklist-item"><span class="checklist-num">8</span> 无障碍：ARIA标签、键盘可访问、prefers-reduced-motion</div>
+      <div class="checklist-item"><span class="checklist-num">9</span> 整体风格：是否体现"温暖治愈系"，专业、优雅、精简？</div>
+      <div class="checklist-item"><span class="checklist-num">10</span> 480px 移动端适配：触控区域≥44px，布局是否合理？</div>
+      <button class="checklist-close" onclick="closeChecklist()">确认通过</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== NAVIGATION ==========
+const pages = ['welcome','dashboard','checkin','medication','resources','crisis','cbt','wrap'];
+const navPages = ['dashboard','checkin','resources','crisis','cbt'];
+const crisisPages = ['crisis'];
+
+function navigateTo(pageId) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+
+  // Update nav active state
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  // Crisis button visibility
+  const crisisBtn = document.getElementById('crisisBtn');
+  crisisBtn.style.display = crisisPages.includes(pageId) ? 'none' : 'flex';
+
+  // Init page-specific features
+  if (pageId === 'dashboard') initDashboard();
+  if (pageId === 'medication') initMedication();
+  if (pageId === 'resources') initResTabIndicator();
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+}
+
+// ========== DASHBOARD ==========
+function initDashboard() {
+  const score = 72;
+  const circumference = 2 * Math.PI * 85; // ~534
+  const offset = circumference * (1 - score / 100);
+  const fill = document.getElementById('gaugeFill');
+  const scoreEl = document.getElementById('gaugeScore');
+  const levelEl = document.getElementById('gaugeLevel');
+  const banner = document.getElementById('riskBanner');
+
+  // Animate
+  setTimeout(() => {
+    fill.style.strokeDashoffset = offset;
+    fill.style.stroke = 'var(--success)';
+    levelEl.style.color = 'var(--success)';
+    levelEl.textContent = '状态良好';
+    banner.style.display = 'none';
+  }, 100);
+
+  // Animate score number
+  let current = 0;
+  const interval = setInterval(() => {
+    current++;
+    scoreEl.textContent = current;
+    if (current >= score) clearInterval(interval);
+  }, 15);
+
+  // Trend chart
+  renderTrend();
+}
+
+function renderTrend() {
+  const chart = document.getElementById('trendChart');
+  if (chart.children.length > 0) return;
+  const days = ['一','二','三','四','五','六','日'];
+  const data = [
+    [3,4,3,4,5,4,3],
+    [4,3,4,5,4,5,4],
+    [3,3,4,3,4,4,5],
+    [2,3,2,3,3,4,3],
+    [4,4,5,4,5,5,4],
+    [5,4,4,5,4,5,5]
+  ];
+  const colors = ['#B2BEC3','#6BAF7A','#4A90D9','#E8C95A','#E8985E','#D46B6B'];
+  days.forEach((day, i) => {
+    const dayEl = document.createElement('div');
+    dayEl.className = 'trend-day';
+    const barsEl = document.createElement('div');
+    barsEl.className = 'trend-bars';
+    data.forEach((dim, j) => {
+      const bar = document.createElement('div');
+      bar.className = 'trend-bar';
+      bar.style.height = (dim[i] * 12) + 'px';
+      bar.style.background = colors[j];
+      bar.style.opacity = '0.7';
+      barsEl.appendChild(bar);
+    });
+    const label = document.createElement('div');
+    label.className = 'trend-day-label';
+    label.textContent = day;
+    dayEl.appendChild(barsEl);
+    dayEl.appendChild(label);
+    chart.appendChild(dayEl);
+  });
+}
+
+// ========== CHECKIN ==========
+const ratings = {};
+function selectRating(btn) {
+  const group = btn.closest('.dimension-group');
+  const dim = group.dataset.dim;
+  const val = btn.dataset.val;
+  ratings[dim] = val;
+  group.querySelectorAll('.radio-btn').forEach(b => {
+    b.classList.remove('selected');
+    b.setAttribute('aria-checked', 'false');
+  });
+  btn.classList.add('selected');
+  btn.setAttribute('aria-checked', 'true');
+  checkCheckinReady();
+}
+function checkCheckinReady() {
+  const dims = document.querySelectorAll('.dimension-group');
+  const allRated = dims.length === Object.keys(ratings).length;
+  const btn = document.getElementById('checkinSubmit');
+  btn.disabled = !allRated;
+  if (allRated) btn.style.animation = 'crisisPulse 2s infinite';
+  else btn.style.animation = 'none';
+}
+function submitCheckin() {
+  showToast('✅ 签到成功！继续保持 💪');
+  // Reset
+  document.querySelectorAll('.radio-btn.selected').forEach(b => {
+    b.classList.remove('selected');
+    b.setAttribute('aria-checked', 'false');
+  });
+  Object.keys(ratings).forEach(k => delete ratings[k]);
+  document.getElementById('checkinSubmit').disabled = true;
+  document.getElementById('checkinSubmit').style.animation = 'none';
+}
+
+// ========== MEDICATION ==========
+function initMedication() {
+  const pctEl = document.getElementById('adherencePct');
+  let current = 0;
+  const target = 85;
+  const interval = setInterval(() => {
+    current++;
+    pctEl.textContent = current + '%';
+    if (current >= target) clearInterval(interval);
+  }, 20);
+}
+function takeMed(btn) {
+  btn.textContent = '✅ 已服用';
+  btn.style.background = 'var(--success)';
+  btn.disabled = true;
+  showToast('🎉 太棒了！坚持就是胜利');
+}
+function skipMed() {
+  showToast('😊 没关系，明天继续加油');
+}
+
+// ========== RESOURCES ==========
+function initResTabIndicator() {
+  const activeTab = document.querySelector('.res-tab.active');
+  if (activeTab) updateTabIndicator(activeTab);
+}
+function switchResTab(index, tab) {
+  document.querySelectorAll('.res-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('.res-panel').forEach((p, i) => {
+    p.style.display = i === index ? 'block' : 'none';
+  });
+  updateTabIndicator(tab);
+}
+function updateTabIndicator(tab) {
+  const indicator = document.getElementById('tabIndicator');
+  const parent = document.getElementById('resTabs');
+  const parentRect = parent.getBoundingClientRect();
+  const tabRect = tab.getBoundingClientRect();
+  indicator.style.left = (tabRect.left - parentRect.left) + 'px';
+  indicator.style.width = tabRect.width + 'px';
+}
+
+// ========== BREATHING ==========
+let breathingActive = false;
+let breathTimeout = null;
+function toggleBreathing() {
+  const btn = document.getElementById('breathBtn');
+  if (breathingActive) {
+    breathingActive = false;
+    clearTimeout(breathTimeout);
+    btn.textContent = '开始练习';
+    document.getElementById('breathCircle').className = 'breath-circle';
+    document.getElementById('breathText').textContent = '开始';
+    return;
+  }
+  breathingActive = true;
+  btn.textContent = '停止练习';
+  breathCycle();
+}
+function breathCycle() {
+  if (!breathingActive) return;
+  const circle = document.getElementById('breathCircle');
+  const text = document.getElementById('breathText');
+  // Inhale
+  circle.className = 'breath-circle inhale';
+  text.textContent = '吸气...';
+  let count = 4;
+  text.textContent = '吸气 ' + count;
+  breathTimeout = setTimeout(() => {
+    if (!breathingActive) return;
+    const inhaleInterval = setInterval(() => {
+      count--;
+      if (count > 0) text.textContent = '吸气 ' + count;
+      else clearInterval(inhaleInterval);
+    }, 1000);
+    breathTimeout = setTimeout(() => {
+      if (!breathingActive) return;
+      // Hold
+      circle.className = 'breath-circle hold';
+      count = 7;
+      text.textContent = '屏息 ' + count;
+      const holdInterval = setInterval(() => {
+        count--;
+        if (count > 0) text.textContent = '屏息 ' + count;
+        else clearInterval(holdInterval);
+      }, 1000);
+      breathTimeout = setTimeout(() => {
+        if (!breathingActive) return;
+        // Exhale
+        circle.className = 'breath-circle exhale';
+        count = 8;
+        text.textContent = '呼气 ' + count;
+        const exhaleInterval = setInterval(() => {
+          count--;
+          if (count > 0) text.textContent = '呼气 ' + count;
+          else clearInterval(exhaleInterval);
+        }, 1000);
+        breathTimeout = setTimeout(() => {
+          breathCycle();
+        }, 8000);
+      }, 7000);
+    }, 4000);
+  }, 0);
+}
+
+// ========== CBT COURSE ==========
+const courses = [
+  {
+    title: '认识你的思维模式',
+    steps: [
+      { type: '内容', title: '什么是自动化思维？', body: '自动化思维是在特定情境下自动出现的、不经深思熟虑的想法。它们往往带有消极倾向，如"我什么都做不好"、"没有人会在乎我"。\n\n这些想法看似真实，但实际上往往是被扭曲的。' },
+      { type: '练习', title: '捕捉你的想法', body: '回忆最近一次让你感到低落的情境，试着写下当时脑海中闪过的想法。\n\n💡 提示：注意那些包含"总是""从不""应该"等绝对化词语的想法。' },
+      { type: '反思', title: '识别思维陷阱', body: '常见的思维陷阱包括：\n• 非黑即白思维\n• 过度概括\n• 灾难化\n• 读心术\n• 情绪推理\n\n你能识别出自己常用的思维陷阱吗？' },
+      { type: '内容', title: '思维记录表', body: '思维记录表是CBT的核心工具之一。它帮助你：\n1️⃣ 记录触发情境\n2️⃣ 识别自动化思维\n3️⃣ 评估情绪强度\n4️⃣ 寻找替代想法\n5️⃣ 重新评估情绪' },
+      { type: '练习', title: '完成你的第一张思维记录', body: '使用思维记录表，记录今天的一个情境。\n\n记住：这不是评判自己，而是了解自己的思维模式。每个人都会有消极想法，关键是我们如何应对它们。' }
+    ]
+  },
+  {
+    title: '重塑认知框架',
+    steps: [
+      { type: '内容', title: '认知重构简介', body: '认知重构是CBT中最核心的技术。它不是"积极思考"或"自我欺骗"，而是用更平衡、更现实的方式来看待问题。' },
+      { type: '练习', title: '寻找证据', body: '当你有一个消极想法时，问自己：\n• 支持这个想法的证据是什么？\n• 反对这个想法的证据是什么？\n• 有没有其他可能的解释？' },
+      { type: '反思', title: '生成替代想法', body: '基于你找到的证据，尝试生成一个更平衡的想法。\n\n例如：\n❌ "我什么都做不好"\n✅ "虽然这件事没做好，但我之前也成功完成过其他事情"' },
+      { type: '练习', title: '每日练习', body: '从今天开始，每天至少记录一个消极想法，并尝试用认知重构技术来挑战它。\n\n坚持练习，你会发现自己看待事物的方式在慢慢改变。🌱' }
+    ]
+  }
+];
+let currentCourse = -1;
+let currentStep = 0;
+function openCourse(idx) {
+  currentCourse = idx;
+  currentStep = 0;
+  document.getElementById('cbtList').style.display = 'none';
+  const view = document.getElementById('cbtStepView');
+  view.classList.add('active');
+  renderStep();
+}
+function closeCourse() {
+  currentCourse = -1;
+  document.getElementById('cbtList').style.display = 'block';
+  document.getElementById('cbtStepView').classList.remove('active');
+}
+function renderStep() {
+  const course = courses[currentCourse];
+  const step = course.steps[currentStep];
+  // Dots
+  const dotsEl = document.getElementById('stepDots');
+  dotsEl.innerHTML = '';
+  course.steps.forEach((s, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'step-dot' + (i === currentStep ? ' active' : '') + (i < currentStep ? ' done' : '');
+    dotsEl.appendChild(dot);
+  });
+  // Content
+  const contentEl = document.getElementById('stepContent');
+  contentEl.innerHTML = `
+    <div class="step-type-label">${step.type}</div>
+    <div class="step-title">${step.title}</div>
+    <div class="step-body">${step.body.replace(/\n/g, '<br>')}</div>
+  `;
+  // Nav buttons
+  document.getElementById('prevStepBtn').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('nextStepBtn');
+  if (currentStep === course.steps.length - 1) {
+    nextBtn.textContent = '✅ 完成课程';
+  } else {
+    nextBtn.textContent = '下一步 →';
+  }
+}
+function nextStep() {
+  const course = courses[currentCourse];
+  if (currentStep < course.steps.length - 1) {
+    currentStep++;
+    renderStep();
+  } else {
+    showToast('🎉 恭喜完成课程！');
+    closeCourse();
+  }
+}
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    renderStep();
+  }
+}
+
+// ========== WRAP ==========
+function togglePanel(panel) {
+  panel.classList.toggle('open');
+}
+function removeItem(btn) {
+  const item = btn.closest('.wrap-item');
+  item.style.opacity = '0';
+  item.style.transform = 'translateX(20px)';
+  item.style.transition = 'all 0.3s';
+  setTimeout(() => item.remove(), 300);
+}
+function addItem(btn) {
+  const content = btn.closest('.wrap-panel-content');
+  const item = document.createElement('div');
+  item.className = 'wrap-item';
+  item.style.animation = 'fadeInUp 0.3s ease';
+  item.innerHTML = `
+    <span class="wrap-item-text" contenteditable="true" style="outline:none;border-bottom:1px dashed var(--primary);min-width:100px;">点击编辑...</span>
+    <button class="wrap-item-delete" onclick="removeItem(this)">✕</button>
+  `;
+  content.insertBefore(item, btn);
+  item.querySelector('.wrap-item-text').focus();
+  // Select all text
+  const range = document.createRange();
+  range.selectNodeContents(item.querySelector('.wrap-item-text'));
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ========== TOAST ==========
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ========== CHECKLIST ==========
+function closeChecklist() {
+  document.getElementById('checklistOverlay').classList.remove('show');
+  showToast('✅ 全部9轮确认通过！可以进入开发阶段');
+}
+
+// ========== INIT ==========
+window.addEventListener('load', () => {
+  // Show checklist on load
+  setTimeout(() => {
+    document.getElementById('checklistOverlay').classList.add('show');
+  }, 500);
+});
+
+// Navigate to welcome first, then dashboard on CTA
+// Default page is welcome
+</script>
+</body>
+</html>
