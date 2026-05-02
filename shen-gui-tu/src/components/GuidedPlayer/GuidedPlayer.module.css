@@ -1,0 +1,222 @@
+.player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) 0;
+  min-height: 280px;
+}
+
+/* ── Animation area ── */
+.animationArea {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 140px;
+  margin-bottom: var(--space-md);
+}
+
+/* Breathing circle */
+.breathContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+.breathCircle {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: var(--primary-light, #d6e8f7);
+  transition: transform 4s ease-in-out, background 2s;
+}
+.breathActive {
+  transform: scale(1.3);
+  background: var(--primary, #4A90D9);
+}
+.breathLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Body scan */
+.bodyScanContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 0 var(--space-md);
+}
+.bodyOutline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+.bodyPart {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: var(--border, #e0e0e0);
+  color: var(--text-hint);
+  transition: all 0.5s ease;
+}
+.bodyPartActive {
+  background: var(--primary, #4A90D9);
+  color: white;
+  font-weight: 600;
+}
+
+/* Meditation circle */
+.meditationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+.meditCircle {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: var(--primary-light, #d6e8f7);
+}
+.meditPulse {
+  animation: medPulse 3s ease-in-out infinite;
+}
+@keyframes medPulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+.meditLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Progress ── */
+.progressTrack {
+  width: 100%;
+  height: 3px;
+  background: var(--border, #e0e0e0);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+}
+.progressFill {
+  height: 100%;
+  background: var(--primary, #4A90D9);
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+/* ── Segment text ── */
+.segmentText {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  padding: 0 var(--space-sm);
+  min-height: 40px;
+  margin-bottom: var(--space-md);
+}
+
+/* ── Segment dots ── */
+.segmentDots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: var(--space-sm);
+}
+.segDot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--border, #e0e0e0);
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: all 0.3s;
+}
+.segDot:hover {
+  transform: scale(1.6);
+  background: var(--primary, #4A90D9);
+  opacity: 0.8;
+}
+.segDotActive {
+  background: var(--primary, #4A90D9);
+  transform: scale(1.4);
+}
+.segDotDone {
+  background: var(--success, #5CB85C);
+}
+
+/* ── Timer ── */
+.timerRow {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 12px;
+  color: var(--text-hint);
+  margin-bottom: var(--space-md);
+  padding: 0 var(--space-sm);
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+.playBtn {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  background: var(--primary, #4A90D9);
+  color: white;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 40px;
+  cursor: pointer;
+}
+.playBtn:active { opacity: 0.8; }
+.pauseBtn {
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--primary, #4A90D9);
+  border: 1.5px solid var(--primary, #4A90D9);
+  font-size: 14px;
+  font-weight: 600;
+  min-height: 40px;
+  cursor: pointer;
+}
+.stopBtn {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-hint);
+  border: 1px solid var(--border, #e0e0e0);
+  font-size: 13px;
+  min-height: 40px;
+  cursor: pointer;
+}
+.skipBtn {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--primary, #4A90D9);
+  border: 1.5px solid var(--primary, #4A90D9);
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 40px;
+  cursor: pointer;
+}
+
+/* ── Notice ── */
+.notice {
+  font-size: 12px;
+  color: var(--accent, #E8985E);
+  text-align: center;
+  margin-top: var(--space-sm);
+  padding: 0 var(--space-sm);
+}

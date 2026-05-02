@@ -8,6 +8,30 @@
   min-height: 36px;
 }
 .content { padding: 0 var(--space-md); }
+
+/* ── 层级分组 ── */
+.tierGroup { margin-bottom: var(--space-lg); }
+.tierHeader {
+  display: flex; align-items: center; gap: var(--space-sm);
+  margin-bottom: var(--space-sm); padding: 0 2px;
+  cursor: pointer; user-select: none;
+}
+.tierIndicator {
+  width: 4px; height: 32px; border-radius: 2px; flex-shrink: 0;
+}
+.tierTitle { font-size: 16px; font-weight: 700; }
+.tierDesc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.tierCount {
+  margin-left: auto; font-size: 12px; color: var(--text-hint);
+  font-weight: 600; flex-shrink: 0;
+}
+.tierArrow {
+  font-size: 18px; color: var(--text-secondary);
+  transition: transform 0.2s; flex-shrink: 0; margin-left: 4px;
+}
+.tierArrowCollapsed { transform: rotate(-90deg); }
+
+/* ── 课程卡片 ── */
 .courseCard {
   background: var(--surface); border-radius: var(--radius-md);
   padding: var(--space-md); box-shadow: var(--shadow-sm); margin-bottom: var(--space-sm);
@@ -16,14 +40,22 @@
 .courseCard:active { box-shadow: var(--shadow-md); }
 .locked { opacity: 0.5; cursor: not-allowed; }
 .cardHeader { display: flex; align-items: center; gap: var(--space-sm); }
-.cardIcon { font-size: 24px; }
-.cardTitle { font-size: 15px; font-weight: 600; }
+.cardIcon { font-size: 24px; flex-shrink: 0; }
+.cardInfo { display: flex; align-items: center; gap: var(--space-sm); flex: 1; min-width: 0; }
+.cardTitle { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cardTag {
+  font-size: 10px; font-weight: 700; padding: 2px 6px;
+  border-radius: 4px; flex-shrink: 0; letter-spacing: 0.5px;
+}
 .cardDesc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.completedBadge { font-size: 12px; color: var(--success); margin-top: 4px; font-weight: 500; }
 .progressBar {
   height: 4px; background: var(--border); border-radius: 2px;
   margin-top: var(--space-sm); overflow: hidden;
 }
-.progressFill { height: 100%; background: var(--primary); border-radius: 2px; transition: width 0.5s ease; }
+.progressFill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+/* ── 步骤导航 ── */
 .stepDots {
   display: flex; justify-content: center; gap: var(--space-sm);
   margin: var(--space-md) 0;
@@ -60,21 +92,3 @@
 .nextBtn {
   background: var(--primary); color: white; border: none;
 }
-.wrapEntry {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md);
-  background: var(--bg-warm);
-  border-radius: var(--radius-md);
-  margin-top: var(--space-lg);
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  box-shadow: var(--shadow-sm);
-}
-.wrapEntry:active { transform: scale(0.98); box-shadow: var(--shadow-md); }
-.wrapEntryIcon { font-size: 28px; flex-shrink: 0; }
-.wrapEntryText { flex: 1; }
-.wrapEntryTitle { font-size: 15px; font-weight: 600; }
-.wrapEntryDesc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-.wrapEntryArrow { font-size: 16px; color: var(--text-hint); }

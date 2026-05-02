@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RiskGauge from '../../components/RiskGauge/RiskGauge'
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import useRiskLevel from '../../hooks/useRiskLevel'
 import useCheckIn from '../../hooks/useCheckIn'
 import useMedication from '../../hooks/useMedication'
@@ -17,6 +18,15 @@ export default function Dashboard() {
   const { getAdherenceRate } = useMedication()
   const adherence = getAdherenceRate(30)
   const recent = getRecentCheckIns(7)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
+
+  const handleReset = useCallback(() => {
+    setShowResetConfirm(false)
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('sgt-'))
+      .forEach(k => localStorage.removeItem(k))
+    window.location.reload()
+  }, [])
 
   const streak = useMemo(() => {
     let count = 0
@@ -104,6 +114,21 @@ export default function Dashboard() {
           </div>
           <div className={styles.wrapEntryArrow}>→</div>
         </div>
+        {import.meta.env.DEV && (
+          <button
+            className={styles.resetBtn}
+            onClick={() => setShowResetConfirm(true)}
+          >
+            🗑️ 重置所有数据（仅开发环境）
+          </button>
+        )}
+        <ConfirmDialog
+          open={showResetConfirm}
+          title="重置所有数据"
+          message="确定要清除所有用户数据吗？包括签到记录、用药记录、副作用追踪等，此操作不可撤销。"
+          onConfirm={handleReset}
+          onCancel={() => setShowResetConfirm(false)}
+        />
       </div>
     </div>
   )

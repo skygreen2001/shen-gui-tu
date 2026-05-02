@@ -4,6 +4,7 @@ import { hotlines } from '../../data/hotlines'
 import { communityResources } from '../../data/community'
 import { insurancePolicies } from '../../data/insurance'
 import FamilyTab from './FamilyTab'
+import RebuildTab from './RebuildTab'
 import styles from './Resources.module.css'
 
 const tabs = [
@@ -12,6 +13,7 @@ const tabs = [
   { key: 'community', label: '🏘️ 社区' },
   { key: 'insurance', label: '📋 医保' },
   { key: 'family', label: '👨‍👩‍👧 家属' },
+  { key: 'rebuild', label: '🌱 重建' },
 ]
 
 export default function Resources() {
@@ -112,6 +114,7 @@ export default function Resources() {
         )}
 
         {activeTab === 4 && <FamilyTab />}
+        {activeTab === 5 && <RebuildTab />}
       </div>
     </div>
   )

@@ -104,3 +104,11 @@
 .wrapEntryTitle { font-size: 15px; font-weight: 600; }
 .wrapEntryDesc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 .wrapEntryArrow { font-size: 16px; color: var(--text-hint); }
+.resetBtn {
+  display: block; width: 100%; padding: 12px;
+  background: transparent; color: var(--text-hint);
+  border: 1px dashed var(--border); border-radius: var(--radius-md);
+  font-size: 12px; margin-top: var(--space-2xl);
+  transition: all 0.2s; min-height: 40px;
+}
+.resetBtn:active { transform: scale(0.96); }

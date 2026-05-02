@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import useMedication from '../../hooks/useMedication'
+import { getMissedDoseAdvice } from '../../data/medicationKnowledge'
 import Toast from '../../components/Toast/Toast'
 import MedKnowledge from './MedKnowledge'
 import SideEffectTracker from './SideEffectTracker'
@@ -16,7 +17,7 @@ const encouragements = ['🎉 太棒了！坚持就是胜利', '💪 今天又�
 const warmMessages = ['😊 没关系，记得和医生聊聊', '💛 偶尔忘记很正常，明天继续', '🤗 身体感受很重要，和医生沟通一下']
 
 export default function Medication() {
-  const { medications, addMedication, removeMedication, recordDose, getAdherenceRate, getMedStatus } = useMedication()
+  const { medications, addMedication, removeMedication, recordDose, getAdherenceRate, getMedStatus, getStreak, getOnsetPhase } = useMedication()
   const [toast, setToast] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [newName, setNewName] = useState('')
@@ -31,6 +32,8 @@ export default function Medication() {
   }, [])
 
   const adherence = getAdherenceRate(30)
+  const streak = getStreak()
+  const onsetPhase = getOnsetPhase()
   const [animatedPct, setAnimatedPct] = useState(0)
   useEffect(() => {
     let current = 0
@@ -49,8 +52,10 @@ export default function Medication() {
 
   const handleSkip = useCallback((medId) => {
     recordDose(medId, 'skipped')
-    setToast(warmMessages[Math.floor(Math.random() * warmMessages.length)])
-  }, [recordDose])
+    const med = medications.find(m => m.id === medId)
+    const advice = med ? getMissedDoseAdvice(med.name) : ''
+    setToast(advice || warmMessages[Math.floor(Math.random() * warmMessages.length)])
+  }, [recordDose, medications])
 
   const handleAdd = useCallback(() => {
     if (newName.trim() && newDose.trim()) {
@@ -93,6 +98,22 @@ export default function Medication() {
           </div>
           <div className={styles.adherenceLabel}>本月用药依从率</div>
         </div>
+        {streak > 0 && (
+          <div className={styles.streakCard}>
+            <span className={styles.streakIcon}>🔥</span>
+            <span className={styles.streakText}>连续服药 <strong>{streak}</strong> 天</span>
+          </div>
+        )}
+        {onsetPhase.active && (
+          <div className={styles.onsetCard}>
+            <div className={styles.onsetTitle}>🌱 药物起效期引导</div>
+            <div className={styles.onsetBody}>
+              你开始服用 <strong>{onsetPhase.medName}</strong> 已 <strong>{onsetPhase.daysSince}</strong> 天。
+              大多数抗抑郁药物需要 2-4 周才能开始起效，前几周可能出现一些不适（如恶心、焦虑加重），这是正常现象，不代表药物无效。
+              请坚持服药，身体正在适应中。
+            </div>
+          </div>
+        )}
         {medications.map(med => {
           const status = getMedStatus(med.id)
           return (
@@ -110,7 +131,7 @@ export default function Medication() {
                   className={`${styles.takeBtn} ${status === 'taken' ? styles.taken : ''}`}
                   onClick={() => handleTake(med.id)}
                 >
-                  {status === 'taken' ? '✅ 已服用' : '✅ 已服用'}
+                  {status === 'taken' ? '✅ 已服用' : '💊 服药'}
                 </button>
                 <button
                   className={`${styles.skipBtn} ${status === 'skipped' ? styles.skipped : ''}`}

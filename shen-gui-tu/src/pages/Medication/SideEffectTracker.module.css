@@ -68,3 +68,40 @@
 .historyDate { font-size: 13px; font-weight: 600; }
 .historyScore { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 .historyNote { font-size: 12px; color: var(--text-hint); margin-top: var(--space-xs); font-style: italic; }
+/* Coping strategies */
+.strategyHeader {
+  font-size: 14px; font-weight: 600; color: var(--primary);
+  margin-bottom: var(--space-lg); line-height: 1.5;
+}
+.strategyGroup {
+  background: var(--surface); border-radius: var(--radius-md);
+  padding: var(--space-md); box-shadow: var(--shadow-sm); margin-bottom: var(--space-md);
+}
+.strategyTitle {
+  font-size: 14px; font-weight: 600; margin-bottom: var(--space-sm);
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.strategyLevel {
+  font-size: 12px; font-weight: 500; color: var(--accent);
+  background: #FFF3E0; padding: 2px 8px; border-radius: 10px;
+}
+.strategyTip {
+  font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+  padding: var(--space-xs) 0;
+}
+.strategyNote {
+  font-size: 12px; color: var(--text-hint); text-align: center;
+  margin: var(--space-md) 0; font-style: italic;
+}
+/* Report */
+.reportHeader {
+  font-size: 14px; font-weight: 600; color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+.reportContent {
+  background: var(--surface); border-radius: var(--radius-md);
+  padding: var(--space-md); font-size: 13px; line-height: 1.8;
+  color: var(--text-primary); white-space: pre-wrap; word-break: break-all;
+  font-family: var(--font-family); border: 1px solid var(--border);
+  margin-bottom: var(--space-md);
+}
