@@ -1,8 +1,6 @@
 .toast {
   position: fixed;
-  top: 60px;
-  left: 4vw;
-  right: 4vw;
+  top: 70px;
   background: var(--text-primary);
   color: white;
   padding: 10px 16px;
@@ -17,4 +15,4 @@
   overflow-wrap: break-word;
   word-break: break-word;
 }
-.show { opacity: 1; transform: translateY(0); }
+.show { opacity: 1; }
