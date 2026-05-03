@@ -43,7 +43,7 @@ Dashboard 首页的3个统计卡片（打卡天数、用药率、本周记录）
 
 **文件**：`src/components/BottomNav/BottomNav.jsx`
 
-- 在"签到"和"资源"之间插入 `{ to: '/medication', icon: '💊', label: '用药' }`
+- 在"签到"和"服务"之间插入 `{ to: '/medication', icon: '💊', label: '用药' }`
 - 注意：5个Tab变为6个Tab，需确认空间是否足够
 
 **文件**：`src/components/BottomNav/BottomNav.module.css`

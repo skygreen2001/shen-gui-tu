@@ -41,7 +41,7 @@ export default function Resources() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1>服务中心 📚</h1>
-        <p>上海本地心理健康资源</p>
+        <p>上海本地心理健康服务</p>
       </div>
       <div className={styles.content}>
         <div className={styles.tabs} ref={tabsRef}>

@@ -23,7 +23,7 @@
 | Dashboard 首页 | 11 | 9 | 2 | 0 |
 | CheckIn 签到 | 14 | 13 | 1 | 0 |
 | Medication 用药管理 | 10 | 8 | 1 | 1 |
-| Resources 资源中心 | 7 | 7 | 0 | 0 |
+| Resources 服务中心 | 7 | 7 | 0 | 0 |
 | Crisis 危机干预 | 5 | 5 | 0 | 0 |
 | CBT 课程 | 4 | 4 | 0 | 0 |
 | WRAP 计划 | 4 | 4 | 0 | 0 |
@@ -315,7 +315,7 @@
 | M-10 | 按钮文案 | ❌ FAIL | **始终显示"已服用"**，不区分状态 |
 | M-11~M-15 | 辅助功能 | ⚠️ BLOCK | 入口卡片为 div 非 button，无法通过 snapshot 定位交互 |
 
-### Resources 资源中心 — 全部 PASS ✅
+### Resources 服务中心 — 全部 PASS ✅
 
 | 编号 | 测试项 | 状态 | 备注 |
 |------|--------|------|------|
@@ -379,7 +379,7 @@
 | C-05-checkin-success.png | 签到成功页 |
 | M-01-medication-top.png | 用药管理页面上部 |
 | M-09-med-knowledge.png | 药物知识库（喹硫平） |
-| R-01-resources.png | 资源中心（医院 tab） |
+| R-01-resources.png | 服务中心（医院 tab） |
 | CR-01-crisis.png | 危机干预页 |
 | CR-03-breathing.png | 呼吸练习运行中 |
 | CB-01-cbt-courses.png | CBT 课程列表 |
