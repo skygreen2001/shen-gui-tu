@@ -32,25 +32,76 @@
 
 ```
 shen-gui-tu/
-├── docs/                          # 项目文档
-│   ├── 申归途-抑郁症复发预防服务设计方案.md
-│   ├── 抑郁症患者需求与APP工具现状分析报告.md
-│   ├── 欢迎来到「AI 无限职场」SOLO 挑战赛.txt
-│   ├── charts/                    # 8张分析图表
-│   └── prototype/                 # 9个 HTML 交互原型
 ├── src/
-│   ├── main.jsx                   # 应用入口
-│   ├── App.jsx                    # 路由配置
-│   ├── styles/                    # 主题变量 + 全局样式
-│   ├── components/                # 共享组件（Layout/BottomNav/RiskGauge/CrisisButton/Toast）
-│   ├── pages/                     # 8个页面组件
-│   ├── hooks/                     # 自定义 Hooks（useLocalStorage/useCheckIn/useMedication/useRiskLevel）
-│   ├── data/                      # 上海本地静态数据（医院/热线/社区/医保/CBT/WRAP）
-│   └── utils/                     # 工具函数（风险计算/日期格式化）
-├── dist/                          # 生产构建输出
+│   ├── main.jsx                  # 应用入口
+│   ├── App.jsx                   # 路由配置
+│   ├── App.css
+│   ├── index.css
+│   ├── test-setup.js
+│   ├── assets/                   # 静态资源
+│   │   ├── hero.png
+│   │   ├── react.svg
+│   │   └── vite.svg
+│   ├── components/               # 共享组件 (7个)
+│   │   ├── BottomNav/            # 底部导航
+│   │   ├── ConfirmDialog/        # 确认对话框
+│   │   ├── CrisisButton/         # 危机求助按钮
+│   │   ├── GuidedPlayer/         # 引导式播放器
+│   │   ├── Layout/               # 页面布局
+│   │   ├── RiskGauge/            # 风险仪表盘
+│   │   └── Toast/                # 提示消息
+│   ├── pages/                    # 页面组件 (8个)
+│   │   ├── CBTCourse/            # CBT 认知课程
+│   │   ├── CheckIn/              # 每日签到
+│   │   ├── Crisis/               # 危机干预
+│   │   ├── Dashboard/            # 预警仪表盘
+│   │   ├── Medication/           # 用药管理 (6个子模块)
+│   │   │   ├── Medication.jsx     # 服药打卡
+│   │   │   ├── MedKnowledge.jsx   # 药物知识
+│   │   │   ├── MoodCorrelation.jsx # 情绪关联
+│   │   │   ├── SideEffectTracker.jsx # 副作用追踪
+│   │   │   └── TaperNavigator.jsx # 减药导航
+│   │   ├── Resources/            # 资源中心
+│   │   │   ├── FamilyTab.jsx      # 家庭支持
+│   │   │   └── RebuildTab.jsx     # 生活重建
+│   │   ├── WRAPPlan/             # WRAP 康复计划
+│   │   └── Welcome/              # 欢迎页
+│   ├── hooks/                    # 自定义 Hooks (8个)
+│   │   ├── useCheckIn.js         # 签到逻辑
+│   │   ├── useEdgeTTS.js         # Edge TTS 语音
+│   │   ├── useLocalStorage.js    # 本地存储
+│   │   ├── useMedMoodCorrelation.js # 药物情绪关联
+│   │   ├── useMedication.js      # 用药管理
+│   │   ├── useRiskLevel.js       # 风险等级
+│   │   ├── useTTS.js             # 语音合成
+│   │   └── useTaperPlan.js       # 减药计划
+│   ├── data/                     # 静态数据 (13个)
+│   │   ├── caregiverAssessment.js # 照护者评估
+│   │   ├── cbtContent.js         # CBT 课程内容
+│   │   ├── community.js          # 社区资源
+│   │   ├── familyCourses.js      # 家庭课程
+│   │   ├── familyGuide.js        # 家庭指南
+│   │   ├── hospitals.js          # 上海医院数据
+│   │   ├── hotlines.js          # 心理援助热线
+│   │   ├── insurance.js         # 医保政策
+│   │   ├── medicationKnowledge.js # 药物知识
+│   │   ├── peerStories.js        # 同伴故事
+│   │   ├── socialTasks.js        # 社交任务
+│   │   └── wrapTemplate.js      # WRAP 模板
+│   ├── styles/                   # 样式
+│   │   ├── global.css            # 全局样式
+│   │   └── theme.css             # 主题变量
+│   └── utils/                    # 工具函数
+│       ├── dateUtils.js         # 日期工具
+│       └── riskCalculator.js    # 风险计算
+├── public/
+│   ├── audio/                    # 引导音频 (31个 mp3)
+│   ├── icons.svg
+│   └── favicon.*                  # 多尺寸 Favicon
 ├── index.html
+├── package.json
 ├── vite.config.js
-└── package.json
+└── README.md
 ```
 
 ## 快速开始
@@ -67,15 +118,6 @@ npm run build
 
 # 构建产物在 dist/ 目录，可直接打开 dist/index.html 离线运行
 ```
-
-## 设计文档
-
-完整的项目文档位于 `docs/` 目录：
-
-- **[需求分析报告](docs/抑郁症患者需求与APP工具现状分析报告.md)** — 9500万抑郁症患者的八大核心痛点与现有 APP 功能缺口分析
-- **[服务设计方案](docs/申归途-抑郁症复发预防服务设计方案.md)** — 六大早期预警信号、六大核心模块、四阶段患者旅程地图
-- **[UI 原型](docs/prototype/)** — 9轮确认的交互式 HTML 原型（全局设计系统 → 各页面 → 集成走查）
-- **[分析图表](docs/charts/)** — 8张数据可视化图表
 
 ## 设计规范
 
