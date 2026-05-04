@@ -8,7 +8,8 @@
 
 ## 项目体验
 
-- [申归途](https://shen-gui-tu.zh-cn.edgeone.cool/)
+- [申归途](https://shenguitu.netlify.app/)
+- [体验二维码](shen-gui-tu/public/qrcode.png)
 
 ## 核心问题
 
@@ -144,4 +145,4 @@ MIT
 - `[ESLint]`: https://eslint.org/
 - `[Edge-TTS]`: https://github.com/rany2/edge-tts
 - `[TRAE SOLO CN]`: https://trae.cn/
-- `[腾讯云 EdgeOne Pages]`: https://edgeone.ai/zh/
+- `[Netlify]`: https://www.netlify.com/
