@@ -120,7 +120,7 @@ npm run build
 - **[UI 原型](docs/prototype/)** — 9轮确认的交互式 HTML 原型（全局设计系统 → 各页面 → 集成走查）
 - **[分析图表](docs/charts/)** — 8张数据可视化图表
 
-> 注：详细设计文档位于 `.trae/documents/` 目录下
+> 注：详细设计文档位于 **[.trae/documents/](.trae/documents/)** 目录下
 
 ## 设计规范
 
