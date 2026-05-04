@@ -6,6 +6,10 @@
 
 本项目为 **TRAE × 脉脉「AI 无限职场」SOLO 挑战赛** 公益赛道「Hello AI 科技致善」参赛作品。
 
+## 项目体验
+
+- [申归途](https://shen-gui-tu.zh-cn.edgeone.cool/)
+
 ## 核心功能
 
 | 模块 | 功能 | 说明 |
@@ -132,3 +136,14 @@ npm run build
 ## 许可证
 
 MIT
+
+## 项目依赖
+
+- `[React]`: https://react.dev/
+- `[Vite]`: https://vite.dev/
+- `[React Router]`: https://reactrouter.com/
+- `[Vitest]`: https://vitest.dev/
+- `[ESLint]`: https://eslint.org/
+- `[Edge-TTS]`: https://github.com/rany2/edge-tts
+- `[TRAE SOLO CN]`: https://trae.cn/
+- `[腾讯云 EdgeOne Pages]`: https://edgeone.ai/zh/

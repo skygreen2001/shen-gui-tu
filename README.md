@@ -6,6 +6,10 @@
 
 本项目为 **TRAE × 脉脉「AI 无限职场」SOLO 挑战赛** 公益赛道「Hello AI 科技致善」参赛作品。
 
+## 项目体验
+
+- [申归途](https://shen-gui-tu.zh-cn.edgeone.cool/)
+
 ## 核心问题
 
 抑郁症复发率高达 **50%-85%**，首次复发后再次复发概率超 **70%**，三次及以上发作后达 **90%**。50% 患者存在服药依从性问题，出院后几乎无复发预防工具覆盖，存在"断崖式"支持断裂。
@@ -129,3 +133,15 @@ npm run build
 ## 许可证
 
 MIT
+
+
+## 项目依赖
+
+- `[React]`: https://react.dev/
+- `[Vite]`: https://vite.dev/
+- `[React Router]`: https://reactrouter.com/
+- `[Vitest]`: https://vitest.dev/
+- `[ESLint]`: https://eslint.org/
+- `[Edge-TTS]`: https://github.com/rany2/edge-tts
+- `[TRAE SOLO CN]`: https://trae.cn/
+- `[腾讯云 EdgeOne Pages]`: https://edgeone.ai/zh/
