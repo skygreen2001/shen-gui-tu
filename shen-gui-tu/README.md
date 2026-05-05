@@ -8,8 +8,9 @@
 
 ## 项目体验
 
-- [申归途](https://shenguitu.netlify.app/)
-- [体验二维码](public/qrcode.png)
+- 体验《[申归途](https://shenguitu.netlify.app/)》
+- [手机体验二维码](shen-gui-tu/public/qrcode.png)
+ ![手机体验二维码](shen-gui-tu/public/qrcode.png)
 
 ## 核心功能
 
