@@ -23,4 +23,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-/app
+
+# iOS
+app/ios/Pods/
+app/ios/build/
+app/ios/*.xcworkspace/xcuserdata/
+app/ios/*.xcodeproj/xcuserdata/
+app/ios/.xcode.env.local
+app/android/.gradle/*
+app/android/gradle/*
+app/android/app/.cxx/*
+app/android/app/build/
+app/android/build/
+app/android/
