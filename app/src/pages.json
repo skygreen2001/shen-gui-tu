@@ -1,0 +1,97 @@
+{
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^u-(.*)": "@/components/u-$1/u-$1.vue"
+    }
+  },
+  "globalStyle": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "申归途",
+    "navigationBarBackgroundColor": "#F8F6F2",
+    "backgroundColor": "#F8F6F2"
+  },
+  "pages": [
+    {
+      "path": "pages/welcome/welcome",
+      "style": { "navigationStyle": "custom", "navigationBarTitleText": "" }
+    },
+    {
+      "path": "pages/dashboard/dashboard",
+      "style": { "navigationBarTitleText": "首页" }
+    },
+    {
+      "path": "pages/checkin/checkin",
+      "style": { "navigationBarTitleText": "每日打卡" }
+    },
+    {
+      "path": "pages/medication/medication",
+      "style": { "navigationBarTitleText": "用药管理" }
+    },
+    {
+      "path": "pages/medication/med-knowledge",
+      "style": { "navigationBarTitleText": "药物知识" }
+    },
+    {
+      "path": "pages/medication/side-effect-tracker",
+      "style": { "navigationBarTitleText": "副作用追踪" }
+    },
+    {
+      "path": "pages/medication/mood-correlation",
+      "style": { "navigationBarTitleText": "情绪关联" }
+    },
+    {
+      "path": "pages/medication/taper-navigator",
+      "style": { "navigationBarTitleText": "减药导航" }
+    },
+    {
+      "path": "pages/resources/resources",
+      "style": { "navigationBarTitleText": "服务中心" }
+    },
+    {
+      "path": "pages/crisis/crisis",
+      "style": { "navigationBarTitleText": "危机干预", "navigationStyle": "custom" }
+    },
+    {
+      "path": "pages/cbt-course/cbt-course",
+      "style": { "navigationBarTitleText": "CBT课程" }
+    },
+    {
+      "path": "pages/wrap-plan/wrap-plan",
+      "style": { "navigationBarTitleText": "WRAP计划" }
+    }
+  ],
+  "tabBar": {
+    "color": "#9B9B9B",
+    "selectedColor": "#4A90D9",
+    "borderStyle": "white",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      {
+        "pagePath": "pages/dashboard/dashboard",
+        "text": "首页",
+        "iconPath": "static/tab/home.png",
+        "selectedIconPath": "static/tab/home-active.png"
+      },
+      {
+        "pagePath": "pages/medication/medication",
+        "text": "疗愈",
+        "iconPath": "static/tab/heal.png",
+        "selectedIconPath": "static/tab/heal-active.png"
+      },
+      {
+        "pagePath": "pages/resources/resources",
+        "text": "服务",
+        "iconPath": "static/tab/service.png",
+        "selectedIconPath": "static/tab/service-active.png"
+      },
+      {
+        "pagePath": "pages/cbt-course/cbt-course",
+        "text": "成长",
+        "iconPath": "static/tab/grow.png",
+        "selectedIconPath": "static/tab/grow-active.png"
+      }
+    ]
+  }
+}
