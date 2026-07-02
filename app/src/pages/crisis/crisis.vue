@@ -1,5 +1,10 @@
 <template>
   <view class="crisis-page">
+    <!-- 返回首页按钮 -->
+    <view class="back-bar">
+      <text class="back-link" @tap="goBack">← 返回首页</text>
+    </view>
+
     <!-- 英雄区域 -->
     <view class="hero">
       <text class="hero-title">你不是一个人 🤝</text>
@@ -57,6 +62,9 @@
         <text class="safety-item">4. 去安全的地方：回家或找一个安静的角落待一会儿</text>
       </view>
     </view>
+
+    <!-- 底部空白区域 -->
+    <view style="height: 300rpx;"></view>
   </view>
 </template>
 <script setup lang="ts">
@@ -133,12 +141,19 @@ function stopBreathing() {
 
 onUnmounted(() => { stopBreathing() })
 
+function goBack() {
+  uni.switchTab({ url: '/pages/dashboard/dashboard' })
+}
+
 function callHotline(phone: string) { uni.makePhoneCall({ phoneNumber: phone }) }
 </script>
 <style lang="scss" scoped>
 .crisis-page { min-height: 100vh; background: #F8F6F2; }
 
-.hero { text-align: center; padding: 64rpx 32rpx 40rpx; }
+.back-bar { padding: 48rpx 32rpx 0; }
+.back-link { font-size: 28rpx; color: #4A90D9; font-weight: 500; }
+
+.hero { text-align: center; padding: 48rpx 32rpx 40rpx; }
 .hero-title { font-size: 56rpx; font-weight: 700; line-height: 1.3; display: block; }
 .hero-sub { font-size: 28rpx; color: #6B6B6B; margin-top: 16rpx; display: block; }
 

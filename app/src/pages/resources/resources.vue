@@ -2,107 +2,70 @@
   <view class="resources-page">
     <!-- 头部 -->
     <view class="header">
-      <text class="title">🏥 服务中心</text>
-      <text class="subtitle">你并不孤单，这里有你需要的一切支持</text>
+      <text class="title">服务中心 📚</text>
+      <text class="subtitle">上海本地心理健康服务</text>
     </view>
 
-    <!-- Tab 切换 -->
-    <scroll-view scroll-x class="tab-scroll" :scroll-left="tabScrollLeft">
-      <view class="tab-bar">
+    <view class="body">
+      <!-- Tab 切换（与 Web 版一致：底部边框 + 滑动指示器） -->
+      <view class="tabs">
         <view v-for="(tab, idx) in tabs" :key="tab.key"
-          :class="['tab-item', activeTab === tab.key ? 'tab-active' : '']"
-          :style="{ borderColor: activeTab === tab.key ? tab.color : 'transparent' }"
+          :class="['tab-item', activeTabIdx === idx ? 'tab-active' : '']"
           @tap="switchTab(tab.key, idx)">
           <text>{{ tab.label }}</text>
         </view>
+        <view class="tab-indicator" :style="{ left: indicatorLeft + 'px', width: indicatorWidth + 'px' }" />
       </view>
-    </scroll-view>
 
-    <!-- Tab 内容 -->
-    <scroll-view scroll-y class="content-scroll">
-
-      <!-- ==================== 1. 医院Tab ==================== -->
-      <view v-if="activeTab === 'hospitals'" class="tab-content">
-        <!-- 区域筛选 -->
-        <picker :range="areas" @change="onAreaChange" class="area-picker-wrap">
-          <view class="area-picker">
-            <text class="area-picker-text">📍 {{ selectedArea }}</text>
-            <text class="area-picker-arrow">▼</text>
+      <!-- Tab 内容 -->
+      <view class="tab-content" v-if="activeTab === 'hospitals'">
+        <!-- 区域筛选（与 Web 版一致：全宽下拉框） -->
+        <picker :range="areas" @change="onAreaChange" class="area-filter">
+          <view class="area-select">
+            <text class="area-select-text">{{ selectedArea }}</text>
+            <text class="area-select-arrow">▾</text>
           </view>
         </picker>
-        <!-- 医院列表 -->
-        <view v-for="h in filteredHospitals" :key="h.id" class="info-card">
-          <view class="card-header">
-            <text class="card-icon">🏥</text>
-            <view class="card-title-area">
-              <text class="card-title">{{ h.name }}</text>
-              <view class="card-meta">
-                <text class="card-level" :class="h.level === '三甲' ? 'level-top' : 'level-second'">{{ h.level }}</text>
-                <text v-if="h.hours" class="card-hours">{{ h.hours }}</text>
-              </view>
-            </view>
+        <!-- 医院列表（与 Web 版一致：简洁卡片布局） -->
+        <view v-for="h in filteredHospitals" :key="h.id" class="res-card">
+          <text class="card-name">{{ h.name }}</text>
+          <text class="card-info">{{ h.level }} · {{ h.address }}</text>
+          <view class="card-tags">
+            <text v-for="tag in h.tags" :key="tag" class="tag-item">{{ tag }}</text>
           </view>
-          <view class="card-body">
-            <text class="card-addr">📍 {{ h.address }}</text>
-            <view v-if="h.tags && h.tags.length" class="card-tags">
-              <text v-for="tag in h.tags" :key="tag" class="tag-item">{{ tag }}</text>
-            </view>
-            <text class="card-phone" @tap="callPhone(h.phone)">📞 {{ h.phone }}</text>
-          </view>
+          <text class="card-link" @tap="callPhone(h.phone)">📞 {{ h.phone }}</text>
         </view>
       </view>
 
       <!-- ==================== 2. 热线Tab ==================== -->
       <view v-else-if="activeTab === 'hotlines'" class="tab-content">
         <view v-for="h in hotlines" :key="h.id"
-          :class="['info-card', h.featured ? 'featured-card' : '']">
-          <view class="card-header">
-            <text class="card-icon">{{ h.featured ? '🔴' : '📞' }}</text>
-            <view class="card-title-area">
-              <view class="card-title-row">
-                <text class="card-title">{{ h.name }}</text>
-                <text v-if="h.featured" class="featured-badge">免费</text>
-              </view>
-              <text class="card-sub">{{ h.hours }}</text>
-            </view>
-          </view>
-          <view class="card-body">
-            <text v-if="h.desc" class="card-desc">{{ h.desc }}</text>
-            <text class="card-phone" @tap="callPhone(h.number)">📞 {{ h.number }}</text>
-          </view>
+          :class="['hotline-card', h.featured ? 'featured' : '']">
+          <text class="hotline-name">{{ h.featured ? '🔴' : '📞' }} {{ h.name }}</text>
+          <text class="hotline-num" @tap="callPhone(h.number)">{{ h.number }}</text>
+          <text class="hotline-time">{{ h.hours }} {{ h.featured ? '· 免费' : '' }}</text>
         </view>
       </view>
 
       <!-- ==================== 3. 社区Tab ==================== -->
       <view v-else-if="activeTab === 'community'" class="tab-content">
-        <view v-for="c in communityResources" :key="c.id" class="info-card">
-          <view class="card-header">
-            <text class="card-icon">🏘️</text>
-            <view class="card-title-area">
-              <text class="card-title">{{ c.name }}</text>
-              <text class="card-sub">{{ c.area }}</text>
-            </view>
-          </view>
-          <view class="card-body">
-            <text class="card-addr">📍 {{ c.address }}</text>
-            <view v-if="c.services && c.services.length" class="card-tags">
-              <text v-for="s in c.services" :key="s" class="tag-item">{{ s }}</text>
-            </view>
-            <text v-if="c.phone" class="card-phone" @tap="callPhone(c.phone)">📞 {{ c.phone }}</text>
+        <view v-for="c in communityResources" :key="c.id" class="res-card">
+          <text class="card-name">{{ c.name }}</text>
+          <text class="card-info">{{ c.area }} · {{ c.address }}</text>
+          <view class="card-tags">
+            <text v-for="s in c.services" :key="s" :class="['tag-item', 'tag-success']">{{ s }}</text>
           </view>
         </view>
       </view>
 
       <!-- ==================== 4. 医保Tab ==================== -->
       <view v-else-if="activeTab === 'insurance'" class="tab-content">
-        <view v-for="item in insurancePolicies" :key="item.id" class="info-card insurance-card">
-          <view class="card-header">
-            <text class="card-icon">💳</text>
-            <text class="card-title">{{ item.title }}</text>
+        <view v-for="item in insurancePolicies" :key="item.id" class="policy-item">
+          <text class="policy-title">{{ item.title }}</text>
+          <view class="policy-desc">
+            <text>{{ item.desc }}<text class="highlight">{{ item.highlight }}</text></text>
           </view>
-          <view class="card-body">
-            <text class="card-desc">{{ item.desc }}<text class="highlight-text">{{ item.highlight }}</text>。{{ item.detail }}</text>
-          </view>
+          <text v-if="item.detail" class="policy-detail">{{ item.detail }}</text>
         </view>
       </view>
 
@@ -413,13 +376,14 @@
           </view>
         </view>
       </view>
-
-    </scroll-view>
+    </view>
+    <CrisisButton :visible="true" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
+import CrisisButton from '@/components/crisis-button/crisis-button.vue'
 import { hospitals, areas } from '@/data/hospitals'
 import { hotlines } from '@/data/hotlines'
 import { communityResources } from '@/data/community'
@@ -432,19 +396,26 @@ import { peerStories, storyCategories } from '@/data/peerStories'
 
 // ==================== 通用Tab ====================
 const tabs = [
-  { key: 'hospitals', label: '🏥 医院', color: '#4A90D9' },
-  { key: 'hotlines', label: '📞 热线', color: '#D46B6B' },
-  { key: 'community', label: '🏘️ 社区', color: '#6BAF7A' },
-  { key: 'insurance', label: '💳 医保', color: '#E8985E' },
-  { key: 'family', label: '👨‍👩‍👧 家属', color: '#9B59B6' },
-  { key: 'rebuild', label: '🌱 重建', color: '#5CB85C' },
+  { key: 'hospitals', label: '🏥 医院' },
+  { key: 'hotlines', label: '📞 热线' },
+  { key: 'community', label: '🏘️ 社区' },
+  { key: 'insurance', label: '📋 医保' },
+  { key: 'family', label: '👨‍👩‍👧 家属' },
+  { key: 'rebuild', label: '🌱 重建' },
 ]
 const activeTab = ref('hospitals')
-const tabScrollLeft = ref(0)
+const activeTabIdx = ref(0)
+const indicatorLeft = ref(0)
+const indicatorWidth = ref(125)
 
 function switchTab(key: string, idx: number) {
   activeTab.value = key
-  tabScrollLeft.value = idx > 3 ? (idx - 3) * 140 : 0
+  activeTabIdx.value = idx
+  // 每个tab宽度为屏幕1/6，加一点间距
+  const screenWidth = uni.getSystemInfoSync().windowWidth
+  const tabWidth = screenWidth / 6
+  indicatorLeft.value = idx * tabWidth
+  indicatorWidth.value = tabWidth
 }
 
 function callPhone(phone: string) {
@@ -779,6 +750,11 @@ watch(rebuildSubTab, (val) => {
 
 // ==================== 初始化 ====================
 onMounted(() => {
+  // 初始化 tab indicator 位置
+  const screenWidth = uni.getSystemInfoSync().windowWidth
+  const tabWidth = screenWidth / 6
+  indicatorLeft.value = 0
+  indicatorWidth.value = tabWidth
   loadFamilyProgress()
   loadAssessments()
   loadSelfCareItems()
@@ -793,6 +769,9 @@ onMounted(() => {
   background: #F8F6F2;
 }
 
+.body {
+  padding: 0 32rpx 120rpx;
+}
 .header {
   padding: 32rpx 32rpx 16rpx;
 }
@@ -808,31 +787,33 @@ onMounted(() => {
   display: block;
 }
 
-/* Tab栏 */
-.tab-scroll {
-  white-space: nowrap;
-}
-.tab-bar {
+/* Tab栏（与 Web 版一致：底部边框 + 滑动指示器） */
+.tabs {
   display: flex;
-  padding: 16rpx 32rpx;
-  gap: 16rpx;
+  border-bottom: 4rpx solid #E5E2DC;
+  position: relative;
+  margin-bottom: 16rpx;
 }
 .tab-item {
-  display: inline-block;
-  padding: 16rpx 28rpx;
-  border-radius: 9999rpx;
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
   font-size: 26rpx;
-  background: #FFFFFF;
-  border-bottom: 4rpx solid transparent;
-  white-space: nowrap;
-  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.04);
+  font-weight: 500;
+  color: #6B6B6B;
+  background: none;
 }
 .tab-active {
+  color: #4A90D9;
   font-weight: 600;
 }
-.content-scroll {
-  padding: 0 32rpx 60rpx;
-  height: calc(100vh - 240rpx);
+.tab-indicator {
+  position: absolute;
+  bottom: -4rpx;
+  height: 4rpx;
+  background: #4A90D9;
+  border-radius: 2rpx;
+  transition: left 0.3s ease, width 0.3s ease;
 }
 .tab-content {
   padding-top: 16rpx;
@@ -902,88 +883,73 @@ onMounted(() => {
 }
 .tag-item {
   font-size: 22rpx;
-  padding: 4rpx 12rpx;
+  padding: 4rpx 16rpx;
   border-radius: 8rpx;
-  background: #F0F0F0;
-  color: #6B6B6B;
+  font-weight: 500;
+  background: #E3F2FD;
+  color: #2C5F8A;
 }
 
 /* ====== 医院Tab ====== */
-.area-picker-wrap {
+.area-filter {
   margin-bottom: 16rpx;
 }
-.area-picker {
+.area-select {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8rpx;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  border: 3rpx solid #E5E2DC;
+  border-radius: 16rpx;
   background: #FFFFFF;
-  border-radius: 9999rpx;
-  padding: 16rpx 32rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
-}
-.area-picker-text {
   font-size: 28rpx;
-  color: #4A90D9;
-  font-weight: 500;
 }
-.area-picker-arrow {
-  font-size: 20rpx;
-  color: #4A90D9;
+.area-select-text { color: #2D2D2D; }
+.area-select-arrow { color: #636E72; }
+
+/* 通用资源卡片（与 Web 版 resCard 一致） */
+.res-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  margin-bottom: 16rpx;
 }
-.card-meta {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin-top: 4rpx;
-}
-.card-level {
-  font-size: 22rpx;
-  padding: 2rpx 10rpx;
-  border-radius: 6rpx;
-  font-weight: 600;
-}
-.level-top {
-  background: #FFF3E0;
-  color: #E65100;
-}
-.level-second {
-  background: #E3F2FD;
-  color: #1565C0;
-}
-.card-hours {
-  font-size: 22rpx;
-  color: #9B9B9B;
+.card-name { font-size: 30rpx; font-weight: 600; display: block; }
+.card-info { font-size: 24rpx; color: #6B6B6B; margin-top: 4rpx; display: block; }
+.card-link {
+  display: inline-flex; align-items: center; gap: 4rpx;
+  margin-top: 12rpx; color: #4A90D9; font-size: 26rpx; font-weight: 500;
 }
 
-/* ====== 热线Tab ====== */
-.featured-card {
-  border-left: 6rpx solid #D32F2F;
+/* ====== 热线Tab（与 Web 版一致） ====== */
+.hotline-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  margin-bottom: 16rpx;
+  border-left: 6rpx solid #4A90D9;
 }
-.featured-badge {
-  font-size: 20rpx;
-  padding: 2rpx 10rpx;
-  border-radius: 6rpx;
-  background: #FFEBEE;
-  color: #D32F2F;
-  font-weight: 600;
-  margin-left: 8rpx;
-}
-.card-title-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
+.featured { border-left-color: #D32F2F; }
+.hotline-name { font-size: 28rpx; font-weight: 600; display: block; }
+.hotline-num { font-size: 26rpx; color: #4A90D9; margin-top: 4rpx; display: block; }
+.featured .hotline-num { color: #D32F2F; font-weight: 700; font-size: 36rpx; }
+.hotline-time { font-size: 22rpx; color: #9B9B9B; margin-top: 4rpx; display: block; }
 
-/* ====== 医保Tab ====== */
-.insurance-card .card-body {
-  padding-left: 52rpx;
+/* ====== 医保Tab（与 Web 版一致） ====== */
+.policy-item {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  margin-bottom: 16rpx;
 }
-.highlight-text {
-  color: #D32F2F;
-  font-weight: 700;
-  font-size: 30rpx;
-}
+.policy-title { font-size: 28rpx; font-weight: 600; display: block; }
+.policy-desc { font-size: 24rpx; color: #6B6B6B; margin-top: 8rpx; line-height: 1.5; display: block; }
+.highlight { color: #E8985E; font-weight: 700; }
+.policy-detail { font-size: 22rpx; color: #9B9B9B; margin-top: 4rpx; display: block; }
+.tag-success { background: #D4EDDA; color: #2D6A3F; }
 
 /* ====== 家属Tab ====== */
 .section-block {

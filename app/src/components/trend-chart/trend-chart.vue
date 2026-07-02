@@ -1,6 +1,5 @@
 <template>
   <view class="chart-container">
-    <view class="chart-title">近 7 天趋势</view>
     <scroll-view scroll-x class="chart-scroll">
       <view class="chart-body">
         <view class="y-axis"><text v-for="v in [5,4,3,2,1]" :key="v" class="y-label">{{ v }}</text></view>

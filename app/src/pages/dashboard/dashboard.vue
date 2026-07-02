@@ -27,12 +27,26 @@
         </view>
         <text class="wrap-arrow">→</text>
       </view>
+      <!-- 重置按钮 -->
+      <view class="reset-btn" @tap="showResetConfirm = true">
+        <text>🗑️ 重置所有数据（仅开发环境）</text>
+      </view>
+      <view v-if="showResetConfirm" class="reset-overlay" @tap.self="showResetConfirm = false">
+        <view class="reset-dialog">
+          <text class="reset-dialog-title">重置所有数据</text>
+          <text class="reset-dialog-msg">确定要清除所有用户数据吗？包括签到记录、用药记录、副作用追踪等，此操作不可撤销。</text>
+          <view class="reset-dialog-actions">
+            <text class="reset-cancel" @tap="showResetConfirm = false">取消</text>
+            <text class="reset-confirm" @tap="handleReset">确认重置</text>
+          </view>
+        </view>
+      </view>
     </view>
     <CrisisButton :visible="true" />
   </view>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import RiskGauge from '@/components/risk-gauge/risk-gauge.vue'
 import TrendChart from '@/components/trend-chart/trend-chart.vue'
@@ -49,6 +63,22 @@ function goCheckIn() { uni.navigateTo({ url: '/pages/checkin/checkin' }) }
 function goMedication() { uni.switchTab({ url: '/pages/medication/medication' }) }
 function goWrap() { uni.navigateTo({ url: '/pages/wrap-plan/wrap-plan' }) }
 function callHotline() { uni.makePhoneCall({ phoneNumber: '962525' }) }
+
+// 重置功能（仅开发环境）
+const isDev = process.env.NODE_ENV === 'development'
+const showResetConfirm = ref(false)
+
+function handleReset() {
+  showResetConfirm.value = false
+  try {
+    const res = uni.getStorageInfoSync()
+    res.keys.filter((k: string) => k.startsWith('sgt-')).forEach((k: string) => {
+      uni.removeStorageSync(k)
+    })
+  } catch (e) {}
+  uni.showToast({ title: '数据已重置', icon: 'success' })
+  setTimeout(() => { uni.reLaunch({ url: '/pages/welcome/welcome' }) }, 1000)
+}
 </script>
 <style lang="scss" scoped>
 .dashboard { padding: 32rpx; padding-bottom: 180rpx; }
@@ -71,4 +101,26 @@ function callHotline() { uni.makePhoneCall({ phoneNumber: '962525' }) }
 .wrap-arrow { font-size: 32rpx; color: #9B9B9B; }
 .trend-section { margin-bottom: 32rpx; }
 .trend-title { font-size: 32rpx; font-weight: 600; display: block; margin-bottom: 16rpx; color: #2D2D2D; }
+
+/* ── 重置按钮（仅开发环境） ── */
+.reset-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 24rpx; margin-top: 48rpx;
+  background: transparent; color: #9B9B9B;
+  border: 2rpx dashed #E5E2DC; border-radius: 24rpx;
+  font-size: 24rpx;
+}
+.reset-btn:active { transform: scale(0.96); }
+.reset-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999;
+}
+.reset-dialog {
+  width: 600rpx; background: #FFFFFF; border-radius: 24rpx; padding: 40rpx;
+}
+.reset-dialog-title { font-size: 32rpx; font-weight: 600; display: block; color: #2D2D2D; margin-bottom: 16rpx; }
+.reset-dialog-msg { font-size: 26rpx; color: #6B6B6B; line-height: 1.6; display: block; margin-bottom: 32rpx; }
+.reset-dialog-actions { display: flex; justify-content: flex-end; gap: 24rpx; }
+.reset-cancel { font-size: 28rpx; color: #9B9B9B; padding: 16rpx 24rpx; }
+.reset-confirm { font-size: 28rpx; color: #D46B6B; font-weight: 600; padding: 16rpx 24rpx; }
 </style>

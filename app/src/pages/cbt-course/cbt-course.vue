@@ -68,6 +68,7 @@
         </view>
       </view>
     </view>
+    <CrisisButton :visible="true" />
   </view>
 </template>
 
@@ -76,6 +77,7 @@ import { ref, reactive, computed, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import { cbtCourses, tierInfo } from '@/data/cbtContent'
 import GuidedPlayer from '@/components/guided-player/guided-player.vue'
+import CrisisButton from '@/components/crisis-button/crisis-button.vue'
 
 const store = useStore()
 const progress = computed(() => store.state.cbt?.progress || {})
