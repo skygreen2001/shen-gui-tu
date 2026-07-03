@@ -28,7 +28,7 @@
         <text class="wrap-arrow">→</text>
       </view>
       <!-- 重置按钮 -->
-      <view class="reset-btn" @tap="showResetConfirm = true">
+      <view v-if="isDev" class="reset-btn" @tap="showResetConfirm = true">
         <text>🗑️ 重置所有数据（仅开发环境）</text>
       </view>
       <view v-if="showResetConfirm" class="reset-overlay" @tap.self="showResetConfirm = false">
@@ -65,7 +65,7 @@ function goWrap() { uni.navigateTo({ url: '/pages/wrap-plan/wrap-plan' }) }
 function callHotline() { uni.makePhoneCall({ phoneNumber: '962525' }) }
 
 // 重置功能（仅开发环境）
-const isDev = process.env.NODE_ENV === 'development'
+const isDev = import.meta.env.DEV
 const showResetConfirm = ref(false)
 
 function handleReset() {
