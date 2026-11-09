@@ -14,6 +14,12 @@
 
     ![手机体验二维码](shen-gui-tu/public/qrcode.png)
 
+## 下载源码
+
+* 下载地址[Gitee]: https://gitee.com/skygreen2015/shen-gui-tu
+* 下载地址[CNB]: https://cnb.cool/skygreen2001/shen-gui-tu
+* 下载地址[Github]: https://github.com/skygreen2001/betterlife.git   
+
 ## 核心问题
 
 抑郁症复发率高达 **50%-85%**，首次复发后再次复发概率超 **70%**，三次及以上发作后达 **90%**。50% 患者存在服药依从性问题，出院后几乎无复发预防工具覆盖，存在"断崖式"支持断裂。
