@@ -1,0 +1,132 @@
+.content {
+  padding: 16rpx 32rpx calc(var(--nav-height) + var(--crisis-size) + 64rpx);
+}
+.card { margin-bottom: 32rpx; }
+
+.adherence {
+  text-align: center;
+  padding: 48rpx 32rpx;
+}
+.adherence-circle {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  margin: 0 auto 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 44rpx;
+  font-weight: 700;
+}
+.adherence-label { font-size: 26rpx; color: var(--text-secondary); }
+
+.streak-card {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 28rpx 32rpx;
+}
+.streak-icon { font-size: 40rpx; }
+.streak-text { font-size: 28rpx; }
+.streak-text .strong { color: var(--danger); font-size: 34rpx; }
+
+.onset-card { padding: 32rpx; }
+.onset-title { font-size: 28rpx; font-weight: 700; margin-bottom: 16rpx; }
+.onset-body { font-size: 24rpx; color: var(--text-secondary); line-height: 1.7; }
+.onset-body .strong { color: var(--primary); }
+
+.med-card { padding: 32rpx; }
+.med-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+}
+.med-info { flex: 1; }
+.med-name { font-size: 32rpx; font-weight: 700; }
+.med-dose { font-size: 24rpx; color: var(--text-secondary); margin-top: 8rpx; }
+.med-time { font-size: 22rpx; color: var(--text-hint); margin-top: 4rpx; }
+.info-btn {
+  font-size: 40rpx;
+  min-height: 0;
+  padding: 8rpx;
+}
+.med-actions {
+  display: flex;
+  gap: 20rpx;
+}
+.take-btn, .skip-btn {
+  flex: 1;
+  border-radius: var(--radius-md);
+  padding: 20rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  min-height: 80rpx;
+  border: 2rpx solid var(--border);
+  color: var(--text-secondary);
+  background: var(--bg);
+}
+.take-btn.taken {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+.skip-btn.skipped {
+  background: var(--warning);
+  border-color: var(--warning);
+  color: #fff;
+}
+
+.add-btn {
+  width: 100%;
+  border: 2rpx dashed var(--border);
+  border-radius: var(--radius-md);
+  color: var(--primary);
+  font-size: 28rpx;
+  padding: 24rpx;
+  min-height: 84rpx;
+  margin-bottom: 32rpx;
+}
+.add-form .input {
+  width: 100%;
+  height: 84rpx;
+  background: var(--bg);
+  border-radius: var(--radius-md);
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+}
+.confirm-btn {
+  width: 100%;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  padding: 22rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  min-height: 84rpx;
+}
+
+.aux-entry {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24rpx;
+}
+.aux-icon { font-size: 44rpx; }
+.aux-text { flex: 1; }
+.aux-title { font-size: 28rpx; font-weight: 700; }
+.aux-desc { font-size: 22rpx; color: var(--text-secondary); margin-top: 4rpx; }
+.aux-arrow { color: var(--text-hint); font-size: 32rpx; }
+
+.tip {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.tip .strong { color: var(--text-primary); }

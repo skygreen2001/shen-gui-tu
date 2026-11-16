@@ -1,0 +1,63 @@
+<view class="container">
+  <view class="header">
+    <button class="back-btn" bindtap="goBack">← 返回</button>
+    <view class="title">减药导航</view>
+  </view>
+
+  <view class="content">
+    <view class="warning">⚠️ 减药必须在医生指导下进行，切勿自行调整剂量！</view>
+
+    <!-- 创建表单 -->
+    <view class="form card" wx:if="{{view === 'create'}}">
+      <view class="form-title">创建减药计划</view>
+      <input class="input" placeholder="药物名称" value="{{medName}}" bindinput="onMedName" />
+      <input class="input" placeholder="当前剂量（如 20mg）" value="{{startDose}}" bindinput="onStartDose" />
+      <input class="input" placeholder="目标（默认：停药）" value="{{targetDose}}" bindinput="onTargetDose" />
+      <view class="phase-row">
+        <text class="phase-label">分阶段数：</text>
+        <picker mode="selector" range="{{phaseLabels}}" value="{{phaseIndex}}" bindchange="onPhaseChange">
+          <view class="select">{{phaseLabels[phaseIndex]}} ▾</view>
+        </picker>
+      </view>
+      <button class="submit-btn" bindtap="handleCreate">创建计划</button>
+    </view>
+
+    <!-- 进度视图 -->
+    <view class="progress" wx:elif="{{activePlan}}">
+      <view class="plan-info card">
+        <view class="plan-med">{{activePlan.medName}}</view>
+        <view class="plan-dose">{{activePlan.startDose}} → {{activePlan.targetDose || '停药'}}</view>
+      </view>
+
+      <view class="timeline">
+        <view class="phase {{phase.status}}" wx:for="{{activePlan.phases}}" wx:key="index" wx:for-item="phase" wx:for-index="i">
+          <view class="phase-dot"></view>
+          <view class="phase-line" wx:if="{{i < activePlan.phases.length - 1}}"></view>
+          <view class="phase-content">
+            <view class="phase-label">{{phase.dose}}</view>
+            <view class="phase-duration">{{phase.duration}}</view>
+            <button
+              wx:if="{{phase.status === 'current'}}"
+              class="done-btn"
+              data-index="{{i}}"
+              bindtap="handlePhaseDone"
+            >标记完成</button>
+            <text wx:if="{{phase.status === 'done'}}" class="done-label">✅ 已完成</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="report-section card">
+        <view class="form-title">📋 生成医生报告</view>
+        <view class="report-hint">将减药进度整理为文本，方便与医生沟通</view>
+        <button class="submit-btn" bindtap="copyReport">复制报告</button>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty card" wx:else>
+      <view class="empty-text">暂无进行中的减药计划</view>
+      <button class="submit-btn" bindtap="switchCreate">创建新计划</button>
+    </view>
+  </view>
+</view>

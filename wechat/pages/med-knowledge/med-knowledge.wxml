@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="header">
+    <button class="back-btn" bindtap="goBack">← 返回</button>
+    <view class="title">{{name}}</view>
+  </view>
+
+  <view class="content" wx:if="{{info}}">
+    <view class="panel {{openKey === sec.key ? 'open' : ''}}" wx:for="{{sections}}" wx:key="key" wx:for-item="sec">
+      <view class="panel-header" data-key="{{sec.key}}" bindtap="togglePanel">
+        <text>{{sec.label}}</text>
+        <text class="arrow">▼</text>
+      </view>
+      <view class="panel-body" wx:if="{{openKey === sec.key}}">
+        <view class="panel-content">
+          <block wx:if="{{sec.type === 'list'}}">
+            <view class="list-item" wx:for="{{info[sec.key]}}" wx:key="*this">• {{item}}</view>
+          </block>
+          <block wx:else>
+            <text>{{info[sec.key]}}</text>
+          </block>
+        </view>
+      </view>
+    </view>
+
+    <view class="disclaimer">⚕️ 以上信息仅供参考，具体请遵医嘱。如有疑问请咨询您的主治医生。</view>
+  </view>
+
+  <view class="content empty" wx:else>
+    <view class="empty-icon">📖</view>
+    <view class="empty-title">暂未收录该药物</view>
+    <view class="empty-desc">建议咨询您的主治医生了解详情</view>
+  </view>
+</view>

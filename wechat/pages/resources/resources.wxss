@@ -1,0 +1,93 @@
+.content {
+  padding: 0 32rpx calc(var(--nav-height) + 64rpx);
+}
+.tabs-scroll {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 32rpx;
+}
+.tabs {
+  display: inline-flex;
+  gap: 16rpx;
+  padding-bottom: 8rpx;
+}
+.tab {
+  display: inline-block;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 16rpx 28rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  border: 2rpx solid var(--border);
+}
+.tab.active-tab {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.filter { margin-bottom: 24rpx; }
+.select {
+  display: inline-block;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 16rpx 32rpx;
+  font-size: 26rpx;
+  border: 2rpx solid var(--border);
+}
+
+.card { margin-bottom: 24rpx; }
+.card-name { font-size: 30rpx; font-weight: 700; }
+.card-info { font-size: 24rpx; color: var(--text-secondary); margin-top: 8rpx; }
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+.tag {
+  font-size: 20rpx;
+  color: var(--primary);
+  background: rgba(74,144,217,0.12);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+.tag-success {
+  color: var(--success);
+  background: rgba(107,175,122,0.12);
+}
+.card-link {
+  font-size: 28rpx;
+  color: var(--primary);
+  font-weight: 600;
+  margin-top: 16rpx;
+}
+
+.hotline-card { padding: 32rpx; }
+.hotline-card.featured {
+  border-left: 8rpx solid var(--danger);
+}
+.hotline-name { font-size: 28rpx; font-weight: 700; }
+.hotline-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 12rpx 0;
+}
+.hotline-time { font-size: 22rpx; color: var(--text-hint); }
+
+.policy-item { padding: 32rpx; }
+.policy-title { font-size: 30rpx; font-weight: 700; }
+.policy-desc {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  margin-top: 12rpx;
+  line-height: 1.6;
+}
+.highlight { color: var(--accent); font-weight: 700; font-size: 32rpx; }
+.policy-detail {
+  font-size: 22rpx;
+  color: var(--text-hint);
+  margin-top: 8rpx;
+}

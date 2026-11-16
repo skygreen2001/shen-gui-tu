@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "预警仪表盘",
+  "usingComponents": {
+    "risk-gauge": "/components/risk-gauge/risk-gauge"
+  }
+}

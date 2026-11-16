@@ -1,0 +1,65 @@
+<view class="page">
+  <view class="page-header">
+    <view class="h1">你好 👋</view>
+    <view class="sub">今天感觉怎么样？</view>
+  </view>
+
+  <view class="content">
+    <risk-gauge score="{{score}}" level="{{level}}" />
+
+    <button class="checkin-btn {{hasCheckedToday ? 'checked' : ''}}" bindtap="goCheckIn">
+      {{hasCheckedToday ? '✅ 今日已签到（点击查看）' : '📋 开始今日签到'}}
+    </button>
+
+    <view class="stats">
+      <view class="stat-card">
+        <view class="stat-value" style="color: var(--success)">{{streak}}</view>
+        <view class="stat-label">打卡天数</view>
+      </view>
+      <view class="stat-card" bindtap="goMedication">
+        <view class="stat-value" style="color: var(--primary)">{{adherence}}%</view>
+        <view class="stat-label">用药率</view>
+      </view>
+      <view class="stat-card">
+        <view class="stat-value" style="color: var(--accent)">{{recentCount}}</view>
+        <view class="stat-label">本周记录</view>
+      </view>
+    </view>
+
+    <view class="trend card">
+      <view class="trend-title">近7天趋势</view>
+      <view class="trend-chart">
+        <view class="trend-day" wx:for="{{dayLabels}}" wx:key="*this" wx:for-item="day" wx:for-index="i">
+          <view class="trend-bars">
+            <view
+              wx:for="{{trendData[i]}}"
+              wx:key="index"
+              wx:for-item="bar"
+              class="trend-bar"
+              style="height: {{bar.height}}rpx; background: {{bar.color}}; opacity: {{bar.opacity}};"
+            />
+          </view>
+          <view class="trend-day-label">{{day}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="risk-banner" wx:if="{{isRed}}">
+      <text>⚠️</text>
+      <text>您的状态评分偏低，建议联系医生或拨打 <text class="hotline" bindtap="callHotline">962525</text></text>
+    </view>
+
+    <view class="wrap-entry" bindtap="goWrap">
+      <view class="wrap-entry-icon">📝</view>
+      <view class="wrap-entry-text">
+        <view class="wrap-entry-title">WRAP 个人危机预防计划</view>
+        <view class="wrap-entry-desc">制定你的个人康复行动计划，包含每日维护、预警信号、应对策略等</view>
+      </view>
+      <view class="wrap-entry-arrow">→</view>
+    </view>
+
+    <button class="reset-btn" bindtap="confirmReset">🗑️ 重置所有数据</button>
+  </view>
+
+  <view class="crisis-btn" bindtap="goCrisis">🆘</view>
+</view>

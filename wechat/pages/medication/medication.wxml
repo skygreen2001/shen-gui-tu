@@ -1,0 +1,91 @@
+<view class="page">
+  <view class="page-header">
+    <view class="h1">用药管理 💊</view>
+    <view class="sub">坚持用药是康复的重要保障</view>
+  </view>
+
+  <view class="content">
+    <view class="adherence card">
+      <view class="adherence-circle" style="background: {{adherenceColor}}">
+        <text>{{animatedPct}}%</text>
+      </view>
+      <view class="adherence-label">本月用药依从率</view>
+    </view>
+
+    <view class="streak-card card" wx:if="{{streak > 0}}">
+      <text class="streak-icon">🔥</text>
+      <text class="streak-text">连续服药 <text class="strong">{{streak}}</text> 天</text>
+    </view>
+
+    <view class="onset-card card" wx:if="{{onsetPhase.active}}">
+      <view class="onset-title">🌱 药物起效期引导</view>
+      <view class="onset-body">
+        你开始服用 <text class="strong">{{onsetPhase.medName}}</text> 已 <text class="strong">{{onsetPhase.daysSince}}</text> 天。
+        大多数抗抑郁药物需要 2-4 周才能开始起效，前几周可能出现一些不适（如恶心、焦虑加重），这是正常现象，不代表药物无效。
+        请坚持服药，身体正在适应中。
+      </view>
+    </view>
+
+    <view class="med-card card" wx:for="{{meds}}" wx:key="id" wx:for-item="med">
+      <view class="med-card-top">
+        <view class="med-info">
+          <view class="med-name">{{med.name}}</view>
+          <view class="med-dose">{{med.dose}} · {{med.frequency}}</view>
+          <view class="med-time">{{med.time}}</view>
+        </view>
+        <button class="info-btn" data-name="{{med.name}}" bindtap="openKnowledge">📖</button>
+      </view>
+      <view class="med-actions">
+        <button
+          class="take-btn {{med.status === 'taken' ? 'taken' : ''}}"
+          data-id="{{med.id}}"
+          bindtap="handleTake"
+        >{{med.status === 'taken' ? '✅ 已服用' : '💊 服药'}}</button>
+        <button
+          class="skip-btn {{med.status === 'skipped' ? 'skipped' : ''}}"
+          data-id="{{med.id}}"
+          bindtap="handleSkip"
+        >{{med.status === 'skipped' ? '⏭️ 已跳过' : '⏭️ 跳过'}}</button>
+      </view>
+    </view>
+
+    <button class="add-btn" bindtap="toggleAdd">{{showAdd ? '取消' : '+ 添加药物'}}</button>
+
+    <view class="add-form card" wx:if="{{showAdd}}">
+      <input class="input" placeholder="药物名称" value="{{newName}}" bindinput="onNameInput" />
+      <input class="input" placeholder="剂量（如 10mg）" value="{{newDose}}" bindinput="onDoseInput" />
+      <button class="confirm-btn" bindtap="handleAdd">确认添加</button>
+    </view>
+
+    <view class="aux-entry" bindtap="goSideEffects">
+      <view class="aux-icon">📋</view>
+      <view class="aux-text">
+        <view class="aux-title">副作用周报</view>
+        <view class="aux-desc">每周记录药物副作用，追踪身体变化</view>
+      </view>
+      <view class="aux-arrow">→</view>
+    </view>
+    <view class="aux-entry" bindtap="goMoodCorrelation">
+      <view class="aux-icon">📈</view>
+      <view class="aux-text">
+        <view class="aux-title">药物-情绪联动</view>
+        <view class="aux-desc">查看用药与情绪的关联趋势</view>
+      </view>
+      <view class="aux-arrow">→</view>
+    </view>
+    <view class="aux-entry" bindtap="goTaper">
+      <view class="aux-icon">🎯</view>
+      <view class="aux-text">
+        <view class="aux-title">减药导航</view>
+        <view class="aux-desc">在医生指导下安全渐进减药</view>
+      </view>
+      <view class="aux-arrow">→</view>
+    </view>
+
+    <view class="tip card">
+      💡 <text class="strong">温馨提示：</text>即使感觉好转，也请遵医嘱继续服药。突然停药可能导致不适。如有疑问，请咨询您的主治医生。
+    </view>
+  </view>
+
+  <view class="crisis-btn" bindtap="goCrisis">🆘</view>
+</view>

@@ -1,0 +1,135 @@
+<view class="ft-container">
+  <!-- 家属课程详情 -->
+  <view wx:if="{{view === 'course'}}">
+    <button class="back-btn" bindtap="backToList">← 返回</button>
+    <view class="course-title">{{course.icon}} {{course.title}}</view>
+    <view class="step-dots">
+      <view
+        wx:for="{{course.steps}}"
+        wx:key="index"
+        class="dot {{index === activeStep ? 'active-dot' : ''}} {{index < activeStep ? 'done-dot' : ''}}"
+      ></view>
+    </view>
+    <view class="step-card card">
+      <text class="step-type">{{step.type}}</text>
+      <view class="step-title">{{step.title}}</view>
+      <view class="step-body">
+        <view class="line" wx:for="{{step.lines}}" wx:key="index">{{item}}</view>
+      </view>
+    </view>
+    <view class="step-nav">
+      <button class="nav-btn" disabled="{{activeStep === 0}}" bindtap="prevStep">上一步</button>
+      <button class="nav-btn primary" wx:if="{{isLast}}" bindtap="nextStep">{{isCompleted ? '已完成 ✓' : '完成课程'}}</button>
+      <button class="nav-btn primary" wx:else bindtap="nextStep">下一步</button>
+    </view>
+  </view>
+
+  <!-- 照护者自评 -->
+  <view wx:elif="{{view === 'assessment'}}">
+    <button class="back-btn" bindtap="backToList">← 返回</button>
+    <view class="section-title">💪 照护者压力自评</view>
+    <view class="assess-hint">请根据你最近一周的真实感受评分（1=完全不符合，5=完全符合）</view>
+    <view class="question-item" wx:for="{{caregiverQuestions}}" wx:key="id" wx:for-item="q" wx:for-index="qi">
+      <view class="question-text">{{qi + 1}}. {{q.text}}</view>
+      <view class="rating-row">
+        <button
+          wx:for="{{[1,2,3,4,5]}}"
+          wx:key="*this"
+          wx:for-item="v"
+          class="rating-btn {{answers[q.id] === v ? 'rating-selected' : ''}}"
+          data-qid="{{q.id}}"
+          data-val="{{v}}"
+          bindtap="selectAnswer"
+        >{{v}}</button>
+      </view>
+    </view>
+    <button class="submit-btn" bindtap="submitAssessment">提交自评</button>
+  </view>
+
+  <!-- 自评结果 -->
+  <view wx:elif="{{view === 'result' && latest}}">
+    <button class="back-btn" bindtap="backToList">← 返回</button>
+    <view class="section-title">自评结果</view>
+    <view class="result-card" style="background: {{latestLevel.bgColor}}; border-color: {{latestLevel.color}};">
+      <view class="result-score" style="color: {{latestLevel.color}}">{{latest.totalScore}} / 40</view>
+      <view class="result-label" style="color: {{latestLevel.color}}">{{latestLevel.label}}</view>
+      <view class="result-advice">{{latestLevel.advice}}</view>
+    </view>
+    <button class="submit-btn" bindtap="backToList">返回家属支持</button>
+  </view>
+
+  <!-- 主列表 -->
+  <view wx:else>
+    <view class="section">
+      <view class="section-title">📖 家属教育课程</view>
+      <view class="section-desc">为照护者提供的心理学知识，帮助更好地支持家人</view>
+      <view class="course-grid">
+        <view
+          wx:for="{{familyCourses}}"
+          wx:key="id"
+          class="course-card {{progress[item.id] ? 'course-done' : ''}}"
+          data-index="{{index}}"
+          bindtap="openCourse"
+        >
+          <view class="course-icon">{{item.icon}}</view>
+          <view class="course-info">
+            <view class="course-name">{{item.title}}</view>
+            <view class="course-desc">{{item.desc}}</view>
+          </view>
+          <text class="done-badge" wx:if="{{progress[item.id]}}">✓</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">🎯 家属行动指南</view>
+      <view class="section-desc">根据患者当前状态，采取不同的支持策略</view>
+      <view class="guide-card" wx:for="{{familyActionGuide}}" wx:key="level" wx:for-item="g" wx:for-index="gi" style="border-color: {{g.color}};">
+        <view class="guide-header" data-index="{{gi}}" bindtap="toggleGuide">
+          <text class="guide-icon">{{g.icon}}</text>
+          <text class="guide-label" style="color: {{g.color}};">{{g.label}}</text>
+          <text class="guide-arrow">{{expandedGuide === gi ? '▲' : '▼'}}</text>
+        </view>
+        <view class="guide-body" wx:if="{{expandedGuide === gi}}">
+          <view class="guide-desc">{{g.description}}</view>
+          <view class="guide-sub-title">✅ 建议做的事：</view>
+          <view class="guide-item" wx:for="{{g.doList}}" wx:key="*this">• {{item}}</view>
+          <view class="guide-sub-title">❌ 应避免的事：</view>
+          <view class="guide-item" wx:for="{{g.dontList}}" wx:key="*this">• {{item}}</view>
+          <view class="guide-reminder" style="background: {{g.bgColor}}; color: {{g.color}};">💡 {{g.keyReminder}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">💪 照护者压力自评</view>
+      <view class="section-desc">关注自己的状态，才能更好地支持家人</view>
+      <view class="assess-entry">
+        <button class="assess-btn" bindtap="startAssessment">开始自评</button>
+        <text class="assess-last" wx:if="{{lastAssessLabel}}">{{lastAssessLabel}}</text>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="self-care-header" bindtap="toggleSelfCare">
+        <view class="section-title">🌿 自我关怀清单</view>
+        <text class="guide-arrow">{{showSelfCare ? '▲' : '▼'}}</text>
+      </view>
+      <view class="self-care-list" wx:if="{{showSelfCare}}">
+        <view class="self-care-item" wx:for="{{selfCareItems}}" wx:key="index" wx:for-item="item" wx:for-index="si">
+          <input
+            class="self-care-input"
+            value="{{item}}"
+            placeholder="添加一项自我关怀活动"
+            data-index="{{si}}"
+            bindinput="updateSelfCareItem"
+          />
+          <button class="remove-btn" data-index="{{si}}" bindtap="removeSelfCareItem">✕</button>
+        </view>
+        <button class="add-btn" bindtap="addSelfCareItem">+ 添加</button>
+      </view>
+    </view>
+
+    <view class="disclaimer">以上内容仅供参考，不替代专业心理咨询和医疗建议。</view>
+  </view>
+</view>

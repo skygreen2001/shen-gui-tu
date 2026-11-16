@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "pages/welcome/welcome",
+    "pages/dashboard/dashboard",
+    "pages/checkin/checkin",
+    "pages/medication/medication",
+    "pages/med-knowledge/med-knowledge",
+    "pages/side-effects/side-effects",
+    "pages/mood-correlation/mood-correlation",
+    "pages/taper/taper",
+    "pages/resources/resources",
+    "pages/crisis/crisis",
+    "pages/cbt/cbt",
+    "pages/wrap/wrap"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#F8F6F2",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "申归途",
+    "backgroundColor": "#F8F6F2",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#B2BEC3",
+    "selectedColor": "#4A90D9",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/dashboard/dashboard", "text": "首页" },
+      { "pagePath": "pages/medication/medication", "text": "疗愈" },
+      { "pagePath": "pages/resources/resources", "text": "服务" },
+      { "pagePath": "pages/cbt/cbt", "text": "成长" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

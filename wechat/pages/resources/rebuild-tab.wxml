@@ -1,0 +1,128 @@
+<view class="rb-container">
+  <!-- 故事详情 -->
+  <view wx:if="{{view === 'storyDetail' && story}}">
+    <button class="back-btn" bindtap="backToStories">← 返回</button>
+    <view class="story-title">{{story.title}}</view>
+    <view class="story-tags">
+      <text class="story-tag" wx:for="{{story.tags}}" wx:key="*this">#{{item}}</text>
+    </view>
+    <view class="story-body">
+      <view class="para" wx:for="{{story.lines}}" wx:key="index">{{item}}</view>
+    </view>
+    <view class="story-footer">— 一位正在康复中的朋友</view>
+  </view>
+
+  <!-- 社交记录 -->
+  <view wx:elif="{{view === 'record'}}">
+    <button class="back-btn" bindtap="goTasks">← 返回</button>
+    <view class="section-title">📊 记录今天的社交活动</view>
+    <view class="type-grid">
+      <button
+        wx:for="{{activityTypes}}"
+        wx:key="key"
+        class="type-btn {{recordType === item.key ? 'type-selected' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="selectType"
+      >{{item.label}}</button>
+    </view>
+    <input
+      class="note-input"
+      placeholder="今天有什么想记录的？（选填）"
+      maxlength="100"
+      value="{{recordNote}}"
+      bindinput="onRecordNote"
+    />
+    <button class="submit-btn" bindtap="submitRecord">提交记录</button>
+  </view>
+
+  <!-- 感受弹窗 -->
+  <view wx:elif="{{feelingTask}}" class="feeling-view">
+    <view class="section-title">🎉 完成任务！</view>
+    <view class="feeling-hint">记录一下你的感受（选填）</view>
+    <input class="note-input" placeholder="一句话就好..." value="{{feelingInput}}" bindinput="onFeelingInput" />
+    <view class="feeling-btns">
+      <button class="skip-btn" bindtap="skipFeeling">跳过</button>
+      <button class="submit-btn inline" bindtap="confirmFeeling">确认</button>
+    </view>
+  </view>
+
+  <!-- 主视图 -->
+  <view wx:else>
+    <view class="sub-nav">
+      <button class="sub-tab {{view === 'tasks' ? 'sub-active' : ''}}" bindtap="goTasks">📋 社交任务</button>
+      <button class="sub-tab {{view === 'stories' ? 'sub-active' : ''}}" bindtap="goStories">👥 同伴故事</button>
+    </view>
+
+    <!-- 社交任务 -->
+    <block wx:if="{{view === 'tasks'}}">
+      <view class="stats">
+        <view class="stat-item">
+          <view class="stat-num">{{doneTasks}}/{{totalTasks}}</view>
+          <view class="stat-label">已完成任务</view>
+        </view>
+        <view class="stat-item">
+          <view class="stat-num">{{weekActivities}}</view>
+          <view class="stat-label">本周社交</view>
+        </view>
+        <button class="record-entry" bindtap="goRecord">📝 记录今天的社交活动</button>
+      </view>
+
+      <view class="stage-card" wx:for="{{stages}}" wx:key="id" wx:for-item="stage" wx:for-index="si">
+        <view class="stage-header" data-index="{{si}}" bindtap="toggleStage">
+          <text class="stage-icon">{{stage.icon}}</text>
+          <view class="stage-info">
+            <view class="stage-name">{{stage.title}}</view>
+            <view class="stage-desc">{{stage.desc}}</view>
+          </view>
+          <view class="stage-meta">
+            <text class="stage-progress">{{stage.doneCount}}/{{stage.tasks.length}}</text>
+            <text class="stage-arrow">{{expandedStage === si ? '▲' : '▼'}}</text>
+          </view>
+        </view>
+        <view class="task-list" wx:if="{{expandedStage === si}}">
+          <view
+            wx:for="{{stage.tasks}}"
+            wx:key="id"
+            wx:for-item="task"
+            class="task-item {{completedTasks[task.id] ? 'task-done' : ''}}"
+          >
+            <button class="task-check" data-id="{{task.id}}" bindtap="toggleTask">
+              {{completedTasks[task.id] ? '✅' : '⬜'}}
+            </button>
+            <view class="task-content">
+              <view class="task-title">{{task.title}}</view>
+              <view class="task-desc">{{task.desc}}</view>
+              <view class="task-meta">⏱ {{task.duration}}</view>
+              <view class="task-feeling" wx:if="{{completedTasks[task.id].feeling}}">"{{completedTasks[task.id].feeling}}"</view>
+              <view class="task-tip" wx:if="{{!completedTasks[task.id]}}">💡 {{task.tip}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 同伴故事 -->
+    <block wx:if="{{view === 'stories'}}">
+      <view class="story-filter">
+        <button
+          wx:for="{{storyCategories}}"
+          wx:key="key"
+          class="filter-btn {{storyFilter === item.key ? 'filter-active' : ''}}"
+          data-key="{{item.key}}"
+          bindtap="filterStories"
+        >{{item.label}}</button>
+      </view>
+      <view class="story-list">
+        <view class="story-card" wx:for="{{filteredStories}}" wx:key="id" wx:for-item="s" data-id="{{s.id}}" bindtap="openStory">
+          <view class="story-card-title">{{s.title}}</view>
+          <view class="story-card-summary">{{s.summary}}</view>
+          <view class="story-tags">
+            <text class="story-tag" wx:for="{{s.tags}}" wx:key="*this" wx:for-item="t">#{{t}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view class="disclaimer">以上内容仅供参考，不替代专业心理咨询和医疗建议。</view>
+  </view>
+</view>

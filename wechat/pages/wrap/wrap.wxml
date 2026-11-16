@@ -1,0 +1,38 @@
+<view class="page">
+  <view class="page-header">
+    <view class="h1">WRAP计划 📝</view>
+    <view class="sub">个人康复行动计划</view>
+  </view>
+
+  <view class="content">
+    <view class="panel {{openPanel === section.id ? 'open' : ''}}" wx:for="{{sections}}" wx:key="id" wx:for-item="section">
+      <view class="panel-header" data-id="{{section.id}}" bindtap="togglePanel">
+        <view class="panel-title">{{section.title}}</view>
+        <view class="panel-arrow">▼</view>
+      </view>
+      <view class="panel-body" wx:if="{{openPanel === section.id}}">
+        <view class="panel-content">
+          <view class="hint">{{section.hint}}</view>
+          <view class="item" wx:for="{{section.items}}" wx:key="index" wx:for-item="item" wx:for-index="idx">
+            <input
+              class="item-input"
+              value="{{item}}"
+              data-sid="{{section.id}}"
+              data-idx="{{idx}}"
+              bindinput="updateItem"
+            />
+            <button class="item-delete" data-sid="{{section.id}}" data-idx="{{idx}}" bindtap="removeItem">✕</button>
+          </view>
+          <button class="add-btn" data-sid="{{section.id}}" bindtap="addItem">+ 添加条目</button>
+        </view>
+      </view>
+    </view>
+
+    <view class="footer">
+      <view>WRAP（Wellness Recovery Action Plan）是由 Mary Ellen Copeland 博士开发的</view>
+      <view>个人康复行动计划，已被全球广泛用于心理健康自我管理。</view>
+    </view>
+  </view>
+
+  <view class="crisis-btn" bindtap="goCrisis">🆘</view>
+</view>

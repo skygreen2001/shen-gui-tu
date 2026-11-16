@@ -1,0 +1,60 @@
+<view class="page">
+  <!-- 已签到视图 -->
+  <block wx:if="{{mode === 'done'}}">
+    <view class="page-header">
+      <view class="h1">每日签到 📋</view>
+    </view>
+    <view class="content">
+      <view class="done-card card">
+        <view class="done-icon">🎉</view>
+        <view class="done-title">{{doneTitle || '今日已签到'}}</view>
+        <view class="done-desc">{{doneMsg || '你今天已经完成了签到，可以修改或明天继续加油！'}}</view>
+        <button class="re-edit-btn" bindtap="enterEdit">修改今日签到</button>
+      </view>
+    </view>
+  </block>
+
+  <!-- 表单视图 -->
+  <block wx:else>
+    <view class="page-header">
+      <view class="h1">每日签到 📋</view>
+      <view class="sub">{{editing ? '修改今日签到内容' : '花1分钟了解自己的状态'}}</view>
+    </view>
+    <view class="content">
+      <view class="dim-group" wx:for="{{dimensions}}" wx:key="key" wx:for-item="dim">
+        <view class="dim-label"><text>{{dim.icon}}</text> {{dim.label}}</view>
+        <view class="radio-group">
+          <view
+            wx:for="{{dim.values}}"
+            wx:key="*this"
+            wx:for-item="val"
+            class="radio-btn {{ratings[dim.key] === val ? 'selected' : ''}}"
+            data-key="{{dim.key}}"
+            data-val="{{val}}"
+            bindtap="selectRating"
+          >{{val}}</view>
+        </view>
+        <view class="rating-labels">
+          <text>{{dim.left}}</text>
+          <text>{{dim.right}}</text>
+        </view>
+      </view>
+
+      <view class="note-wrap">
+        <textarea
+          class="note"
+          placeholder="今天有什么想记录的吗？（选填）"
+          maxlength="200"
+          value="{{note}}"
+          bindinput="onNoteInput"
+        />
+      </view>
+
+      <button
+        class="submit-btn {{allRated ? 'ready' : ''}}"
+        disabled="{{!allRated}}"
+        bindtap="handleSubmit"
+      >{{editing ? '保存修改' : '提交签到'}}</button>
+    </view>
+  </block>
+</view>

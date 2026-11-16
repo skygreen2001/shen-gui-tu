@@ -1,0 +1,69 @@
+<view class="container">
+  <view class="header">
+    <button class="back-btn" bindtap="goBack">← 返回</button>
+    <view class="title">副作用追踪</view>
+  </view>
+
+  <view class="tabs">
+    <button class="tab {{view === 'form' ? 'active-tab' : ''}}" data-view="form" bindtap="switchView">📝 本周记录</button>
+    <button class="tab {{view === 'history' ? 'active-tab' : ''}}" data-view="history" bindtap="switchView">📊 历史记录</button>
+    <button class="tab {{view === 'report' ? 'active-tab' : ''}}" wx:if="{{hasReports}}" data-view="report" bindtap="switchView">📋 报告</button>
+  </view>
+
+  <!-- 应对策略视图 -->
+  <view class="content" wx:if="{{view === 'strategies'}}">
+    <view class="strategy-header">💡 针对你本周的副作用，以下是一些循证应对建议：</view>
+    <view class="strategy-group" wx:for="{{strategies}}" wx:key="label" wx:for-item="item">
+      <view class="strategy-title">
+        {{item.label}}
+        <text class="strategy-level">{{item.levelLabel}}</text>
+      </view>
+      <view class="strategy-tip" wx:for="{{item.strategies}}" wx:key="*this" wx:for-item="tip">{{tip}}</view>
+    </view>
+    <view class="strategy-note">💡 以上建议仅供参考。如果副作用严重影响日常生活，请及时联系医生。</view>
+    <button class="submit-btn" data-view="form" bindtap="switchView">我知道了</button>
+  </view>
+
+  <!-- 报告视图 -->
+  <view class="content" wx:if="{{view === 'report'}}">
+    <view class="report-header">📋 副作用追踪报告（供复诊参考）</view>
+    <view class="report-content">{{reportText}}</view>
+    <button class="submit-btn" bindtap="copyReport">📋 复制报告到剪贴板</button>
+  </view>
+
+  <!-- 表单视图 -->
+  <view class="content" wx:if="{{view === 'form'}}">
+    <view class="hint">根据你的真实感受评分，没有对错之分</view>
+    <view class="item" wx:for="{{items}}" wx:key="key" wx:for-item="item">
+      <view class="item-label">{{item.label}}</view>
+      <view class="rating-row">
+        <button
+          wx:for="{{[0,1,2,3,4]}}"
+          wx:key="*this"
+          wx:for-item="i"
+          class="rating-btn {{ratings[item.key] === i ? 'selected' : ''}}"
+          data-key="{{item.key}}"
+          data-val="{{i}}"
+          bindtap="selectRating"
+        >{{i}}</button>
+      </view>
+      <view class="rating-labels"><text>{{levels[0]}}</text><text>{{levels[4]}}</text></view>
+    </view>
+    <textarea class="note" placeholder="本周有什么想记录的吗？（选填）" value="{{note}}" bindinput="onNoteInput" />
+    <view class="summary">总分：<text class="strong">{{totalScore}}</text> / 28</view>
+    <button class="submit-btn" bindtap="handleSubmit">提交周报</button>
+  </view>
+
+  <!-- 历史视图 -->
+  <view class="content" wx:if="{{view === 'history'}}">
+    <view class="empty" wx:if="{{reports.length === 0}}">暂无记录，完成第一次周报后这里会显示历史趋势</view>
+    <block wx:else>
+      <view class="history-card card" wx:for="{{displayReports}}" wx:key="id" wx:for-item="report">
+        <view class="history-date">{{report.date}}（{{report.weekKey}}）</view>
+        <view class="history-score">总分：{{report.total}} / 28</view>
+        <view class="history-note" wx:if="{{report.note}}">{{report.note}}</view>
+      </view>
+      <button class="submit-btn" bindtap="generateReport">📋 生成复诊报告</button>
+    </block>
+  </view>
+</view>

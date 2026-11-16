@@ -1,0 +1,10 @@
+<view class="gauge">
+  <view class="wrap">
+    <canvas id="gaugeCanvas" type="2d" class="svg"></canvas>
+    <view class="center">
+      <view class="score">{{displayScore}}</view>
+      <view class="score-label">综合评分</view>
+      <view class="level" style="color: {{color}}">{{label}}</view>
+    </view>
+  </view>
+</view>

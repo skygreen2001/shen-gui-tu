@@ -1,0 +1,42 @@
+<view class="container">
+  <view class="header">
+    <button class="back-btn" bindtap="goBack">← 返回</button>
+    <view class="title">药物-情绪联动</view>
+  </view>
+
+  <view class="content">
+    <view class="empty" wx:if="{{!hasData}}">
+      <view class="empty-icon">📈</view>
+      <view class="empty-title">数据积累中</view>
+      <view class="empty-hint">需要至少 2 周的签到和副作用记录才能生成分析</view>
+    </view>
+
+    <block wx:else>
+      <view class="chart-section card">
+        <view class="chart-title">近 {{weeks.length}} 周趋势</view>
+        <view class="chart-legend">
+          <view class="legend-item"><view class="legend-dot mood-dot" /> 情绪评分</view>
+          <view class="legend-item"><view class="legend-dot se-dot" /> 副作用总分</view>
+        </view>
+        <view class="chart">
+          <view class="bar-group" wx:for="{{weeks}}" wx:key="weekKey" wx:for-item="wk">
+            <view class="bar-row">
+              <view class="bar mood-bar" style="height: {{wk.moodHeight}}%"></view>
+            </view>
+            <view class="bar-row">
+              <view class="bar se-bar" style="height: {{wk.seHeight}}%"></view>
+            </view>
+            <view class="bar-label">{{wk.shortKey}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="insight-section">
+        <view class="chart-title">📋 分析洞察</view>
+        <view class="insight-card" wx:for="{{insights}}" wx:key="*this">{{item}}</view>
+      </view>
+    </block>
+
+    <view class="disclaimer">⚕️ 以上分析仅供参考，不能替代专业医疗建议。如有不适请及时就医。</view>
+  </view>
+</view>

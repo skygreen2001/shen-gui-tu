@@ -1,0 +1,73 @@
+<view class="page">
+  <view class="page-header">
+    <view class="h1">服务中心 📚</view>
+    <view class="sub">上海本地心理健康服务</view>
+  </view>
+
+  <view class="content">
+    <!-- 顶部 tab -->
+    <scroll-view scroll-x class="tabs-scroll">
+      <view class="tabs">
+        <view
+          wx:for="{{tabs}}"
+          wx:key="key"
+          class="tab {{activeTab === index ? 'active-tab' : ''}}"
+          data-index="{{index}}"
+          bindtap="switchTab"
+        >{{item.label}}</view>
+      </view>
+    </scroll-view>
+
+    <!-- 医院面板 -->
+    <view class="panel" wx:if="{{activeTab === 0}}">
+      <view class="filter">
+        <picker mode="selector" range="{{areas}}" value="{{areaIndex}}" bindchange="onAreaChange">
+          <view class="select">📍 {{areas[areaIndex]}} ▾</view>
+        </picker>
+      </view>
+      <view class="res-card card" wx:for="{{filteredHospitals}}" wx:key="id" wx:for-item="h">
+        <view class="card-name">{{h.name}}</view>
+        <view class="card-info">{{h.level}} · {{h.address}}</view>
+        <view class="card-tags">
+          <text class="tag" wx:for="{{h.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+        <view class="card-link" data-phone="{{h.phone}}" bindtap="callPhone">📞 {{h.phone}}</view>
+      </view>
+    </view>
+
+    <!-- 热线面板 -->
+    <view class="panel" wx:if="{{activeTab === 1}}">
+      <view class="hotline-card {{h.featured ? 'featured' : ''}} card" wx:for="{{hotlines}}" wx:key="id" wx:for-item="h">
+        <view class="hotline-name">{{h.featured ? '🔴' : '📞'}} {{h.name}}</view>
+        <view class="hotline-num" data-phone="{{h.number}}" bindtap="callPhone">{{h.number}}</view>
+        <view class="hotline-time">{{h.hours}} {{h.featured ? '· 免费' : ''}}</view>
+      </view>
+    </view>
+
+    <!-- 社区面板 -->
+    <view class="panel" wx:if="{{activeTab === 2}}">
+      <view class="res-card card" wx:for="{{communityResources}}" wx:key="id" wx:for-item="c">
+        <view class="card-name">{{c.name}}</view>
+        <view class="card-info">{{c.area}} · {{c.address}}</view>
+        <view class="card-tags">
+          <text class="tag tag-success" wx:for="{{c.services}}" wx:key="*this">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 医保面板 -->
+    <view class="panel" wx:if="{{activeTab === 3}}">
+      <view class="policy-item card" wx:for="{{insurancePolicies}}" wx:key="id" wx:for-item="p">
+        <view class="policy-title">{{p.title}}</view>
+        <view class="policy-desc">{{p.desc}}<text class="highlight">{{p.highlight}}</text></view>
+        <view class="policy-detail" wx:if="{{p.detail}}">{{p.detail}}</view>
+      </view>
+    </view>
+
+    <!-- 家属面板（FamilyTab） -->
+    <family-tab wx:if="{{activeTab === 4}}" />
+
+    <!-- 重建面板（RebuildTab） -->
+    <rebuild-tab wx:if="{{activeTab === 5}}" />
+  </view>
+</view>

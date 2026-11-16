@@ -1,0 +1,39 @@
+<view class="page">
+  <view class="hero">
+    <view class="hero-title">你不是一个人 🤝</view>
+    <view class="hero-sub">无论何时，都有人愿意倾听和帮助你</view>
+  </view>
+
+  <view class="actions">
+    <button class="primary-btn" data-phone="962525" bindtap="callPhone">📞 立即拨打 962525</button>
+    <button class="secondary-btn" data-phone="4001619995" bindtap="callPhone">📞 全国热线 400-161-9995</button>
+  </view>
+
+  <view class="channels card">
+    <view class="channel-item" data-phone="120" bindtap="callPhone">🏥 急救电话 120</view>
+    <view class="channel-item" data-phone="4001619995" bindtap="callPhone">💬 希望24热线</view>
+    <view class="channel-item" data-phone="12345" bindtap="callPhone">📱 市民服务热线 12345</view>
+    <view class="channel-item" data-phone="962525" bindtap="callPhone">🏫 学校心理中心</view>
+  </view>
+
+  <view class="breath-section">
+    <view class="breath-card card">
+      <view class="breath-title">🌬️ 4-7-8 呼吸放松法</view>
+      <view class="circle-wrap">
+        <view class="circle {{phase === 'inhale' ? 'inhale' : ''}} {{phase === 'hold' ? 'hold' : ''}} {{phase === 'exhale' ? 'exhale' : ''}}"></view>
+        <view class="breath-text">
+          {{phase === 'idle' ? '开始' : (phase === 'inhale' ? '吸气 ' + count : (phase === 'hold' ? '屏息 ' + count : '呼气 ' + count))}}
+        </view>
+      </view>
+      <button class="breath-btn" bindtap="toggleBreathing">{{breathing ? '停止练习' : '开始练习'}}</button>
+    </view>
+  </view>
+
+  <view class="safety-card card">
+    <view class="safety-title">🛡️ 安全小贴士</view>
+    <view class="safety-item">远离危险物品和环境</view>
+    <view class="safety-item">联系信任的人，告诉他们你的感受</view>
+    <view class="safety-item">去一个让你感到安全的地方</view>
+    <view class="safety-item">记住：这种感觉会过去的</view>
+  </view>
+</view>

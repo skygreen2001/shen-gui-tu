@@ -1,0 +1,151 @@
+<view class="page">
+  <!-- 课程列表 -->
+  <block wx:if="{{view === 'list'}}">
+    <view class="page-header">
+      <view class="h1">心理干预课程 📖</view>
+      <view class="sub">CBT · MBCT · WRAP · ACT 循证课程体系</view>
+    </view>
+    <view class="content">
+      <view class="tier-group" wx:for="{{groupedCourses}}" wx:key="tier" wx:for-item="group">
+        <view class="tier-header" data-tier="{{group.tier}}" bindtap="toggleTier">
+          <view class="tier-indicator" style="background: {{group.color}};"></view>
+          <view class="tier-text">
+            <view class="tier-title">{{group.title}}</view>
+            <view class="tier-desc">{{group.desc}}</view>
+          </view>
+          <view class="tier-count">{{group.doneCount}}/{{group.courses.length}}</view>
+          <view class="tier-arrow {{collapsedTiers[group.tier] ? 'collapsed' : ''}}">▾</view>
+        </view>
+        <block wx:if="{{!collapsedTiers[group.tier]}}">
+          <view
+            wx:for="{{group.courses}}"
+            wx:key="id"
+            wx:for-item="course"
+            class="course-card {{course.isLocked ? 'locked' : ''}}"
+            data-id="{{course.id}}"
+            bindtap="openCourse"
+          >
+            <view class="card-header">
+              <text class="card-icon">{{course.isLocked ? '🔒' : course.icon}}</text>
+              <view class="card-info">
+                <text class="card-title">{{course.title}}</text>
+                <text class="card-tag" style="background: {{course.tierColor}}20; color: {{course.tierColor}};">{{course.tag}}</text>
+              </view>
+            </view>
+            <view class="card-desc">{{course.isLocked ? '完成前置课程后解锁' : course.desc}}</view>
+            <view class="completed-badge" wx:if="{{course.completed}}">✅ 已完成</view>
+            <view class="progress-bar">
+              <view class="progress-fill" style="width: {{course.completed ? 100 : 0}}%; background: {{course.tierColor}};"></view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+    <view class="crisis-btn" bindtap="goCrisis">🆘</view>
+  </block>
+
+  <!-- 课程学习 -->
+  <block wx:else>
+    <view class="header">
+      <button class="back-btn" bindtap="closeCourse">← 返回</button>
+      <view class="h1">{{course.title}}</view>
+    </view>
+    <view class="content">
+      <view class="step-dots">
+        <view
+          wx:for="{{course.steps}}"
+          wx:key="index"
+          class="dot {{index === activeStepIdx ? 'dot-active' : ''}} {{index < activeStepIdx ? 'dot-done' : ''}}"
+        ></view>
+      </view>
+
+      <view class="step-content card">
+        <view class="step-type">{{step.type}}</view>
+        <view class="step-title">{{step.title}}</view>
+
+        <!-- 引导练习播放器 -->
+        <view class="guided-player" wx:if="{{step.guided}}">
+          <!-- 呼吸动画 -->
+          <view class="animation-area">
+            <view class="breath-container" wx:if="{{gp.type === 'breathing'}}">
+              <view class="breath-circle {{gp.playing ? 'breath-active' : ''}}"></view>
+              <view class="breath-label">{{gp.phaseLabel}}</view>
+            </view>
+            <!-- 身体扫描 -->
+            <view class="body-scan-container" wx:if="{{gp.type === 'bodyScan'}}">
+              <view class="body-outline">
+                <view
+                  wx:for="{{gp.bodyParts}}"
+                  wx:key="*this"
+                  class="body-part {{index <= gp.idx && gp.playing ? 'body-part-active' : ''}}"
+                >{{item}}</view>
+              </view>
+            </view>
+            <!-- 冥想动画 -->
+            <view class="medit-container" wx:if="{{gp.type === 'meditation'}}">
+              <view class="medit-circle {{gp.playing ? 'medit-pulse' : ''}}"></view>
+              <view class="medit-label">
+                {{!gp.playing && !gp.finished ? '准备开始' : (gp.finished ? '练习结束 🌱' : '正在引导...')}}
+              </view>
+            </view>
+          </view>
+
+          <!-- 进度条 -->
+          <view class="progress-track">
+            <view class="progress-fill-bar" style="width: {{gp.progress}}%;"></view>
+          </view>
+
+          <!-- 当前段落文字 -->
+          <view class="segment-text">
+            {{gp.finished ? '练习结束。你做得很棒！' : (gp.seg ? gp.seg.text : step.guided.segments[0].text)}}
+          </view>
+
+          <!-- 段落圆点（可跳转） -->
+          <view class="segment-dots">
+            <view
+              wx:for="{{gp.segments}}"
+              wx:key="index"
+              class="seg-dot {{index === gp.idx && gp.playing ? 'seg-dot-active' : ''}} {{index < gp.idx || gp.finished ? 'seg-dot-done' : ''}}"
+              data-index="{{index}}"
+              bindtap="gpJump"
+            ></view>
+          </view>
+
+          <!-- 计时 -->
+          <view class="timer-row">
+            <text>{{gp.elapsedText}}</text>
+            <text>{{gp.totalText}}</text>
+          </view>
+
+          <!-- 控制按钮 -->
+          <view class="gp-controls">
+            <button wx:if="{{!gp.playing && !gp.paused}}" class="play-btn" bindtap="gpPlay">
+              ▶ {{gp.finished ? '重新播放' : '开始引导'}}
+            </button>
+            <block wx:if="{{gp.playing}}">
+              <button class="skip-btn" bindtap="gpSkip">⏭ 跳过</button>
+              <button class="pause-btn" bindtap="gpPause">⏸ 暂停</button>
+            </block>
+            <button wx:if="{{gp.paused}}" class="play-btn" bindtap="gpPlay">▶ 继续</button>
+            <button wx:if="{{gp.playing || gp.paused}}" class="stop-btn" bindtap="gpStop">⏹ 结束</button>
+          </view>
+
+          <view class="audio-notice" wx:if="{{!gp.hasAudio}}">音频文件暂未生成，请跟随文字自行练习</view>
+        </view>
+
+        <!-- 普通文本内容 -->
+        <view class="step-body" wx:else>
+          <view class="line" wx:for="{{step.lines}}" wx:key="index">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="step-nav">
+        <button class="prev-btn" disabled="{{activeStepIdx === 0}}" bindtap="prevStep">← 上一步</button>
+        <button class="next-btn" bindtap="nextStep">
+          {{activeStepIdx === course.steps.length - 1 ? '✅ 完成课程' : '下一步 →'}}
+        </button>
+      </view>
+    </view>
+    <view class="crisis-btn" bindtap="goCrisis">🆘</view>
+  </block>
+</view>
