@@ -8,6 +8,7 @@ import RebuildTab from './RebuildTab'
 import styles from './Resources.module.css'
 
 const tabs = [
+  { key: 'wechat', label: '💬 微信' },
   { key: 'hospitals', label: '🏥 医院' },
   { key: 'hotlines', label: '📞 热线' },
   { key: 'community', label: '🏘️ 社区' },
@@ -55,6 +56,43 @@ export default function Resources() {
 
         {activeTab === 0 && (
           <div className={styles.panel}>
+            <div className={styles.wechatCard}>
+              <div className={styles.wechatHeader}>
+                <img src="/lvsisdai-logo.png" alt="上海精神卫生飘扬的绿丝带 logo" className={styles.wechatLogo} />
+                <div className={styles.wechatInfo}>
+                  <div className={styles.wechatName}>上海精神卫生飘扬的绿丝带</div>
+                  <div className={styles.wechatSub}>上海市精神卫生中心 · 第三方官方公众号</div>
+                </div>
+              </div>
+              <div className={styles.wechatTag}>
+                <span className={styles.wechatTagLabel}>推荐关注</span>
+                <span className={styles.wechatTagSep}>·</span>
+                <span>精神卫生专业资讯</span>
+              </div>
+              <div className={styles.wechatDesc}>
+                「上海精神卫生飘扬的绿丝带」是由上海市精神卫生中心运营的官方微信公众号。
+                该公众号致力于传播心理健康知识、普及精神卫生专业知识与相关法律法规，并持续发布精神卫生领域的公益宣传与培训信息。
+              </div>
+              <div className={styles.wechatStats}>
+                <div className={styles.wechatStat}>
+                  <span className={styles.wechatStatVal}>2.5万</span>
+                  <span className={styles.wechatStatLabel}>关注</span>
+                </div>
+                <div className={styles.wechatStatDivider} />
+                <div className={styles.wechatStat}>
+                  <span className={styles.wechatStatVal}>1.3万</span>
+                  <span className={styles.wechatStatLabel}>点赞</span>
+                </div>
+              </div>
+              <div className={styles.wechatTip}>
+                💡 打开微信 → 搜索「上海精神卫生飘扬的绿丝带」→ 关注公众号
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 1 && (
+          <div className={styles.panel}>
             <div className={styles.filter}>
               <select value={area} onChange={e => setArea(e.target.value)}>
                 {areas.map(a => <option key={a}>{a}</option>)}
@@ -73,7 +111,7 @@ export default function Resources() {
           </div>
         )}
 
-        {activeTab === 1 && (
+        {activeTab === 2 && (
           <div className={styles.panel}>
             {hotlines.map(h => (
               <div key={h.id} className={`${styles.hotlineCard} ${h.featured ? styles.featured : ''}`}>
@@ -85,7 +123,7 @@ export default function Resources() {
           </div>
         )}
 
-        {activeTab === 2 && (
+        {activeTab === 3 && (
           <div className={styles.panel}>
             {communityResources.map(c => (
               <div key={c.id} className={styles.resCard}>
@@ -99,7 +137,7 @@ export default function Resources() {
           </div>
         )}
 
-        {activeTab === 3 && (
+        {activeTab === 4 && (
           <div className={styles.panel}>
             {insurancePolicies.map(p => (
               <div key={p.id} className={styles.policyItem}>
@@ -113,8 +151,8 @@ export default function Resources() {
           </div>
         )}
 
-        {activeTab === 4 && <FamilyTab />}
-        {activeTab === 5 && <RebuildTab />}
+        {activeTab === 5 && <FamilyTab />}
+        {activeTab === 6 && <RebuildTab />}
       </div>
     </div>
   )

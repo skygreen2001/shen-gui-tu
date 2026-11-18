@@ -18,7 +18,41 @@
       </view>
 
       <!-- Tab 内容 -->
-      <view class="tab-content" v-if="activeTab === 'hospitals'">
+      <view v-if="activeTab === 'wechat'" class="tab-content">
+        <view class="wechat-card">
+          <view class="wechat-header">
+            <view class="wechat-logo">🟢</view>
+            <view class="wechat-info">
+              <text class="wechat-name">上海精神卫生飘扬的绿丝带</text>
+              <text class="wechat-sub">上海市精神卫生中心 · 第三方官方公众号</text>
+            </view>
+          </view>
+          <view class="wechat-tag-row">
+            <text class="wechat-tag-label">推荐关注</text>
+            <text class="wechat-tag-sep">·</text>
+            <text class="wechat-tag-text">精神卫生专业资讯</text>
+          </view>
+          <view class="wechat-desc">
+            <text class="wechat-desc-text">「上海精神卫生飘扬的绿丝带」是由上海市精神卫生中心运营的官方微信公众号。该公众号致力于传播心理健康知识、普及精神卫生专业知识与相关法律法规，并持续发布精神卫生领域的公益宣传与培训信息。</text>
+          </view>
+          <view class="wechat-stats">
+            <view class="wechat-stat">
+              <text class="wechat-stat-val">2.5万</text>
+              <text class="wechat-stat-label">关注</text>
+            </view>
+            <view class="wechat-stat-divider"></view>
+            <view class="wechat-stat">
+              <text class="wechat-stat-val">1.3万</text>
+              <text class="wechat-stat-label">点赞</text>
+            </view>
+          </view>
+          <view class="wechat-tip">
+            <text class="wechat-tip-text">💡 打开微信 → 搜索「上海精神卫生飘扬的绿丝带」→ 关注公众号</text>
+          </view>
+        </view>
+      </view>
+
+      <view v-else-if="activeTab === 'hospitals'" class="tab-content">
         <!-- 区域筛选（与 Web 版一致：全宽下拉框） -->
         <picker :range="areas" @change="onAreaChange" class="area-filter">
           <view class="area-select">
@@ -248,7 +282,7 @@
         </view>
       </view>
 
-      <!-- ==================== 6. 重建Tab ==================== -->
+      <!-- ==================== 重建Tab ==================== -->
       <view v-else-if="activeTab === 'rebuild'" class="tab-content">
 
         <!-- 子导航 -->
@@ -396,6 +430,7 @@ import { peerStories, storyCategories } from '@/data/peerStories'
 
 // ==================== 通用Tab ====================
 const tabs = [
+  { key: 'wechat', label: '💬 微信' },
   { key: 'hospitals', label: '🏥 医院' },
   { key: 'hotlines', label: '📞 热线' },
   { key: 'community', label: '🏘️ 社区' },
@@ -403,7 +438,7 @@ const tabs = [
   { key: 'family', label: '👨‍👩‍👧 家属' },
   { key: 'rebuild', label: '🌱 重建' },
 ]
-const activeTab = ref('hospitals')
+const activeTab = ref('wechat')
 const activeTabIdx = ref(0)
 const indicatorLeft = ref(0)
 const indicatorWidth = ref(125)
@@ -411,9 +446,9 @@ const indicatorWidth = ref(125)
 function switchTab(key: string, idx: number) {
   activeTab.value = key
   activeTabIdx.value = idx
-  // 每个tab宽度为屏幕1/6，加一点间距
+  // 每个tab宽度为屏幕1/7，加一点间距
   const screenWidth = uni.getSystemInfoSync().windowWidth
-  const tabWidth = screenWidth / 6
+  const tabWidth = screenWidth / 7
   indicatorLeft.value = idx * tabWidth
   indicatorWidth.value = tabWidth
 }
@@ -752,7 +787,7 @@ watch(rebuildSubTab, (val) => {
 onMounted(() => {
   // 初始化 tab indicator 位置
   const screenWidth = uni.getSystemInfoSync().windowWidth
-  const tabWidth = screenWidth / 6
+  const tabWidth = screenWidth / 7
   indicatorLeft.value = 0
   indicatorWidth.value = tabWidth
   loadFamilyProgress()
@@ -1603,5 +1638,116 @@ onMounted(() => {
   line-height: 1.8;
   white-space: pre-wrap;
   display: block;
+}
+
+/* ====== 微信公众号Tab ====== */
+.wechat-card {
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  border: 2rpx solid #E8F5E9;
+}
+.wechat-header {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-bottom: 24rpx;
+}
+.wechat-logo {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+}
+.wechat-info { flex: 1; min-width: 0; }
+.wechat-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #333;
+  display: block;
+  word-break: break-all;
+}
+.wechat-sub {
+  font-size: 24rpx;
+  color: #9B9B9B;
+  margin-top: 4rpx;
+  display: block;
+}
+.wechat-tag-row {
+  font-size: 22rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+  background: #F5F5F5;
+  border-radius: 8rpx;
+  padding: 8rpx 20rpx;
+  display: inline-flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.wechat-tag-label {
+  color: #2E7D32;
+  font-weight: 600;
+}
+.wechat-tag-sep {
+  color: #CCC;
+}
+.wechat-tag-text {
+  color: #666;
+}
+.wechat-desc {
+  background: #F1F8E9;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+.wechat-desc-text {
+  font-size: 26rpx;
+  color: #4A4A4A;
+  line-height: 1.7;
+}
+.wechat-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FAFAFA;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+.wechat-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.wechat-stat-val {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2E7D32;
+}
+.wechat-stat-label {
+  font-size: 22rpx;
+  color: #9B9B9B;
+  margin-top: 4rpx;
+}
+.wechat-stat-divider {
+  width: 2rpx;
+  height: 56rpx;
+  background: #E0E0E0;
+}
+.wechat-tip {
+  background: #FFF8E1;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  text-align: center;
+}
+.wechat-tip-text {
+  font-size: 24rpx;
+  color: #666;
 }
 </style>

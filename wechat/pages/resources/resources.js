@@ -4,6 +4,7 @@ import { communityResources } from '../../data/community'
 import { insurancePolicies } from '../../data/insurance'
 
 const TABS = [
+  { key: 'wechat', label: '💬 微信' },
   { key: 'hospitals', label: '🏥 医院' },
   { key: 'hotlines', label: '📞 热线' },
   { key: 'community', label: '🏘️ 社区' },

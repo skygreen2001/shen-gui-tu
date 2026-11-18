@@ -18,8 +18,43 @@
       </view>
     </scroll-view>
 
-    <!-- 医院面板 -->
+    <!-- 微信公众号面板（首位） -->
     <view class="panel" wx:if="{{activeTab === 0}}">
+      <view class="wechat-card card">
+        <view class="wechat-header">
+          <image class="wechat-logo" src="/assets/lvsisdai-logo.png" mode="aspectFill" />
+          <view class="wechat-info">
+            <view class="wechat-name">上海精神卫生飘扬的绿丝带</view>
+            <view class="wechat-sub">上海市精神卫生中心 · 第三方官方公众号</view>
+          </view>
+        </view>
+        <view class="wechat-tag-row">
+          <text class="wechat-tag-label">推荐关注</text>
+          <text class="wechat-tag-sep">·</text>
+          <text class="wechat-tag-text">精神卫生专业资讯</text>
+        </view>
+        <view class="wechat-desc">
+          <view class="wechat-desc-text">「上海精神卫生飘扬的绿丝带」是由上海市精神卫生中心运营的官方微信公众号。该公众号致力于传播心理健康知识、普及精神卫生专业知识与相关法律法规，并持续发布精神卫生领域的公益宣传与培训信息。</view>
+        </view>
+        <view class="wechat-stats">
+          <view class="wechat-stat">
+            <text class="wechat-stat-val">2.5万</text>
+            <text class="wechat-stat-label">关注</text>
+          </view>
+          <view class="wechat-stat-divider"></view>
+          <view class="wechat-stat">
+            <text class="wechat-stat-val">1.3万</text>
+            <text class="wechat-stat-label">点赞</text>
+          </view>
+        </view>
+        <view class="wechat-tip">
+          <text class="wechat-tip-text">💡 打开微信 → 搜索「上海精神卫生飘扬的绿丝带」→ 关注公众号</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 医院面板 -->
+    <view class="panel" wx:if="{{activeTab === 1}}">
       <view class="filter">
         <picker mode="selector" range="{{areas}}" value="{{areaIndex}}" bindchange="onAreaChange">
           <view class="select">📍 {{areas[areaIndex]}} ▾</view>
@@ -36,7 +71,7 @@
     </view>
 
     <!-- 热线面板 -->
-    <view class="panel" wx:if="{{activeTab === 1}}">
+    <view class="panel" wx:if="{{activeTab === 2}}">
       <view class="hotline-card {{h.featured ? 'featured' : ''}} card" wx:for="{{hotlines}}" wx:key="id" wx:for-item="h">
         <view class="hotline-name">{{h.featured ? '🔴' : '📞'}} {{h.name}}</view>
         <view class="hotline-num" data-phone="{{h.number}}" bindtap="callPhone">{{h.number}}</view>
@@ -45,7 +80,7 @@
     </view>
 
     <!-- 社区面板 -->
-    <view class="panel" wx:if="{{activeTab === 2}}">
+    <view class="panel" wx:if="{{activeTab === 3}}">
       <view class="res-card card" wx:for="{{communityResources}}" wx:key="id" wx:for-item="c">
         <view class="card-name">{{c.name}}</view>
         <view class="card-info">{{c.area}} · {{c.address}}</view>
@@ -56,7 +91,7 @@
     </view>
 
     <!-- 医保面板 -->
-    <view class="panel" wx:if="{{activeTab === 3}}">
+    <view class="panel" wx:if="{{activeTab === 4}}">
       <view class="policy-item card" wx:for="{{insurancePolicies}}" wx:key="id" wx:for-item="p">
         <view class="policy-title">{{p.title}}</view>
         <view class="policy-desc">{{p.desc}}<text class="highlight">{{p.highlight}}</text></view>
@@ -65,9 +100,9 @@
     </view>
 
     <!-- 家属面板（FamilyTab） -->
-    <family-tab wx:if="{{activeTab === 4}}" />
+    <family-tab wx:if="{{activeTab === 5}}" />
 
     <!-- 重建面板（RebuildTab） -->
-    <rebuild-tab wx:if="{{activeTab === 5}}" />
+    <rebuild-tab wx:if="{{activeTab === 6}}" />
   </view>
 </view>
