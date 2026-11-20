@@ -24,7 +24,7 @@
         <view class="wechat-header">
           <image class="wechat-logo" src="/assets/lvsisdai-logo.png" mode="aspectFill" />
           <view class="wechat-info">
-            <view class="wechat-name">上海精神卫生飘扬的绿丝带</view>
+            <text class="wechat-name" selectable="true">上海精神卫生飘扬的绿丝带</text>
             <view class="wechat-sub">上海市精神卫生中心 · 第三方官方公众号</view>
           </view>
         </view>
@@ -34,7 +34,7 @@
           <text class="wechat-tag-text">精神卫生专业资讯</text>
         </view>
         <view class="wechat-desc">
-          <view class="wechat-desc-text">「上海精神卫生飘扬的绿丝带」是由上海市精神卫生中心运营的官方微信公众号。该公众号致力于传播心理健康知识、普及精神卫生专业知识与相关法律法规，并持续发布精神卫生领域的公益宣传与培训信息。</view>
+          <text class="wechat-desc-text" selectable="true">「上海精神卫生飘扬的绿丝带」是由上海市精神卫生中心运营的官方微信公众号。该公众号致力于传播心理健康知识、普及精神卫生专业知识与相关法律法规，并持续发布精神卫生领域的公益宣传与培训信息。</text>
         </view>
         <view class="wechat-stats">
           <view class="wechat-stat">
@@ -48,7 +48,7 @@
           </view>
         </view>
         <view class="wechat-tip">
-          <text class="wechat-tip-text">💡 打开微信 → 搜索「上海精神卫生飘扬的绿丝带」→ 关注公众号</text>
+          <text class="wechat-tip-text" selectable="true">💡 打开微信 → 搜索「上海精神卫生飘扬的绿丝带」→ 关注公众号</text>
         </view>
       </view>
     </view>
